@@ -1,0 +1,427 @@
+{
+  "analysis_metadata": {
+    "date": "2025-10-02",
+    "project": "thot-mobile",
+    "analyzer": "Claude Code",
+    "duration_minutes": 10,
+    "status": "SUCCESS"
+  },
+  "summary": {
+    "total_dtos": 9,
+    "dtos_with_freezed": 0,
+    "dtos_without_freezed": 9,
+    "total_entities": 16,
+    "entities_with_freezed": 4,
+    "entities_with_json_serializable": 1,
+    "entities_simple": 11,
+    "total_generated_files": 8,
+    "freezed_files": 4,
+    "g_files": 4,
+    "compilation_errors": 0,
+    "flutter_analyze_warnings": 0,
+    "compliance_percentage": 100
+  },
+  "dtos": {
+    "admin": {
+      "path": "lib/features/admin/data/models/admin_dto.dart",
+      "type": "simple",
+      "classes": ["ReportDto"],
+      "compliant": true,
+      "uses_freezed": false
+    },
+    "authentication": {
+      "path": "lib/features/authentication/data/models/auth_dto.dart",
+      "type": "simple",
+      "classes": [
+        "LoginRequestDto",
+        "RegisterRequestDto",
+        "AuthResponseDto",
+        "UserDto"
+      ],
+      "compliant": true,
+      "uses_freezed": false
+    },
+    "comments": {
+      "path": "lib/features/comments/data/models/comment_dto.dart",
+      "type": "simple",
+      "classes": ["CommentDto"],
+      "compliant": true,
+      "uses_freezed": false
+    },
+    "media": {
+      "path": "lib/features/media/data/models/media_dto.dart",
+      "type": "simple",
+      "classes": ["MediaDto"],
+      "compliant": true,
+      "uses_freezed": false
+    },
+    "notifications": {
+      "path": "lib/features/notifications/data/models/notification_dto.dart",
+      "type": "simple",
+      "classes": ["NotificationDto"],
+      "compliant": true,
+      "uses_freezed": false
+    },
+    "posts": {
+      "path": "lib/features/posts/data/models/post_dto.dart",
+      "type": "simple",
+      "classes": ["PostDto"],
+      "compliant": true,
+      "uses_freezed": false
+    },
+    "profile": {
+      "path": "lib/features/profile/data/models/profile_dto.dart",
+      "type": "simple",
+      "classes": ["ProfileDto"],
+      "compliant": true,
+      "uses_freezed": false
+    },
+    "search": {
+      "path": "lib/features/search/data/models/search_dto.dart",
+      "type": "simple",
+      "classes": ["SearchResultDto"],
+      "compliant": true,
+      "uses_freezed": false
+    },
+    "settings": {
+      "path": "lib/features/settings/data/models/settings_dto.dart",
+      "type": "simple",
+      "classes": ["SettingsDto"],
+      "compliant": true,
+      "uses_freezed": false
+    }
+  },
+  "entities": {
+    "authentication": [
+      {
+        "path": "lib/features/authentication/domain/entities/user.dart",
+        "name": "User",
+        "type": "freezed",
+        "reason": "Business logic entity for authentication",
+        "authorized": true,
+        "generated_files": [
+          "user.freezed.dart",
+          "user.g.dart"
+        ]
+      }
+    ],
+    "posts": [
+      {
+        "path": "lib/features/posts/domain/entities/post.dart",
+        "name": "Post",
+        "type": "json_serializable",
+        "reason": "Complex entity with enums and nested objects",
+        "authorized": true,
+        "generated_files": ["post.g.dart"]
+      },
+      {
+        "path": "lib/features/posts/domain/entities/saved_short.dart",
+        "name": "SavedShort",
+        "type": "simple",
+        "authorized": true
+      },
+      {
+        "path": "lib/features/posts/domain/entities/short.dart",
+        "name": "Short",
+        "type": "simple",
+        "authorized": true
+      },
+      {
+        "path": "lib/features/posts/domain/entities/political_view.dart",
+        "name": "PoliticalView",
+        "type": "simple",
+        "authorized": true
+      },
+      {
+        "path": "lib/features/posts/domain/entities/question.dart",
+        "name": "Question",
+        "type": "simple",
+        "authorized": true
+      },
+      {
+        "path": "lib/features/posts/domain/entities/post_metadata.dart",
+        "name": "PostMetadata",
+        "type": "simple",
+        "authorized": true
+      }
+    ],
+    "comments": [
+      {
+        "path": "lib/features/comments/domain/entities/comment.dart",
+        "name": "Comment",
+        "type": "simple",
+        "classes": ["Comment", "CommentAuthor"],
+        "authorized": true
+      },
+      {
+        "path": "lib/features/comments/domain/entities/typing_indicator_event.dart",
+        "name": "TypingIndicatorEvent",
+        "type": "simple",
+        "authorized": true
+      }
+    ],
+    "media": [
+      {
+        "path": "lib/features/media/domain/entities/media_file.dart",
+        "name": "MediaFile",
+        "type": "freezed",
+        "reason": "Business logic entity for media files",
+        "authorized": true,
+        "generated_files": [
+          "media_file.freezed.dart",
+          "media_file.g.dart"
+        ]
+      }
+    ],
+    "notifications": [
+      {
+        "path": "lib/features/notifications/domain/entities/notification.dart",
+        "name": "Notification",
+        "type": "simple",
+        "classes": [
+          "NotificationModel",
+          "NotificationSender",
+          "NotificationPost",
+          "NotificationComment"
+        ],
+        "authorized": true
+      }
+    ],
+    "profile": [
+      {
+        "path": "lib/features/profile/domain/entities/user_profile.dart",
+        "name": "UserProfile",
+        "type": "simple",
+        "classes": ["UserProfile", "Experience", "Formation"],
+        "authorized": true
+      },
+      {
+        "path": "lib/features/profile/domain/entities/question.dart",
+        "name": "Question",
+        "type": "simple",
+        "authorized": true
+      }
+    ],
+    "search": [
+      {
+        "path": "lib/features/search/domain/entities/search_result.dart",
+        "name": "SearchResult",
+        "type": "freezed",
+        "reason": "Union types for search results",
+        "authorized": true,
+        "generated_files": [
+          "search_result.freezed.dart",
+          "search_result.g.dart"
+        ]
+      }
+    ],
+    "settings": [
+      {
+        "path": "lib/features/settings/domain/entities/app_settings.dart",
+        "name": "AppSettings",
+        "type": "freezed",
+        "reason": "Business logic entity for app settings",
+        "authorized": true,
+        "generated_files": ["app_settings.freezed.dart"]
+      }
+    ],
+    "admin": [
+      {
+        "path": "lib/features/admin/domain/entities/report.dart",
+        "name": "Report",
+        "type": "simple",
+        "authorized": true
+      }
+    ]
+  },
+  "generated_files": {
+    "freezed": [
+      {
+        "path": "lib/features/authentication/domain/entities/user.freezed.dart",
+        "source": "lib/features/authentication/domain/entities/user.dart",
+        "necessary": true,
+        "reason": "User entity uses @freezed"
+      },
+      {
+        "path": "lib/features/media/domain/entities/media_file.freezed.dart",
+        "source": "lib/features/media/domain/entities/media_file.dart",
+        "necessary": true,
+        "reason": "MediaFile entity uses @freezed"
+      },
+      {
+        "path": "lib/features/search/domain/entities/search_result.freezed.dart",
+        "source": "lib/features/search/domain/entities/search_result.dart",
+        "necessary": true,
+        "reason": "SearchResult entity uses @freezed"
+      },
+      {
+        "path": "lib/features/settings/domain/entities/app_settings.freezed.dart",
+        "source": "lib/features/settings/domain/entities/app_settings.dart",
+        "necessary": true,
+        "reason": "AppSettings entity uses @freezed"
+      }
+    ],
+    "g": [
+      {
+        "path": "lib/features/authentication/domain/entities/user.g.dart",
+        "source": "lib/features/authentication/domain/entities/user.dart",
+        "necessary": true,
+        "reason": "User entity uses @freezed with JSON serialization"
+      },
+      {
+        "path": "lib/features/media/domain/entities/media_file.g.dart",
+        "source": "lib/features/media/domain/entities/media_file.dart",
+        "necessary": true,
+        "reason": "MediaFile entity uses @freezed with JSON serialization"
+      },
+      {
+        "path": "lib/features/posts/domain/entities/post.g.dart",
+        "source": "lib/features/posts/domain/entities/post.dart",
+        "necessary": true,
+        "reason": "Post entity uses @JsonSerializable"
+      },
+      {
+        "path": "lib/features/search/domain/entities/search_result.g.dart",
+        "source": "lib/features/search/domain/entities/search_result.dart",
+        "necessary": true,
+        "reason": "SearchResult entity uses @freezed with JSON serialization"
+      }
+    ]
+  },
+  "compliance_rules": {
+    "rule_1_dtos_simple": {
+      "description": "All DTOs must be simple classes without freezed",
+      "status": "COMPLIANT",
+      "percentage": 100,
+      "violations": []
+    },
+    "rule_2_freezed_authorized_only": {
+      "description": "Freezed only for authorized entities",
+      "status": "COMPLIANT",
+      "percentage": 100,
+      "authorized_entities": [
+        "lib/features/authentication/domain/entities/user.dart",
+        "lib/features/media/domain/entities/media_file.dart",
+        "lib/features/search/domain/entities/search_result.dart",
+        "lib/features/settings/domain/entities/app_settings.dart"
+      ],
+      "actual_entities": [
+        "lib/features/authentication/domain/entities/user.dart",
+        "lib/features/media/domain/entities/media_file.dart",
+        "lib/features/search/domain/entities/search_result.dart",
+        "lib/features/settings/domain/entities/app_settings.dart"
+      ],
+      "violations": []
+    },
+    "rule_3_dto_format": {
+      "description": "All DTOs follow auth_dto.dart format",
+      "status": "COMPLIANT",
+      "percentage": 100,
+      "required_features": [
+        "const classes",
+        "manual toJson()",
+        "manual fromJson()",
+        "null handling",
+        "default values",
+        "no freezed imports",
+        "no json_annotation imports"
+      ],
+      "violations": []
+    }
+  },
+  "build_results": {
+    "flutter_analyze": {
+      "command": "flutter analyze --no-pub",
+      "output": "No issues found! (ran in 1.7s)",
+      "errors": 0,
+      "warnings": 0,
+      "info": 0,
+      "duration_seconds": 1.7,
+      "status": "SUCCESS"
+    },
+    "build_runner": {
+      "command": "flutter pub run build_runner build --delete-conflicting-outputs",
+      "output": "Built with build_runner in 28s; wrote 12 outputs",
+      "duration_seconds": 28,
+      "outputs_count": 12,
+      "status": "SUCCESS"
+    }
+  },
+  "recommendations": [
+    {
+      "priority": "HIGH",
+      "category": "consistency",
+      "description": "Maintain consistency: Continue using simple classes for all new DTOs",
+      "action": "Add linting rule or PR checklist to verify DTOs don't use Freezed"
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "documentation",
+      "description": "Document why certain entities use Freezed (union types, strict immutability)",
+      "action": "Add comments in entity files explaining the choice of Freezed"
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "review",
+      "description": "Regular review: Periodically verify no DTO introduces Freezed by mistake",
+      "action": "Run analysis script monthly or in CI/CD pipeline"
+    },
+    {
+      "priority": "LOW",
+      "category": "optimization",
+      "description": "Consider: Migrate Post entity from @JsonSerializable to simple class if complexity allows",
+      "action": "Evaluate if Post entity complexity justifies code generation"
+    }
+  ],
+  "impact": {
+    "performance": {
+      "description": "Reduced generated code size",
+      "metrics": {
+        "generated_files_before": "unknown",
+        "generated_files_after": 8,
+        "reduction_percentage": "unknown"
+      }
+    },
+    "maintainability": {
+      "description": "Simpler and more readable DTO code",
+      "benefits": [
+        "Easier to debug (no generated code)",
+        "Faster to modify (no rebuild required)",
+        "More transparent JSON conversion",
+        "Lower cognitive load for developers"
+      ]
+    },
+    "build_time": {
+      "description": "Fewer files to generate",
+      "metrics": {
+        "freezed_files": 4,
+        "g_files": 4,
+        "total_generated": 8
+      }
+    },
+    "architecture": {
+      "description": "Clear separation between DTOs (data layer) and Entities (domain layer)",
+      "benefits": [
+        "DTOs = Simple transport objects",
+        "Entities = Business logic with appropriate tools",
+        "Clean Architecture principles respected",
+        "Easier onboarding for new developers"
+      ]
+    }
+  },
+  "quality_metrics": {
+    "dtos_without_freezed_percentage": 100,
+    "entities_compliant_percentage": 100,
+    "generated_files_necessary_percentage": 100,
+    "compilation_success": true,
+    "analyze_success": true,
+    "overall_quality_score": 100
+  },
+  "next_steps": [
+    "Monitor: Ensure no new DTOs introduce Freezed",
+    "Document: Add architecture decision records (ADRs)",
+    "Test: Verify JSON serialization/deserialization works correctly",
+    "CI/CD: Add automated checks for DTO compliance",
+    "Review: Periodic code review focusing on data layer architecture"
+  ]
+}

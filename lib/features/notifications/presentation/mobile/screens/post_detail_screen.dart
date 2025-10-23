@@ -1,0 +1,1 @@
+export 'package:thot/features/posts/presentation/mobile/screens/post_detail_screen.dart';
