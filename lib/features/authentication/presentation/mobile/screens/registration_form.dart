@@ -1043,7 +1043,7 @@ class _RegistrationFormState extends State<RegistrationForm>
                   color: _acceptedTerms ? cs.primary : Colors.transparent,
                   borderRadius: BorderRadius.circular(6),
                   border: Border.all(
-                    color: _acceptedTerms ? cs.primary : cs.outline,
+                    color: _acceptedTerms ? cs.primary : Colors.white,
                     width: 2,
                   ),
                 ),

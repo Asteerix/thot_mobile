@@ -738,6 +738,10 @@ class _RegistrationStepperState extends State<RegistrationStepper>
             },
             checkColor: Colors.black,
             activeColor: Colors.white,
+            side: BorderSide(
+              color: Colors.white,
+              width: 2,
+            ),
             title: Text(
               'J\'accepte les conditions',
               style: TextStyle(color: Colors.white),
