@@ -796,7 +796,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                               onTap: () {
                                 Navigator.pop(innerContext);
                                 Future.delayed(const Duration(milliseconds: 100), () {
-                                  context.pushNamed(RouteNames.terms);
+                                  context.pushNamed('terms');
                                 });
                               },
                               borderRadius: BorderRadius.circular(12),
@@ -844,7 +844,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                               onTap: () {
                                 Navigator.pop(innerContext);
                                 Future.delayed(const Duration(milliseconds: 100), () {
-                                  context.pushNamed(RouteNames.privacyPolicy);
+                                  context.pushNamed('privacy-policy');
                                 });
                               },
                               borderRadius: BorderRadius.circular(12),
