@@ -43,6 +43,7 @@ mixin WelcomeScreenMixin<T extends StatefulWidget> on State<T>, SingleTickerProv
   }
   Future<void> navigateToLogin() async {
     if (_isLoading) return;
+    FocusScope.of(context).unfocus();
     setState(() => _isLoading = true);
     await Future.delayed(const Duration(milliseconds: 300));
     if (!mounted) return;
@@ -51,6 +52,7 @@ mixin WelcomeScreenMixin<T extends StatefulWidget> on State<T>, SingleTickerProv
   }
   Future<void> navigateToRegister() async {
     if (_isLoading) return;
+    FocusScope.of(context).unfocus();
     setState(() => _isLoading = true);
     await Future.delayed(const Duration(milliseconds: 300));
     if (!mounted) return;

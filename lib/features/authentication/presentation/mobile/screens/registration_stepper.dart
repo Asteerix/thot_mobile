@@ -220,6 +220,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
   Future<void> _handleRegistration() async {
+    FocusScope.of(context).unfocus();
     setState(() => _isLoading = true);
     try {
       String username = widget.isJournalist
@@ -257,6 +258,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
   }
   void _nextStep() {
     if (_currentStep < 3) {
+      FocusScope.of(context).unfocus();
       HapticFeedback.lightImpact();
       setState(() => _currentStep++);
       _pageController.nextPage(
@@ -267,6 +269,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
     }
   }
   void _previousStep() {
+    FocusScope.of(context).unfocus();
     if (_currentStep > 0) {
       HapticFeedback.lightImpact();
       setState(() => _currentStep--);
@@ -628,7 +631,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                 label: 'Mot de passe',
                 icon: Icons.lock,
                 obscureText: _obscurePassword,
-                hint: '8 caractères minimum',
+                hint: '8 car., majuscule, chiffre, caractère spécial',
                 hasStartedTyping: _hasStartedTypingPassword,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -648,6 +651,9 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                   }
                   if (!RegExp(r'[0-9]').hasMatch(value)) {
                     return 'Doit contenir au moins un chiffre';
+                  }
+                  if (!RegExp(r'[!@#\$%^&*(),.?":{}|<>]').hasMatch(value)) {
+                    return 'Doit contenir un caractère spécial';
                   }
                   return null;
                 },
@@ -966,11 +972,14 @@ class _RegistrationStepperState extends State<RegistrationStepper>
       backgroundColor: Colors.black,
       body: SafeArea(
         child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   GestureDetector(
                     onTap: _previousStep,
@@ -987,9 +996,9 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                       ),
                     ),
                   ),
-                  const Spacer(),
-                  _buildDots(),
-                  const Spacer(),
+                  Expanded(
+                    child: Center(child: _buildDots()),
+                  ),
                   const SizedBox(width: 36),
                 ],
               ),
@@ -1001,11 +1010,9 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                 children: List.generate(4, _buildStepPage),
               ),
             ),
-            Container(
+            Padding(
               padding: const EdgeInsets.all(24),
-              child: SafeArea(
-                top: false,
-                child: _currentStep == 3
+              child: _currentStep == 3
                     ? SizedBox(
                         width: double.infinity,
                         height: 60,
@@ -1060,7 +1067,6 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                           ),
                         ),
                       ),
-              ),
             ),
           ],
         ),

@@ -48,6 +48,7 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
     HapticFeedback.lightImpact();
   }
   void _continueToRegistration() {
+    FocusScope.of(context).unfocus();
     HapticFeedback.mediumImpact();
     context.go(
       '${RouteNames.registrationStepper}?isJournalist=${_selectedType == ProfileType.journalist}',
@@ -79,11 +80,19 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
                 opacity: _fadeAnimation,
                 child: SlideTransition(
                   position: _slideAnimation,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      children: [
-                        const Spacer(),
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: MediaQuery.of(context).size.height - 100,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 40),
                         Text(
                           'Qui êtes-vous ?',
                           style: theme.textTheme.displaySmall?.copyWith(
@@ -99,8 +108,10 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
                             color: Colors.white.withOpacity(0.7),
                           ),
                         ),
-                          const SizedBox(height: 60),
+                          const SizedBox(height: 40),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Expanded(
                                 child: _OptionCard(
@@ -126,7 +137,7 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
                               ),
                             ],
                           ),
-                        const Spacer(),
+                        const SizedBox(height: 40),
                         SizedBox(
                           width: double.infinity,
                           height: 56,
@@ -150,7 +161,9 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
                           ),
                         ),
                         const SizedBox(height: 40),
-                      ],
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),

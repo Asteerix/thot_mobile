@@ -194,16 +194,17 @@ class _FeedItemState extends State<FeedItem>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AspectRatio(
-                        aspectRatio: 16 / 9,
-                        child: Padding(
-                          padding: const EdgeInsets.all(6),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                ShaderMask(
+                      ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12),
+                        ),
+                        child: AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              ShaderMask(
                                   shaderCallback: (rect) {
                                     return LinearGradient(
                                       begin: Alignment.topCenter,
@@ -255,6 +256,9 @@ class _FeedItemState extends State<FeedItem>
                                     return SafeNetworkImage(
                                       url: imageUrl,
                                       fit: BoxFit.cover,
+                                      memCacheWidth: 800,
+                                      memCacheHeight: 450,
+                                      filterQuality: FilterQuality.medium,
                                     );
                                   }),
                                 ),
@@ -288,8 +292,7 @@ class _FeedItemState extends State<FeedItem>
                                       ),
                                     ),
                                   ),
-                              ],
-                            ),
+                            ],
                           ),
                         ),
                       ),
