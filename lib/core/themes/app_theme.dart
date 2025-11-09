@@ -7,6 +7,11 @@ class AppTheme {
         seedColor: AppColors.primary,
         brightness: Brightness.light,
       ),
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: AppColors.primary,
+        selectionColor: AppColors.primary.withOpacity(0.3),
+        selectionHandleColor: AppColors.primary,
+      ),
     );
   }
   static ThemeData get darkTheme {
@@ -54,6 +59,11 @@ class AppTheme {
         selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.textSecondary,
         elevation: 0,
+      ),
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: AppColors.primary,
+        selectionColor: AppColors.primary.withOpacity(0.3),
+        selectionHandleColor: AppColors.primary,
       ),
     );
   }

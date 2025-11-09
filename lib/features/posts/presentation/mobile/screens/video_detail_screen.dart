@@ -495,168 +495,167 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
             ],
           );
         }
-        return Column(
-          children: [
-            Container(
-              color: Theme.of(context).colorScheme.onSurface,
-              child: SafeArea(
-                bottom: false,
-                child: AspectRatio(
-                  aspectRatio: (_videoController?.value.isInitialized ?? false)
-                      ? _videoController!.value.aspectRatio
-                      : 16 / 9,
-                  child: _buildVideoPlayer(),
-                ),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _post!.title,
-                        style:
-                            Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
-                      const SizedBox(height: 16),
-                      if (_post!.journalist != null)
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              AppAvatar(
-                                avatarUrl: _post!.journalist!.avatarUrl,
-                                radius: 24,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      _post!.journalist!.name,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Row(
-                                      children: [
-                                        if (_post!.journalist!.isVerified) ...[
-                                          Icon(
-                                            Icons.verified,
-                                            color: AppColors.info,
-                                            size: 16,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            'Verified',
-                                            style: TextStyle(
-                                              color: AppColors.info,
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                        ],
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              if (_post!.journalist?.id != null)
-                                Builder(
-                                  builder: (context) {
-                                    final currentUserId = context.watch<AuthProvider>().userProfile?.id;
-                                    final isOwnPost = currentUserId != null &&
-                                                      currentUserId == _post!.journalist!.id;
-                                    if (isOwnPost) {
-                                      return const SizedBox.shrink();
-                                    }
-                                    return FollowButton(
-                                      userId: _post!.journalist!.id!,
-                                      isFollowing: _post!.journalist!.isFollowing,
-                                    );
-                                  },
-                                ),
-                            ],
-                          ),
-                        ),
-                      const SizedBox(height: 24),
-                      if (_post!.content.isNotEmpty) ...[
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.05),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.1),
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.description,
-                                    color: Colors.white.withOpacity(0.7),
-                                    size: 18,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Description',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                _post!.content,
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
-                                  fontSize: 15,
-                                  height: 1.6,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                      ],
-                      Consumer<PostsStateProvider>(
-                        builder: (context, postsProvider, child) {
-                          final currentPost =
-                              postsProvider.getPost(_post!.id) ?? _post!;
-                          return PostActions(
-                            post: currentPost,
-                            onLike: () => _handleLike(currentPost),
-                            onComment: () => _showCommentsSheet(currentPost.id),
-                            onSave: () => _handleSave(currentPost),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 32),
-                    ],
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                color: Theme.of(context).colorScheme.onSurface,
+                child: SafeArea(
+                  bottom: false,
+                  child: AspectRatio(
+                    aspectRatio: (_videoController?.value.isInitialized ?? false)
+                        ? _videoController!.value.aspectRatio
+                        : 16 / 9,
+                    child: _buildVideoPlayer(),
                   ),
                 ),
               ),
-            ),
-          ],
+              Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _post!.title,
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                    ),
+                    const SizedBox(height: 16),
+                    if (_post!.journalist != null)
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            AppAvatar(
+                              avatarUrl: _post!.journalist!.avatarUrl,
+                              radius: 24,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _post!.journalist!.name,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Row(
+                                    children: [
+                                      if (_post!.journalist!.isVerified) ...[
+                                        Icon(
+                                          Icons.verified,
+                                          color: AppColors.info,
+                                          size: 16,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          'Verified',
+                                          style: TextStyle(
+                                            color: AppColors.info,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (_post!.journalist?.id != null)
+                              Builder(
+                                builder: (context) {
+                                  final currentUserId = context.watch<AuthProvider>().userProfile?.id;
+                                  final isOwnPost = currentUserId != null &&
+                                                    currentUserId == _post!.journalist!.id;
+                                  if (isOwnPost) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  return FollowButton(
+                                    userId: _post!.journalist!.id!,
+                                    isFollowing: _post!.journalist!.isFollowing,
+                                  );
+                                },
+                              ),
+                          ],
+                        ),
+                      ),
+                    const SizedBox(height: 24),
+                    if (_post!.content.isNotEmpty) ...[
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.1),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.description,
+                                  color: Colors.white.withOpacity(0.7),
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Description',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              _post!.content,
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 15,
+                                height: 1.6,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                    Consumer<PostsStateProvider>(
+                      builder: (context, postsProvider, child) {
+                        final currentPost =
+                            postsProvider.getPost(_post!.id) ?? _post!;
+                        return PostActions(
+                          post: currentPost,
+                          onLike: () => _handleLike(currentPost),
+                          onComment: () => _showCommentsSheet(currentPost.id),
+                          onSave: () => _handleSave(currentPost),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 32),
+                  ],
+                ),
+              ),
+            ],
+          ),
         );
       },
     );

@@ -765,7 +765,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                       left: 16,
                       right: 16,
                       top: 12,
-                      bottom: 12,
+                      bottom: 12 + MediaQuery.of(context).viewInsets.bottom,
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,

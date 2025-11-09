@@ -283,7 +283,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
           children: [
             Expanded(
               child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _buildArticleHeader(colorScheme),
                     if (_post!.content.isNotEmpty)
@@ -293,6 +295,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                         height: 400,
                         child: TabBarView(
                           controller: _tabController,
+                          physics: const NeverScrollableScrollPhysics(),
                           children: [
                             _buildPerspectiveTab(colorScheme),
                             _buildSuggestionsTab(colorScheme),
