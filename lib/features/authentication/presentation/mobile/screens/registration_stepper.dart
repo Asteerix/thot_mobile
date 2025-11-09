@@ -791,12 +791,15 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                         SizedBox(height: 24),
                         Material(
                           color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                              context.pushNamed(RouteNames.terms);
-                            },
-                            borderRadius: BorderRadius.circular(12),
+                          child: Builder(
+                            builder: (innerContext) => InkWell(
+                              onTap: () {
+                                Navigator.pop(innerContext);
+                                Future.delayed(const Duration(milliseconds: 100), () {
+                                  context.pushNamed(RouteNames.terms);
+                                });
+                              },
+                              borderRadius: BorderRadius.circular(12),
                             child: Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
@@ -830,17 +833,21 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                                 ],
                               ),
                             ),
+                            ),
                           ),
                         ),
                         SizedBox(height: 12),
                         Material(
                           color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                              context.pushNamed(RouteNames.privacyPolicy);
-                            },
-                            borderRadius: BorderRadius.circular(12),
+                          child: Builder(
+                            builder: (innerContext) => InkWell(
+                              onTap: () {
+                                Navigator.pop(innerContext);
+                                Future.delayed(const Duration(milliseconds: 100), () {
+                                  context.pushNamed(RouteNames.privacyPolicy);
+                                });
+                              },
+                              borderRadius: BorderRadius.circular(12),
                             child: Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
@@ -873,6 +880,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                                   ),
                                 ],
                               ),
+                            ),
                             ),
                           ),
                         ),
