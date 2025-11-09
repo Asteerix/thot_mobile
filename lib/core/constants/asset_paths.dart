@@ -7,5 +7,5 @@ final class AssetPaths {
   static const String defaultJournalistAvatar =
       'assets/images/defaults/default_journalist_avatar.png';
   static const String defaultCover = 'assets/images/default_cover.png';
-  static const String appIcon = 'assets/images/app_icon.png';
+  static const String appIcon = 'assets/app_logo.png';
 }
