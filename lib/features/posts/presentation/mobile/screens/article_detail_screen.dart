@@ -423,34 +423,48 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundImage: _post!.journalist?.avatarUrl?.isNotEmpty ==
-                        true
-                    ? NetworkImage(
-                        ImageUtils.getAvatarUrl(_post!.journalist!.avatarUrl!))
-                    : const AssetImage(UIConstants.defaultJournalistAvatarPath)
-                        as ImageProvider,
+              GestureDetector(
+                onTap: () {
+                  if (_post!.journalist?.id != null) {
+                    context.push('/profile/${_post!.journalist!.id}');
+                  }
+                },
+                child: CircleAvatar(
+                  radius: 20,
+                  backgroundImage: _post!.journalist?.avatarUrl?.isNotEmpty ==
+                          true
+                      ? NetworkImage(
+                          ImageUtils.getAvatarUrl(_post!.journalist!.avatarUrl!))
+                      : const AssetImage(UIConstants.defaultJournalistAvatarPath)
+                          as ImageProvider,
+                ),
               ),
               const SizedBox(width: UIConstants.paddingM),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _post!.journalist?.name ?? 'Inconnu',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: colorScheme.onSurface,
-                            fontWeight: FontWeight.w500,
-                          ),
-                    ),
-                    Text(
-                      '@${_post!.journalist?.username ?? 'unknown'}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                    ),
-                  ],
+                child: GestureDetector(
+                  onTap: () {
+                    if (_post!.journalist?.id != null) {
+                      context.push('/profile/${_post!.journalist!.id}');
+                    }
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _post!.journalist?.name ?? 'Inconnu',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: colorScheme.onSurface,
+                              fontWeight: FontWeight.w500,
+                            ),
+                      ),
+                      Text(
+                        '@${_post!.journalist?.username ?? 'unknown'}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               if (_post!.journalist?.isVerified ?? false)

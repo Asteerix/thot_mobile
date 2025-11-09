@@ -526,69 +526,76 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                     ),
                     const SizedBox(height: 16),
                     if (_post!.journalist != null)
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            AppAvatar(
-                              avatarUrl: _post!.journalist!.avatarUrl,
-                              radius: 24,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _post!.journalist!.name,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                      GestureDetector(
+                        onTap: () {
+                          if (_post!.journalist?.id != null) {
+                            context.push('/profile/${_post!.journalist!.id}');
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              AppAvatar(
+                                avatarUrl: _post!.journalist!.avatarUrl,
+                                radius: 24,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _post!.journalist!.name,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Row(
-                                    children: [
-                                      if (_post!.journalist!.isVerified) ...[
-                                        Icon(
-                                          Icons.verified,
-                                          color: AppColors.info,
-                                          size: 16,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          'Verified',
-                                          style: TextStyle(
+                                    const SizedBox(height: 2),
+                                    Row(
+                                      children: [
+                                        if (_post!.journalist!.isVerified) ...[
+                                          Icon(
+                                            Icons.verified,
                                             color: AppColors.info,
-                                            fontSize: 12,
+                                            size: 16,
                                           ),
-                                        ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            'Verified',
+                                            style: TextStyle(
+                                              color: AppColors.info,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
                                       ],
-                                    ],
-                                  ),
-                                ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            if (_post!.journalist?.id != null)
-                              Builder(
-                                builder: (context) {
-                                  final currentUserId = context.watch<AuthProvider>().userProfile?.id;
-                                  final isOwnPost = currentUserId != null &&
-                                                    currentUserId == _post!.journalist!.id;
-                                  if (isOwnPost) {
-                                    return const SizedBox.shrink();
-                                  }
-                                  return FollowButton(
-                                    userId: _post!.journalist!.id!,
-                                    isFollowing: _post!.journalist!.isFollowing,
-                                  );
-                                },
-                              ),
-                          ],
+                              if (_post!.journalist?.id != null)
+                                Builder(
+                                  builder: (context) {
+                                    final currentUserId = context.watch<AuthProvider>().userProfile?.id;
+                                    final isOwnPost = currentUserId != null &&
+                                                      currentUserId == _post!.journalist!.id;
+                                    if (isOwnPost) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    return FollowButton(
+                                      userId: _post!.journalist!.id!,
+                                      isFollowing: _post!.journalist!.isFollowing,
+                                    );
+                                  },
+                                ),
+                            ],
+                          ),
                         ),
                       ),
                     const SizedBox(height: 24),
@@ -650,7 +657,132 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                         );
                       },
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
+                    if (_post!.hasOppositions) ...[
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColors.warning.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppColors.warning.withOpacity(0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.swap_horiz,
+                                  color: AppColors.warning,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Perspectives divergentes',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Cette publication a ${_post!.oppositions.length} point(s) de vue opposé(s)',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.7),
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            ..._post!.oppositions.map((opposition) {
+                              return GestureDetector(
+                                onTap: () {
+                                  context.push('/post/${opposition.postId}');
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.only(bottom: 12),
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.05),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.1),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      if (opposition.imageUrl != null)
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(6),
+                                          child: Image.network(
+                                            opposition.imageUrl!,
+                                            width: 60,
+                                            height: 60,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error, stackTrace) {
+                                              return Container(
+                                                width: 60,
+                                                height: 60,
+                                                color: Colors.white.withOpacity(0.1),
+                                                child: Icon(
+                                                  Icons.image,
+                                                  color: Colors.white.withOpacity(0.3),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              opposition.title,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            if (opposition.description != null && opposition.description!.isNotEmpty) ...[
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                opposition.description!,
+                                                style: TextStyle(
+                                                  color: Colors.white.withOpacity(0.6),
+                                                  fontSize: 12,
+                                                ),
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                      ),
+                                      Icon(
+                                        Icons.arrow_forward_ios,
+                                        color: Colors.white.withOpacity(0.5),
+                                        size: 16,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
                   ],
                 ),
               ),

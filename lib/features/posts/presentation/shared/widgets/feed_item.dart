@@ -276,22 +276,6 @@ class _FeedItemState extends State<FeedItem>
                                     ],
                                   ),
                                 ),
-                                if (displayPost.type == PostType.video)
-                                  Center(
-                                    child: Container(
-                                      padding: const EdgeInsets.all(16),
-                                      decoration: BoxDecoration(
-                                        color: colorScheme.surface
-                                            .withOpacity(0.5),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Icon(
-                                        Icons.play_arrow,
-                                        color: colorScheme.onSurface,
-                                        size: 28,
-                                      ),
-                                    ),
-                                  ),
                             ],
                           ),
                         ),
