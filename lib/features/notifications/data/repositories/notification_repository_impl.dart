@@ -4,6 +4,7 @@ import 'package:thot/core/network/api_client.dart';
 import 'package:thot/core/constants/api_routes.dart';
 import 'package:thot/core/monitoring/logger_service.dart';
 import 'package:thot/core/realtime/socket_service.dart';
+import 'package:thot/core/realtime/event_bus.dart';
 import 'package:thot/features/notifications/domain/entities/notification.dart';
 import 'package:thot/features/notifications/domain/failures/notification_failure.dart';
 import 'package:thot/features/notifications/domain/repositories/notification_repository.dart';
@@ -12,7 +13,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
   final ApiService _apiService;
   final _logger = LoggerService.instance;
   final _socketService = SocketService();
-  StreamSubscription<NotificationModel>? _socketSubscription;
+  final _eventBus = EventBus();
+  StreamSubscription<SocketNotificationEvent>? _socketSubscription;
   final _unreadCountController = StreamController<int>.broadcast();
   final _notificationController =
       StreamController<NotificationModel>.broadcast();
@@ -20,6 +22,18 @@ class NotificationRepositoryImpl implements NotificationRepository {
     _initializeSocketListener();
   }
   void _initializeSocketListener() {
+    _socketSubscription =
+        _eventBus.on<SocketNotificationEvent>().listen((event) {
+      try {
+        final notification = NotificationModel.fromJson(event.notification);
+        _notificationController.add(notification);
+        _updateUnreadCount();
+        _logger.info(
+            'New notification received: ${notification.type} from ${notification.sender.username}');
+      } catch (e) {
+        _logger.error('Error processing socket notification', e);
+      }
+    });
   }
   @override
   Future<Either<NotificationFailure, List<NotificationModel>>>
@@ -65,7 +79,10 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
   Future<int> getUnreadCount() async {
     try {
-      return 0;
+      final endpoint = ApiRoutes.buildPath(ApiRoutes.notificationUnreadCount);
+      final response = await _apiService.get(endpoint);
+      final data = response.data['data'] ?? response.data;
+      return data['unreadCount'] ?? 0;
     } catch (e) {
       _logger.error('Error getting unread count', e);
       return 0;
@@ -162,9 +179,11 @@ class NotificationRepositoryImpl implements NotificationRepository {
   Stream<int> get unreadCountStream => _unreadCountController.stream;
   void startPolling() {
     _socketService.initialize();
+    _socketService.subscribeToNotifications();
     _updateUnreadCount();
   }
   void stopPolling() {
+    _socketSubscription?.cancel();
   }
   Future<void> _updateUnreadCount() async {
     try {

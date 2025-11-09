@@ -87,7 +87,7 @@ class EditorToolbar extends StatelessWidget {
           _buildDivider(colorScheme),
           _buildToolbarButton(
             context: context,
-            icon: Icons.format_list_bulleted,
+            icon: Icons.list,
             tooltip: 'Liste à puces',
             onPressed: onBulletList,
             colorScheme: colorScheme,

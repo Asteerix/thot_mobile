@@ -245,7 +245,7 @@ class _UserSearchState extends State<UserSearch> {
                   fontSize: 14,
                 ),
                 prefixIcon: Icon(
-                  Icons.search_rounded,
+                  Icons.search,
                   color: Colors.grey[600],
                   size: 20,
                 ),
@@ -281,7 +281,7 @@ class _UserSearchState extends State<UserSearch> {
     }
     if (widget.users.isEmpty || _sections.isEmpty) {
       return EmptyState(
-        icon: Icons.person_search,
+        icon: Icons.personSearch,
         title: 'Aucun utilisateur trouvé',
         subtitle: widget.emptyStateMessage,
       );

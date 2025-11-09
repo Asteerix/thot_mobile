@@ -84,7 +84,7 @@ class _ArticleDetailScreenWebState extends State<ArticleDetailScreenWeb> {
               ),
               OutlinedButton.icon(
                 onPressed: () {},
-                icon: const Icon(Icons.person_add_outlined, size: 18),
+                icon: Icon(Icons.person_add, size: 18),
                 label: const Text('Follow'),
               ),
             ],
@@ -140,16 +140,16 @@ class _ArticleDetailScreenWebState extends State<ArticleDetailScreenWeb> {
           Row(
             children: [
               _buildActionButton(
-                  context, Icons.favorite_border, '125', colorScheme),
+                  context, Icons.favorite, '125', colorScheme),
               const SizedBox(width: WebTheme.lg),
               _buildActionButton(
-                  context, Icons.chat_bubble_outline, '43', colorScheme),
+                  context, Icons.comment, '43', colorScheme),
               const SizedBox(width: WebTheme.lg),
               _buildActionButton(
-                  context, Icons.share_outlined, '18', colorScheme),
+                  context, Icons.share, '18', colorScheme),
               const Spacer(),
               IconButton(
-                icon: const Icon(Icons.bookmark_border),
+                icon: Icon(Icons.bookmark),
                 onPressed: () {},
                 tooltip: 'Save',
               ),

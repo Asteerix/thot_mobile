@@ -48,7 +48,7 @@ class BannedUserOverlay extends StatelessWidget {
                         Icon(
                           userStatus == 'banned'
                               ? Icons.block
-                              : Icons.warning_amber_rounded,
+                              : Icons.warning,
                           size: 64,
                           color: colorScheme.error,
                         ),

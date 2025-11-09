@@ -37,7 +37,7 @@ class SavedContentScreenWeb extends ConsumerWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.bookmark_outline, size: 64, color: colorScheme.outline),
+                      Icon(Icons.bookmark, size: 64, color: colorScheme.outline),
                       const SizedBox(height: WebTheme.md),
                       Text(
                         'Aucun contenu sauvegardé',

@@ -87,7 +87,7 @@ class InteractionUsersSheet extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              Icons.group_outlined,
+                              Icons.group,
                               size: 64,
                               color: AppColors.textSecondary,
                             ),

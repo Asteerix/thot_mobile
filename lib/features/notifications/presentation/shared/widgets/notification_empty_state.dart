@@ -11,7 +11,7 @@ class NotificationEmptyState extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final (icon, title, subtitle) = switch (filter) {
       NotificationFilter.all => (
-          Icons.notifications_none_rounded,
+          Icons.notifications,
           'Aucune notification',
           'Vos notifications apparaîtront ici',
         ),
@@ -21,17 +21,17 @@ class NotificationEmptyState extends StatelessWidget {
           'Personne ne vous a mentionné',
         ),
       NotificationFilter.postLike => (
-          Icons.favorite_border_rounded,
+          Icons.favorite,
           'Aucun J\'aime',
           'Vos J\'aime apparaîtront ici',
         ),
       NotificationFilter.comment => (
-          Icons.chat_bubble_outline_rounded,
+          Icons.comment,
           'Aucun commentaire',
           'Les réponses apparaîtront ici',
         ),
       NotificationFilter.newFollower => (
-          Icons.group_outlined,
+          Icons.group,
           'Aucun nouvel abonné',
           'Vos nouveaux abonnés apparaîtront ici',
         ),

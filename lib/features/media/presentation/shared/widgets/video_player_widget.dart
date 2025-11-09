@@ -34,7 +34,7 @@ class VideoPlayerWidget extends StatelessWidget {
             ),
             if (showControls)
               const Icon(
-                Icons.play_circle_outline,
+                Icons.play_circle,
                 color: Colors.white,
                 size: 64,
               ),

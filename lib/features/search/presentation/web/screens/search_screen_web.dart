@@ -146,7 +146,7 @@ class _SearchScreenWebState extends State<SearchScreenWeb> {
           prefixIcon: Icon(Icons.search, size: 28, color: colorScheme.primary),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
-                  icon: Icon(Icons.clear, color: colorScheme.onSurface),
+                  icon: Icon(Icons.close, color: colorScheme.onSurface),
                   onPressed: () {
                     _searchController.clear();
                     setState(() => _searchQuery = '');
@@ -204,7 +204,7 @@ class _SearchScreenWebState extends State<SearchScreenWeb> {
             const SizedBox(width: WebTheme.lg),
             ElevatedButton.icon(
               onPressed: () => _performSearch(_searchController.text),
-              icon: const Icon(Icons.search),
+              icon: Icon(Icons.search),
               label: const Text('Search'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: colorScheme.primary,
@@ -424,7 +424,7 @@ class _SearchScreenWebState extends State<SearchScreenWeb> {
                 ),
               ),
               Icon(
-                Icons.arrow_forward_ios,
+                Icons.chevron_right,
                 size: 16,
                 color: colorScheme.onSurface.withOpacity(0.4),
               ),
@@ -560,15 +560,15 @@ class _SearchScreenWebState extends State<SearchScreenWeb> {
   IconData _getFilterIcon(SearchFilter filter) {
     switch (filter) {
       case SearchFilter.all:
-        return Icons.grid_view;
+        return Icons.grid_on;
       case SearchFilter.posts:
-        return Icons.post_add;
+        return Icons.note_add;
       case SearchFilter.articles:
         return Icons.article;
       case SearchFilter.shorts:
-        return Icons.video_library;
+        return Icons.videocam;
       case SearchFilter.users:
-        return Icons.people;
+        return Icons.group;
       case SearchFilter.tags:
         return Icons.tag;
     }

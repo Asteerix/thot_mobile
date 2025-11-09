@@ -300,7 +300,7 @@ class _PostSearchDialogState extends State<PostSearchDialog> {
                         width: 2,
                       ),
                     ),
-                    child: const Icon(Icons.compare_arrows_rounded,
+                    child: const Icon(Icons.swap_horiz,
                       color: Colors.white,
                       size: 24,
                     ),
@@ -319,7 +319,7 @@ class _PostSearchDialogState extends State<PostSearchDialog> {
                   IconButton(
                     tooltip: 'Fermer',
                     onPressed: () => SafeNavigation.pop(context),
-                    icon: const Icon(Icons.close, color: Colors.white70, size: 28),
+                    icon: Icon(Icons.close, color: Colors.white70, size: 28),
                   ),
                 ],
               ),
@@ -516,7 +516,7 @@ class _SearchBar extends StatelessWidget {
                   IconButton(
                     tooltip: 'Effacer',
                     onPressed: onClear,
-                    icon: Icon(Icons.clear, color: Colors.white.withOpacity(0.7)),
+                    icon: Icon(Icons.close, color: Colors.white.withOpacity(0.7)),
                   ),
                 if (loading)
                   Padding(
@@ -633,7 +633,7 @@ class _FiltersRow extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.visibility_off_outlined,
+              Icon(Icons.visibility_off,
                 color: Colors.white.withOpacity(0.7),
                 size: 18),
               const SizedBox(width: 8),
@@ -729,7 +729,7 @@ class _ResultsList extends StatelessWidget {
                             width: isSmall ? 50 : 60,
                             height: isSmall ? 50 : 60,
                             color: Colors.grey[900],
-                            child: Icon(Icons.article_outlined,
+                            child: Icon(Icons.article,
                                 color: Colors.grey[600]),
                           ),
                   ),
@@ -742,7 +742,7 @@ class _ResultsList extends StatelessWidget {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            Icon(Icons.person_outline,
+                            Icon(Icons.person,
                                 size: 12, color: Colors.grey[500]),
                             const SizedBox(width: 4),
                             Expanded(
@@ -761,7 +761,7 @@ class _ResultsList extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Icon(Icons.chevron_right, color: Colors.white38),
+                  Icon(Icons.chevron_right, color: Colors.white38),
                 ],
               ),
             ),
@@ -812,7 +812,7 @@ class _PreviewPane extends StatelessWidget {
                     style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
               ),
               const Spacer(),
-              Icon(Icons.person_outline, size: 16, color: Colors.white.withOpacity(0.7)),
+              Icon(Icons.person, size: 16, color: Colors.white.withOpacity(0.7)),
               const SizedBox(width: 6),
               Flexible(
                 child: Text(
@@ -833,7 +833,7 @@ class _PreviewPane extends StatelessWidget {
             height: 48,
             child: ElevatedButton.icon(
               onPressed: () => onSelect(post),
-              icon: const Icon(Icons.check_circle_outline),
+              icon: Icon(Icons.check_circle),
               label: const Text('Sélectionner cette publication'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
@@ -933,7 +933,7 @@ class _ErrorView extends StatelessWidget {
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: onRetry,
-            icon: const Icon(Icons.refresh),
+            icon: Icon(Icons.refresh),
             label: const Text('Réessayer'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,

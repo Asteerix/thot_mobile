@@ -148,7 +148,7 @@ class CachedNetworkImageWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.broken_image_rounded,
+            Icons.broken_image,
             color: colorScheme.onSurface.withOpacity(0.3),
             size: 32,
           ),

@@ -139,7 +139,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                         HapticFeedback.selectionClick();
                         context.pop();
                       },
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      icon: Icon(Icons.arrow_back, color: Colors.white),
                     ),
                     const Expanded(
                       child: Text(
@@ -183,7 +183,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
-                              Icons.lock_outline,
+                              Icons.lock,
                               color: Colors.white,
                               size: 32,
                             ),
@@ -230,7 +230,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                         _buildQuickCard(
                           'Contrôle',
                           'Total',
-                          Icons.admin_panel_settings,
+                          Icons.security,
                         ),
                         _buildQuickCard(
                           'Transparence',
@@ -252,7 +252,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                       child: Row(
                         children: [
                           Icon(
-                            Icons.shield_outlined,
+                            Icons.shield,
                             color: Colors.white.withOpacity(0.9),
                             size: 28,
                           ),
@@ -287,17 +287,17 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                     _buildSection(
                       '1. Données collectées',
                       'Nous collectons uniquement les données nécessaires au fonctionnement du service : informations de compte (email, nom d\'utilisateur), contenu que vous publiez, préférences et paramètres.',
-                      Icons.folder_outlined,
+                      Icons.folder,
                     ),
                     _buildSection(
                       '2. Utilisation des données',
                       'Vos données servent à personnaliser votre expérience, afficher du contenu pertinent, permettre les interactions sociales et assurer la sécurité de la plateforme.',
-                      Icons.analytics_outlined,
+                      Icons.bar_chart,
                     ),
                     _buildSection(
                       '3. Protection et sécurité',
                       'Toutes les données sensibles sont chiffrées. Nous utilisons les dernières technologies de sécurité et effectuons des audits réguliers pour protéger vos informations.',
-                      Icons.security,
+                      Icons.shield,
                     ),
                     _buildSection(
                       '4. Vos droits RGPD',
@@ -307,12 +307,12 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                     _buildSection(
                       '5. Cookies',
                       'Nous utilisons des cookies essentiels pour le fonctionnement du site. Les cookies analytiques sont optionnels et vous pouvez les refuser.',
-                      Icons.cookie_outlined,
+                      Icons.cookie,
                     ),
                     _buildSection(
                       '6. Partage des données',
                       'Nous ne partageons vos données qu\'avec votre consentement ou pour respecter des obligations légales. Jamais de vente à des tiers.',
-                      Icons.share_outlined,
+                      Icons.share,
                     ),
                     _buildSection(
                       '7. Conservation',
@@ -327,7 +327,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                     _buildSection(
                       '9. Contact DPO',
                       'Pour toute question sur vos données : dpo@thot.app\nDélégué à la protection des données disponible 24/7',
-                      Icons.support_agent,
+                      Icons.headphones,
                     ),
                     const SizedBox(height: 40),
                   ],

@@ -176,7 +176,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
                   backgroundColor: cs.surface,
                   elevation: _showAppBarShadow ? 1.0 : 0.0,
                   leading: IconButton(
-                    icon: const Icon(Icons.arrow_back),
+                    icon: Icon(Icons.arrow_back),
                     onPressed: () => SafeNavigation.pop(context),
                     tooltip: 'Retour',
                   ),
@@ -219,7 +219,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
                   SliverFillRemaining(
                     hasScrollBody: false,
                     child: EmptyState(
-                      icon: Icons.people_outline,
+                      icon: Icons.group,
                       title: 'Aucun abonnement',
                       subtitle: _searchQuery.isNotEmpty
                           ? 'Aucun résultat pour "$_searchQuery"'
@@ -293,7 +293,7 @@ class _SearchField extends StatelessWidget {
             fontSize: 14,
           ),
           prefixIcon:
-              Icon(Icons.search_rounded, color: cs.onSurfaceVariant, size: 20),
+              Icon(Icons.search, color: cs.onSurfaceVariant, size: 20),
           suffixIcon: AnimatedSwitcher(
             duration: const Duration(milliseconds: 150),
             child: controller.text.isEmpty
@@ -301,7 +301,7 @@ class _SearchField extends StatelessWidget {
                 : IconButton(
                     key: const ValueKey('clear'),
                     onPressed: onClear,
-                    icon: const Icon(Icons.close_rounded, size: 18),
+                    icon: const Icon(Icons.close, size: 18),
                     color: cs.onSurfaceVariant,
                     tooltip: 'Effacer la recherche',
                   ),
@@ -504,7 +504,7 @@ class _FollowButton extends StatelessWidget {
                   key: ValueKey(isFollowing ? 'abonne' : 'suivre'),
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(isFollowing ? Icons.check_rounded : Icons.add_rounded,
+                    Icon(isFollowing ? Icons.check : Icons.add_rounded,
                         size: 18),
                     const SizedBox(width: 6),
                     Text(isFollowing ? 'Abonné' : 'Suivre',

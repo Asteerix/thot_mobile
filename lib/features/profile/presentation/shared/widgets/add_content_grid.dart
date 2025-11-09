@@ -39,7 +39,7 @@ class AddContentGrid extends ConsumerWidget {
                 _buildAddContentTile(
                   context,
                   'Publication',
-                  Icons.article_outlined,
+                  Icons.article,
                   Colors.blue,
                   () async {
                     final result = await SafeNavigation.push(
@@ -66,7 +66,7 @@ class AddContentGrid extends ConsumerWidget {
                 _buildAddContentTile(
                   context,
                   'Short',
-                  Icons.short_text,
+                  Icons.alignLeft,
                   Colors.red,
                   () async {
                     final result = await SafeNavigation.push(
@@ -93,7 +93,7 @@ class AddContentGrid extends ConsumerWidget {
                 _buildAddContentTile(
                   context,
                   'Question',
-                  Icons.question_answer_outlined,
+                  Icons.comment,
                   Colors.orange,
                   () async {
                     final result = await SafeNavigation.push(

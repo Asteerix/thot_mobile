@@ -85,7 +85,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.more_vert),
+            icon: Icon(Icons.more_vert),
             onPressed: () {
               _showOptionsBottomSheet(context);
             },
@@ -239,7 +239,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   indicatorColor: Colors.white,
                   tabs: const [
                     Tab(icon: Icon(Icons.grid_on)),
-                    Tab(icon: Icon(Icons.play_circle_outline)),
+                    Tab(icon: Icon(Icons.play_circle)),
                     Tab(icon: Icon(Icons.format_quote)),
                   ],
                 ),
@@ -301,7 +301,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         return Container(
           color: Theme.of(context).colorScheme.surface,
           child: const Center(
-            child: Icon(Icons.photo),
+            child: Icon(Icons.image),
           ),
         );
       },
@@ -317,7 +317,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             children: [
               if (!widget.userProfile.isBlocked) ...[
                 ListTile(
-                  leading: const Icon(Icons.block, color: AppColors.red),
+                  leading: Icon(Icons.block, color: AppColors.red),
                   title: const Text(
                     'Bloquer',
                     style: TextStyle(

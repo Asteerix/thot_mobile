@@ -21,14 +21,14 @@ class _ReportProblemScreenState extends State<ReportProblemScreen> {
   final List<File> _attachedImages = [];
   final ImagePicker _picker = ImagePicker();
   final Map<String, IconData> _categoryIcons = {
-    'sécurité': Icons.security,
+    'sécurité': Icons.shield,
     'fonctionnalité': Icons.build,
     'performance': Icons.speed,
-    'interface': Icons.design_services,
+    'interface': Icons.brush,
     'autre': Icons.more_horiz,
   };
   final List<Map<String, dynamic>> _priorities = [
-    {'label': 'Faible', 'icon': Icons.flag_outlined},
+    {'label': 'Faible', 'icon': Icons.flag},
     {'label': 'Moyenne', 'icon': Icons.flag},
     {'label': 'Élevée', 'icon': Icons.flag},
   ];
@@ -161,7 +161,7 @@ class _ReportProblemScreenState extends State<ReportProblemScreen> {
         backgroundColor: Colors.black,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             HapticFeedback.selectionClick();
             context.pop();
@@ -226,7 +226,7 @@ class _ReportProblemScreenState extends State<ReportProblemScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
-              Icons.info_outline,
+              Icons.info,
               color: Colors.white.withOpacity(0.9),
               size: 24,
             ),
@@ -708,7 +708,7 @@ class _ReportProblemScreenState extends State<ReportProblemScreen> {
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
                 ),
               )
-            : const Icon(Icons.send),
+            : Icon(Icons.send),
         label: Text(
           _isSubmitting ? 'Envoi en cours...' : 'Envoyer le signalement',
           style: const TextStyle(

@@ -64,6 +64,7 @@ dependencies:
   animations: ^2.0.8
   wakelock_plus: ^1.4.0
   markdown_widget: ^2.3.2+8
+  lucide_icons: ^0.257.0
 
 dev_dependencies:
   freezed: ^2.5.8

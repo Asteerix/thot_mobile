@@ -40,7 +40,7 @@ class DomainChip extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.category_outlined, size: 16, color: AppColors.blue),
+          Icon(Icons.tag, size: 16, color: AppColors.blue),
           const SizedBox(width: 6),
           Text(text, style: const TextStyle(color: AppColors.textPrimary)),
         ],

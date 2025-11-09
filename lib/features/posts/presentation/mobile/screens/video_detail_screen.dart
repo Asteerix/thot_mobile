@@ -14,6 +14,7 @@ import 'package:thot/features/posts/application/providers/posts_state_provider.d
 import 'package:provider/provider.dart';
 import 'dart:developer' as developer;
 import 'package:thot/features/authentication/application/providers/auth_provider.dart';
+import 'package:thot/features/comments/presentation/shared/widgets/comment_sheet.dart';
 class VideoDetailScreen extends StatefulWidget {
   final String initialPostId;
   final bool isFromProfile;
@@ -151,32 +152,43 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
             error: errorMessage,
           );
           return Container(
-            color: Theme.of(context).colorScheme.onSurface,
+            color: Colors.black,
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: AppColors.red,
-                    size: 48,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Unable to play video',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.surface,
-                      fontSize: 16,
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.error_outline,
+                      color: Colors.red[300],
+                      size: 48,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    errorMessage,
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Impossible de lire la vidéo',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
-                      fontSize: 14,
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
-                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Text(
+                      errorMessage,
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.7),
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ],
               ),
@@ -214,50 +226,46 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     }
   }
   Widget _buildPlaceholder() {
-    if (_post?.thumbnailUrl != null && _post!.thumbnailUrl!.isNotEmpty) {
-      return Stack(
-        fit: StackFit.expand,
-        children: [
-          Container(
-            color: Theme.of(context).colorScheme.onSurface,
-            child: Image.network(
-              _post!.thumbnailUrl!,
-              fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.87),
-                  child: Center(
-                    child: Icon(
-                      Icons.play_circle_outline,
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.54),
-                      size: 64,
-                    ),
+    return SizedBox.expand(
+      child: Container(
+        color: Colors.black,
+        child: _post?.thumbnailUrl != null && _post!.thumbnailUrl!.isNotEmpty
+            ? Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.network(
+                    _post!.thumbnailUrl!,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Center(
+                        child: Icon(
+                          Icons.play_circle,
+                          color: Colors.white.withOpacity(0.5),
+                          size: 64,
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
-          ),
-          if (_isVideoInitializing)
-            Container(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.45),
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: Theme.of(context).colorScheme.surface,
-                ),
-              ),
-            ),
-        ],
-      );
-    }
-    return Container(
-      color: Theme.of(context).colorScheme.onSurface,
-      child: Center(
-        child: _isVideoInitializing
-            ? CircularProgressIndicator(color: Theme.of(context).colorScheme.surface)
-            : Icon(
-                Icons.play_circle_outline,
-                color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.54),
-                size: 64,
+                  if (_isVideoInitializing)
+                    Container(
+                      color: Colors.black.withOpacity(0.6),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 3,
+                        ),
+                      ),
+                    ),
+                ],
+              )
+            : Center(
+                child: _isVideoInitializing
+                    ? CircularProgressIndicator(color: Colors.white, strokeWidth: 3)
+                    : Icon(
+                        Icons.play_circle,
+                        color: Colors.white.withOpacity(0.5),
+                        size: 64,
+                      ),
               ),
       ),
     );
@@ -299,44 +307,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.8,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.only(top: 8),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text(
-                'Commentaires',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const Expanded(
-              child: Center(
-                child: Text('Commentaires à venir'),
-              ),
-            ),
-          ],
-        ),
-      ),
+      builder: (context) => CommentsBottomSheet(postId: postId),
     );
   }
   void _handleSave(Post post) async {
@@ -409,8 +380,22 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   Widget _buildContent() {
     if (_isLoading) {
       return Center(
-        child: CircularProgressIndicator(
-          color: Theme.of(context).colorScheme.surface,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(
+              color: Colors.white,
+              strokeWidth: 3,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Chargement de la vidéo...',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.7),
+                fontSize: 14,
+              ),
+            ),
+          ],
         ),
       );
     }
@@ -421,24 +406,48 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.error_outline,
-                color: AppColors.red,
-                size: 48,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                _error!,
-                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-                textAlign: TextAlign.center,
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.error_outline,
+                  color: Colors.red[300],
+                  size: 64,
+                ),
               ),
               const SizedBox(height: 24),
+              const Text(
+                'Impossible de charger la vidéo',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Cette vidéo n\'existe plus ou a été supprimée',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 15,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
               ElevatedButton.icon(
                 onPressed: _loadPost,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Retry'),
+                label: const Text('Réessayer'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.blue,
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ],
@@ -449,8 +458,11 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     if (_post == null) {
       return Center(
         child: Text(
-          'Post not found',
-          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+          'Post non trouvé',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+          ),
         ),
       );
     }
@@ -485,16 +497,15 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
         }
         return Column(
           children: [
-            Flexible(
-              flex: 0,
-              child: Container(
-                color: Theme.of(context).colorScheme.onSurface,
-                child: SafeArea(
-                  bottom: false,
-                  child: AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: _buildVideoPlayer(),
-                  ),
+            Container(
+              color: Theme.of(context).colorScheme.onSurface,
+              child: SafeArea(
+                bottom: false,
+                child: AspectRatio(
+                  aspectRatio: (_videoController?.value.isInitialized ?? false)
+                      ? _videoController!.value.aspectRatio
+                      : 16 / 9,
+                  child: _buildVideoPlayer(),
                 ),
               ),
             ),
@@ -580,33 +591,52 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                             ],
                           ),
                         ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          _buildStat(Icons.visibility, '${_post!.stats.views}'),
-                          const SizedBox(width: 24),
-                          _buildStat(
-                              Icons.favorite, '${_post!.interactions.likes}'),
-                          const SizedBox(width: 24),
-                          _buildStat(
-                              Icons.comment, '${_post!.interactions.comments}'),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 24),
                       if (_post!.content.isNotEmpty) ...[
-                        Text(
-                          'Description',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.05),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.1),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.description,
+                                    color: Colors.white.withOpacity(0.7),
+                                    size: 18,
                                   ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Description',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                _post!.content,
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.9),
+                                  fontSize: 15,
+                                  height: 1.6,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _post!.content,
-                          style: TextStyle(fontSize: 15, height: 1.5),
-                        ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 24),
                       ],
                       Consumer<PostsStateProvider>(
                         builder: (context, postsProvider, child) {
@@ -654,13 +684,46 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
           ? null
           : AppBar(
               backgroundColor: Colors.black,
-              iconTheme: IconThemeData(color: Theme.of(context).colorScheme.surface),
+              iconTheme: const IconThemeData(color: Colors.white),
+              leading: Container(
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.4),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.3),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.arrow_back_ios_new),
+                  iconSize: 20,
+                  color: Colors.white,
+                  onPressed: () => Navigator.of(context).pop(),
+                  padding: EdgeInsets.zero,
+                ),
+              ),
               title: _post != null
                   ? Text(
                       _post!.title,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.surface,
+                      style: const TextStyle(
+                        color: Colors.white,
                         fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black,
+                            blurRadius: 4,
+                            offset: Offset(0, 1),
+                          ),
+                        ],
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

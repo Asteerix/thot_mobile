@@ -42,7 +42,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
   late Animation<double> _fadeAnimation;
   QuestionType _questionType = QuestionType.poll;
   String? _selectedDomain;
-  static const List<Map<String, dynamic>> _domains = [
+  static final List<Map<String, dynamic>> _domains = [
     {
       'id': 'politique',
       'title': 'Politique',
@@ -82,25 +82,25 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
     {
       'id': 'societe',
       'title': 'Société',
-      'icon': Icons.groups,
+      'icon': Icons.group,
       'color': AppColors.success
     },
     {
       'id': 'psychologie',
       'title': 'Psychologie',
-      'icon': Icons.self_improvement,
+      'icon': Icons.psychology,
       'color': AppColors.red
     },
     {
       'id': 'sport',
       'title': 'Sport',
-      'icon': Icons.sports_soccer,
+      'icon': Icons.emoji_events,
       'color': AppColors.warning
     },
     {
       'id': 'technologie',
       'title': 'Technologie',
-      'icon': Icons.computer,
+      'icon': Icons.laptop,
       'color': AppColors.blue
     },
   ];
@@ -392,7 +392,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      Icons.poll_outlined,
+                      Icons.bar_chart,
                       color: _questionType == QuestionType.poll
                           ? Colors.white
                           : AppColors.textSecondary,
@@ -432,7 +432,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      Icons.forum_outlined,
+                      Icons.forum,
                       color: _questionType == QuestionType.openEnded
                           ? Colors.white
                           : AppColors.textSecondary,
@@ -538,7 +538,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                       Icon(
                                         _questionType == QuestionType.poll
                                             ? Icons.help_outline
-                                            : Icons.forum_outlined,
+                                            : Icons.forum,
                                         size: 18,
                                         color: Theme.of(context).colorScheme.surface,
                                       ),
@@ -617,7 +617,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                   children: [
                                     Row(
                                       children: [
-                                        Icon(Icons.list_alt,
+                                        Icon(Icons.list,
                                             size: 18, color: AppColors.textSecondary),
                                         const SizedBox(width: 8),
                                         Text(
@@ -722,7 +722,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                         if (_optionControllers.length > 2)
                                           IconButton(
                                             icon: Icon(
-                                              Icons.remove_circle,
+                                              Icons.remove_circle_outline,
                                               color: AppColors.error,
                                             ),
                                             onPressed: () =>
@@ -769,7 +769,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                   children: [
                                     Row(
                                       children: [
-                                        Icon(Icons.image_outlined,
+                                        Icon(Icons.image,
                                             size: 18, color: AppColors.textSecondary),
                                         const SizedBox(width: 8),
                                         Text(

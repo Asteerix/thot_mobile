@@ -90,7 +90,7 @@ class DialogUtils {
       builder: (ctx) => AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.check_circle_outline,
+            Icon(Icons.check_circle,
                 color: Theme.of(context).colorScheme.primary),
             const SizedBox(width: 8),
             Text(title),

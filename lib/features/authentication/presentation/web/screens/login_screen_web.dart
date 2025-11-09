@@ -149,7 +149,7 @@ class _LoginScreenWebState extends State<LoginScreenWeb> {
           AuthTextField(
             controller: _emailController,
             labelText: 'Email',
-            prefixIcon: Icons.email_outlined,
+            prefixIcon: Icons.mail,
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
             enabled: !_isLoading,
@@ -159,7 +159,7 @@ class _LoginScreenWebState extends State<LoginScreenWeb> {
           AuthTextField(
             controller: _passwordController,
             labelText: 'Mot de passe',
-            prefixIcon: Icons.lock_outline,
+            prefixIcon: Icons.lock,
             obscureText: true,
             showPasswordToggle: true,
             textInputAction: TextInputAction.done,

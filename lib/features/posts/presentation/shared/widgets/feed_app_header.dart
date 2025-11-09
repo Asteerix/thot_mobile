@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:thot/shared/widgets/logo_white.dart';
 class FeedAppHeader extends StatelessWidget {
   final String title;
   final IconData? iconData;
@@ -32,48 +33,13 @@ class FeedAppHeader extends StatelessWidget {
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       scrolledUnderElevation: 0.5,
-      title: Row(
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              gradient: iconData != null
-                  ? LinearGradient(
-                      colors: [cs.primary, cs.secondary],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    )
-                  : null,
-              color: iconData != null ? null : cs.primary,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Center(
-              child: iconData != null
-                  ? Icon(
-                      iconData,
-                      color: cs.onPrimary,
-                      size: 20,
-                    )
-                  : Text(
-                      'T',
-                      style: TextStyle(
-                        color: cs.onPrimary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 22,
-            ),
-          ),
-        ],
+      title: Container(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: const LogoWhite(
+          fontSize: 32,
+          letterSpacing: 2,
+          showSubtitle: false,
+        ),
       ),
       actions: [
         if (showViewToggle && onViewToggle != null && viewModeIcon != null)
@@ -103,7 +69,7 @@ class FeedAppHeader extends StatelessWidget {
               HapticFeedback.lightImpact();
               onSearch!();
             },
-            icon: const Icon(Icons.search_rounded),
+            icon: Icon(Icons.search),
           ),
         if (onNotifications != null)
           IconButton(
@@ -111,7 +77,7 @@ class FeedAppHeader extends StatelessWidget {
               HapticFeedback.lightImpact();
               onNotifications!();
             },
-            icon: const Icon(Icons.notifications_outlined),
+            icon: Icon(Icons.notifications),
           ),
         const SizedBox(width: 8),
       ],

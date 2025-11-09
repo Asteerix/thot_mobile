@@ -28,7 +28,7 @@ class SettingTile extends StatelessWidget {
       title: title,
       subtitle: subtitle,
       onTap: onTap,
-      trailing: const Icon(Icons.chevron_right),
+      trailing: Icon(Icons.chevron_right),
     );
   }
   factory SettingTile.link({
@@ -40,7 +40,7 @@ class SettingTile extends StatelessWidget {
       leading: leading,
       title: title,
       onTap: onTap,
-      trailing: const Icon(Icons.open_in_new),
+      trailing: Icon(Icons.open_in_new),
     );
   }
   factory SettingTile.switcher({

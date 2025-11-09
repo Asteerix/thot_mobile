@@ -138,7 +138,7 @@ class _PodcastPostState extends State<PodcastPost>
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      Icon(Icons.calendar_today_outlined,
+                      Icon(Icons.calendar_today,
                           size: 14, color: AppColors.textSecondary),
                       const SizedBox(width: 6),
                       Text(
@@ -228,7 +228,7 @@ class _PodcastPostState extends State<PodcastPost>
                           children: [
                             IconButton(
                               icon: Icon(
-                                Icons.replay_10_rounded,
+                                Icons.fast_rewind,
                                 color: Theme.of(context).colorScheme.surface,
                                 size: 32,
                               ),
@@ -263,8 +263,8 @@ class _PodcastPostState extends State<PodcastPost>
                                 ),
                                 child: Icon(
                                   _isPlaying
-                                      ? Icons.pause_rounded
-                                      : Icons.play_arrow_rounded,
+                                      ? Icons.pause
+                                      : Icons.play_arrow,
                                   color: Theme.of(context).colorScheme.surface,
                                   size: 36,
                                 ),
@@ -273,7 +273,7 @@ class _PodcastPostState extends State<PodcastPost>
                             const SizedBox(width: 20),
                             IconButton(
                               icon: Icon(
-                                Icons.forward_30_rounded,
+                                Icons.forward,
                                 color: Theme.of(context).colorScheme.surface,
                                 size: 32,
                               ),
@@ -301,7 +301,7 @@ class _PodcastPostState extends State<PodcastPost>
                         children: [
                           Row(
                             children: [
-                              Icon(Icons.description_outlined,
+                              Icon(Icons.article,
                                   size: 18, color: AppColors.textSecondary),
                               const SizedBox(width: 8),
                               Text(
@@ -345,7 +345,7 @@ class _PodcastPostState extends State<PodcastPost>
                         children: [
                           Row(
                             children: [
-                              Icon(Icons.text_snippet_outlined,
+                              Icon(Icons.article,
                                   size: 18, color: AppColors.textSecondary),
                               const SizedBox(width: 8),
                               Text(
@@ -394,7 +394,7 @@ class _PodcastPostState extends State<PodcastPost>
         ),
       ),
       child: Icon(
-        Icons.mic_rounded,
+        Icons.mic,
         color: Theme.of(context).colorScheme.surface,
         size: 80,
       ),

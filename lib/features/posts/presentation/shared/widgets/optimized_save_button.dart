@@ -67,7 +67,7 @@ class _OptimizedSaveButtonState extends State<OptimizedSaveButton> {
       icon: AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
         child: Icon(
-          _isSaved ? Icons.bookmark : Icons.bookmark_border,
+          _isSaved ? Icons.bookmark : Icons.bookmark,
           key: ValueKey(_isSaved),
           color: widget.color ?? Colors.white,
           size: widget.size,

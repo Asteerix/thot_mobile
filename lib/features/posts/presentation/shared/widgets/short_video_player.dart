@@ -167,7 +167,7 @@ class _ShortVideoPlayerState extends State<ShortVideoPlayer> {
                   children: [
                     IconButton(
                       icon: Icon(
-                        post.isLiked ? Icons.favorite : Icons.favorite_border,
+                        post.isLiked ? Icons.favorite : Icons.favorite,
                         color: Colors.white,
                       ),
                       onPressed: () async {
@@ -183,7 +183,7 @@ class _ShortVideoPlayerState extends State<ShortVideoPlayer> {
                         style: const TextStyle(color: Colors.white)),
                     const SizedBox(height: 16),
                     IconButton(
-                      icon: const Icon(Icons.thumb_down_alt_outlined,
+                      icon: const Icon(Icons.thumb_down,
                           color: Colors.white),
                       onPressed: () async {
                         try {
@@ -198,14 +198,14 @@ class _ShortVideoPlayerState extends State<ShortVideoPlayer> {
                         style: const TextStyle(color: Colors.white)),
                     const SizedBox(height: 16),
                     IconButton(
-                      icon: const Icon(Icons.comment_outlined,
+                      icon: Icon(Icons.comment,
                           color: Colors.white),
                       onPressed: widget.onComment,
                     ),
                     Text('${post.commentsCount}',
                         style: const TextStyle(color: Colors.white)),
                     const SizedBox(height: 16),
-                    const Icon(Icons.public, color: Colors.white70),
+                    Icon(Icons.public, color: Colors.white70),
                   ],
                 ),
               ),
@@ -228,7 +228,7 @@ class _ShortVideoPlayerState extends State<ShortVideoPlayer> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Icon(
-                    Icons.category_outlined,
+                    Icons.tag,
                     color: Colors.white70,
                     size: 16,
                   ),
@@ -284,7 +284,7 @@ class _ShortVideoPlayerState extends State<ShortVideoPlayer> {
                                   ? NetworkImage(avatarUrl)
                                   : null,
                           child: (avatarUrl == null || avatarUrl.isEmpty)
-                              ? const Icon(Icons.person,
+                              ? Icon(Icons.person,
                                   color: Colors.white, size: 24)
                               : null,
                         ),
@@ -351,7 +351,7 @@ class _ShortVideoPlayerState extends State<ShortVideoPlayer> {
                             fontSize: 12,
                           ),
                         ),
-                        const Icon(Icons.public,
+                        Icon(Icons.public,
                             color: Colors.white60, size: 14),
                         const SizedBox(width: 4),
                         Text(

@@ -443,7 +443,7 @@ class _NewArticleScreenState extends State<NewArticleScreen> {
                             right: 8,
                             child: IconButton(
                               onPressed: _removeImage,
-                              icon: Icon(Icons.delete_outline),
+                              icon: Icon(Icons.delete),
                               style: IconButton.styleFrom(
                                 backgroundColor: Colors.black.withOpacity(0.6),
                                 foregroundColor: Colors.white,

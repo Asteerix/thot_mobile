@@ -21,11 +21,11 @@ class _ShortsScreenWebState extends ConsumerState<ShortsScreenWeb> {
   String? _selectedDomain;
   final List<Map<String, dynamic>> _domains = [
     {'name': 'Politique', 'icon': Icons.account_balance, 'color': AppColors.blue},
-    {'name': 'Économie', 'icon': Icons.show_chart, 'color': AppColors.success},
+    {'name': 'Économie', 'icon': Icons.trending_up, 'color': AppColors.success},
     {'name': 'Culture', 'icon': Icons.theater_comedy, 'color': AppColors.purple},
-    {'name': 'Sport', 'icon': Icons.sports_soccer, 'color': AppColors.orange},
-    {'name': 'Tech', 'icon': Icons.computer, 'color': AppColors.blue},
-    {'name': 'Santé', 'icon': Icons.health_and_safety, 'color': AppColors.red},
+    {'name': 'Sport', 'icon': Icons.emoji_events, 'color': AppColors.orange},
+    {'name': 'Tech', 'icon': Icons.laptop, 'color': AppColors.blue},
+    {'name': 'Santé', 'icon': Icons.favorite, 'color': AppColors.red},
   ];
   @override
   void initState() {
@@ -132,7 +132,7 @@ class _ShortsScreenWebState extends ConsumerState<ShortsScreenWeb> {
         Row(
           children: [
             IconButton(
-              icon: const Icon(Icons.arrow_back),
+              icon: Icon(Icons.arrow_back),
               onPressed: () {
                 setState(() => _selectedDomain = null);
                 widget.onNavigate('/shorts');
@@ -155,7 +155,7 @@ class _ShortsScreenWebState extends ConsumerState<ShortsScreenWeb> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.video_library,
+                  Icons.videocam,
                   size: 80,
                   color: colorScheme.outline,
                 ),

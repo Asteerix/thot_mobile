@@ -405,7 +405,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }) async {
     try {
       final url =
-          '${ApiRoutes.buildPath('/users/public-content/$userId')}?type=$contentType';
+          '/api/users/public-content/$userId?type=$contentType';
       developer.log(
         'ProfileRepository: Fetching public content',
         name: 'ProfileRepository',

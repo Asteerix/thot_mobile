@@ -15,7 +15,7 @@ class UrlHelper {
         ? currentUrl.substring(0, currentUrl.length - 4)
         : currentUrl;
     }
-    return 'http://localhost:3000';
+    return 'http://37.59.106.113';
   }
   static String? toAbsoluteUrl(String? path) {
     if (path == null || path.isEmpty) return null;

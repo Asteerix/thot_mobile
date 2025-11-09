@@ -141,7 +141,7 @@ class _VideoPostState extends State<VideoPost>
                             color: Theme.of(context).colorScheme.surface,
                             child: Center(
                               child: Icon(
-                                Icons.video_library_outlined,
+                                Icons.videocam,
                                 color: Theme.of(context).colorScheme.outline,
                                 size: 64,
                               ),
@@ -153,7 +153,7 @@ class _VideoPostState extends State<VideoPost>
                         color: Theme.of(context).colorScheme.surface,
                         child: Center(
                           child: Icon(
-                            Icons.video_library_outlined,
+                            Icons.videocam,
                             color: Theme.of(context).colorScheme.outline,
                             size: 64,
                           ),
@@ -181,7 +181,7 @@ class _VideoPostState extends State<VideoPost>
                               ],
                             ),
                             child: Icon(
-                              Icons.play_arrow_rounded,
+                              Icons.play_arrow,
                               color: Theme.of(context).colorScheme.surface,
                               size: 44,
                             ),
@@ -255,7 +255,7 @@ class _VideoPostState extends State<VideoPost>
                         children: [
                           Row(
                             children: [
-                              Icon(Icons.description_outlined,
+                              Icon(Icons.article,
                                   size: 18, color: AppColors.textSecondary),
                               const SizedBox(width: 8),
                               Text(

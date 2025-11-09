@@ -17,7 +17,7 @@ import 'package:flutter/material.dart';
 /// Exemple d'utilisation :
 /// ```dart
 /// EmptyState(
-///   icon: Icons.bookmark_border,
+///   icon: Icons.bookmark,
 ///   title: 'Aucun contenu enregistré',
 ///   subtitle: 'Vos contenus enregistrés apparaîtront ici',
 ///   action: OutlinedButton(
@@ -210,7 +210,7 @@ class EmptyState extends StatelessWidget {
     bool withAnimation = true,
   }) {
     return EmptyState(
-      icon: Icons.favorite_border,
+      icon: Icons.favorite,
       title: 'Aucun favori',
       subtitle: customMessage ?? 'Vous n\'avez pas encore ajouté de favoris',
       action: action,
@@ -228,7 +228,7 @@ class EmptyState extends StatelessWidget {
     bool withAnimation = true,
   }) {
     return EmptyState(
-      icon: Icons.notifications_none,
+      icon: Icons.notifications,
       title: 'Aucune notification',
       subtitle: customMessage ?? 'Vous n\'avez pas de nouvelles notifications',
       action: action,

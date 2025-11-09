@@ -23,7 +23,7 @@ class NewLiveScreenWeb extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.live_tv, size: 80, color: colorScheme.primary),
+              Icon(Icons.tv, size: 80, color: colorScheme.primary),
               const SizedBox(height: WebTheme.lg),
               Text(
                 'Nouveau Live',

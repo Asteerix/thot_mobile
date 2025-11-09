@@ -163,7 +163,7 @@ class WebHeader extends StatelessWidget implements PreferredSizeWidget {
       children: [
         IconButton(
           icon: Icon(
-            Icons.notifications_outlined,
+            Icons.notifications,
             color: colorScheme.onSurface,
           ),
           onPressed: onNotificationTap,
@@ -252,7 +252,7 @@ class WebHeader extends StatelessWidget implements PreferredSizeWidget {
           ),
           const SizedBox(width: WebTheme.xs),
           Icon(
-            Icons.arrow_drop_down,
+            Icons.keyboard_arrow_down,
             size: 20,
             color: colorScheme.onSurface.withOpacity(0.5),
           ),

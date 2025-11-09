@@ -24,6 +24,9 @@ class SearchBarWidget extends StatelessWidget {
         controller: controller,
         onChanged: onChanged,
         autofocus: autofocus,
+        textCapitalization: TextCapitalization.none,
+        autocorrect: false,
+        enableSuggestions: true,
         style: TextStyle(color: isDark ? Colors.white : Colors.black),
         decoration: InputDecoration(
           hintText: hintText,
@@ -51,7 +54,7 @@ class SearchBarWidget extends StatelessWidget {
           suffixIcon: showClearButton && controller.text.isNotEmpty
               ? IconButton(
                   icon: Icon(
-                    Icons.clear,
+                    Icons.close,
                     color: isDark
                         ? Colors.white.withOpacity(0.7)
                         : Colors.black.withOpacity(0.7),

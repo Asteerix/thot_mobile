@@ -22,7 +22,7 @@ class EmptyState extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(icon ?? Icons.search_off_outlined, size: 32),
+          Icon(icon ?? Icons.search, size: 32),
           const SizedBox(height: 8),
           Text(title, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 4),

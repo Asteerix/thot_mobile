@@ -74,25 +74,29 @@ class _PostActionsState extends State<PostActions> {
         decoration: BoxDecoration(
           color: isActive
             ? Colors.red.withOpacity(0.15)
-            : Colors.transparent,
+            : Colors.white.withOpacity(0.1),
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isActive ? Colors.red.withOpacity(0.3) : Colors.white.withOpacity(0.2),
+            width: 1,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               icon,
-              color: isActive ? Colors.red : Colors.white.withOpacity(0.9),
-              size: 22,
+              color: isActive ? Colors.red : Colors.white,
+              size: 24,
             ),
             if (label.isNotEmpty) ...[
               const SizedBox(width: 6),
               Text(
                 label,
                 style: TextStyle(
-                  color: isActive ? Colors.red : Colors.white.withOpacity(0.9),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
+                  color: isActive ? Colors.red : Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],
@@ -219,9 +223,7 @@ class _PostActionsState extends State<PostActions> {
               Row(
                 children: [
                   _buildActionButton(
-                    icon: displayPost.isLiked
-                        ? Icons.favorite
-                        : Icons.favorite_border,
+                    icon: Icons.favorite,
                     isActive: displayPost.isLiked,
                     label: displayPost.likesCount > 0
                         ? _formatNumber(displayPost.likesCount)
@@ -258,7 +260,7 @@ class _PostActionsState extends State<PostActions> {
                   ),
                   const SizedBox(width: 8),
                   _buildActionButton(
-                    icon: Icons.mode_comment_outlined,
+                    icon: Icons.comment,
                     label: displayPost.commentsCount > 0
                         ? _formatNumber(displayPost.commentsCount)
                         : '',
@@ -269,9 +271,7 @@ class _PostActionsState extends State<PostActions> {
                   ),
                   const Spacer(),
                   _buildActionButton(
-                    icon: displayPost.isSaved
-                        ? Icons.bookmark
-                        : Icons.bookmark_border,
+                    icon: Icons.bookmark,
                     label: '',
                     onPressed: () async {
                       debugPrint(
@@ -340,24 +340,28 @@ class _PostActionsState extends State<PostActions> {
                       height: 48,
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.2),
+                          width: 1,
+                        ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             Icons.visibility,
-                            color: Colors.white.withOpacity(0.7),
-                            size: 18,
+                            color: Colors.white,
+                            size: 20,
                           ),
                           const SizedBox(width: 6),
                           SizedBox(
                             width: 45,
                             child: Text(
                               _formatNumber(displayPost.stats.views),
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.9),
+                              style: const TextStyle(
+                                color: Colors.white,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
                               ),

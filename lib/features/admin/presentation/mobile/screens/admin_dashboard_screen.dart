@@ -198,7 +198,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                   title: 'Utilisateurs',
                                   value: _formatNumber(
                                       _stats['overview']?['totalUsers'] ?? 0),
-                                  icon: Icons.people,
+                                  icon: Icons.group,
                                   color: AppColors.info,
                                   subtitle:
                                       'Actifs: ${_formatNumber(_stats['overview']?['activeUsers'] ?? 0)} | Bannis: ${_formatNumber(_stats['overview']?['bannedUsers'] ?? 0)}',
@@ -209,7 +209,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                   value: _formatNumber(_stats['overview']
                                           ?['totalJournalists'] ??
                                       0),
-                                  icon: Icons.badge,
+                                  icon: Icons.verified,
                                   color: AppColors.success,
                                   subtitle:
                                       'Vérifiés: ${_formatNumber(_stats['overview']?['verifiedJournalists'] ?? 0)}',
@@ -250,7 +250,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           title: 'Journalistes en attente',
                           subtitle:
                               '${_formatNumber(_stats['pendingJournalists'] ?? 0)} demandes à examiner',
-                          icon: Icons.pending_actions,
+                          icon: Icons.schedule,
                           color: AppColors.warning,
                           onTap: () {
                             SafeNavigation.push(
@@ -267,7 +267,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           title: 'Signalements récents',
                           subtitle:
                               '${_formatNumber(_stats['reports']?['pending'] ?? 0)} en attente',
-                          icon: Icons.report_problem,
+                          icon: Icons.warning,
                           color: AppColors.red,
                           onTap: () {
                             SafeNavigation.push(
@@ -425,7 +425,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 ),
               ),
               Icon(
-                Icons.arrow_forward_ios,
+                Icons.chevron_right,
                 color: Theme.of(context)
                     .colorScheme
                     .onSurfaceVariant

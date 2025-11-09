@@ -41,12 +41,12 @@ class MessageInputField extends StatelessWidget {
         children: [
           if (showAttachmentButtons && onAttach != null)
             IconButton(
-              icon: const Icon(Icons.add),
+              icon: Icon(Icons.add),
               onPressed: onAttach,
             ),
           if (showAttachmentButtons && onImage != null)
             IconButton(
-              icon: const Icon(Icons.image_outlined),
+              icon: Icon(Icons.image),
               onPressed: onImage,
             ),
           Expanded(

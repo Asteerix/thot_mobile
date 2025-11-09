@@ -55,7 +55,12 @@ class _ProfileHeaderState extends State<ProfileHeader>
       RouteNames.editProfile,
       arguments: widget.userProfile,
     );
-    widget.onLoadProfile();
+
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        widget.onLoadProfile();
+      }
+    });
   }
   Future<void> _launchUrl(String urlString) async {
     try {
@@ -163,7 +168,7 @@ class _ProfileHeaderState extends State<ProfileHeader>
                 if (widget.userProfile.organization != null)
                   Row(
                     children: [
-                      const Icon(Icons.business, size: 14, color: Colors.grey),
+                      Icon(Icons.business, size: 14, color: Colors.grey),
                       const SizedBox(width: 4),
                       Text(
                         widget.userProfile.organization!,
@@ -180,7 +185,7 @@ class _ProfileHeaderState extends State<ProfileHeader>
                     padding: const EdgeInsets.only(top: 4),
                     child: Row(
                       children: [
-                        const Icon(Icons.location_on_outlined,
+                        Icon(Icons.location_on,
                             size: 14, color: Colors.grey),
                         const SizedBox(width: 4),
                         Text(
@@ -221,7 +226,7 @@ class _ProfileHeaderState extends State<ProfileHeader>
     if (widget.isCurrentUser) {
       return _buildPrimaryButton(
         'Modifier le profil',
-        Icons.edit_outlined,
+        Icons.edit,
         onPressed: _navigateToEditProfile,
         isPrimary: true,
       );
@@ -461,7 +466,7 @@ class _ProfileHeaderState extends State<ProfileHeader>
               Row(
                 children: [
                   const Icon(
-                    Icons.school_outlined,
+                    Icons.school,
                     color: Colors.white,
                     size: 20,
                   ),
@@ -538,7 +543,7 @@ class _ProfileHeaderState extends State<ProfileHeader>
               Row(
                 children: [
                   const Icon(
-                    Icons.work_outline,
+                    Icons.work,
                     color: Colors.white,
                     size: 20,
                   ),

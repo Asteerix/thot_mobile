@@ -537,7 +537,7 @@ class _CommentListItemState extends State<CommentListItem>
                                                 child: Icon(
                                                   _isLiked
                                                       ? Icons.favorite
-                                                      : Icons.favorite_border,
+                                                      : Icons.favorite,
                                                   color: _isLiked
                                                       ? colorScheme.error
                                                       : colorScheme.outline

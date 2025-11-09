@@ -52,8 +52,8 @@ class _ExploreScreenWebState extends State<ExploreScreenWeb> {
     final categories = [
       {'label': 'All', 'value': 'all', 'icon': Icons.dashboard},
       {'label': 'Trending', 'value': 'trending', 'icon': Icons.trending_up},
-      {'label': 'Technology', 'value': 'tech', 'icon': Icons.computer},
-      {'label': 'Science', 'value': 'science', 'icon': Icons.science},
+      {'label': 'Technology', 'value': 'tech', 'icon': Icons.laptop},
+      {'label': 'Science', 'value': 'science', 'icon': Icons.flask},
       {'label': 'Arts', 'value': 'arts', 'icon': Icons.palette},
       {'label': 'Business', 'value': 'business', 'icon': Icons.business},
     ];

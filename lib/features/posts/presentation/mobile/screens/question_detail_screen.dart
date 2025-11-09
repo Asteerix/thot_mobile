@@ -278,7 +278,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen>
                   errorWidget: (context, url, error) => Container(
                     color: Colors.grey[900],
                     child: Icon(
-                      Icons.image_not_supported,
+                      Icons.broken_image,
                       color: Colors.white.withOpacity(0.3),
                       size: 50,
                     ),
@@ -405,7 +405,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen>
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.people_outline,
+                                Icons.group,
                                 size: 14,
                                 color: AppColors.success,
                               ),
@@ -487,7 +487,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen>
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        Icons.poll,
+                        Icons.bar_chart,
                         color: Theme.of(context).colorScheme.surface,
                         size: 20,
                       ),
@@ -840,7 +840,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen>
                           ],
                         ),
                         child: Icon(
-                          Icons.forum_rounded,
+                          Icons.forum,
                           size: 32,
                           color: Theme.of(context).colorScheme.surface,
                         ),
@@ -890,7 +890,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen>
                       color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     ),
                     _buildStatItem(
-                      Icons.people,
+                      Icons.group,
                       _totalParticipants,
                       'Participants',
                       AppColors.success

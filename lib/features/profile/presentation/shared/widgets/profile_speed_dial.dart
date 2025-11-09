@@ -114,7 +114,7 @@ class ProfileSpeedDial extends StatelessWidget {
                   children: [
                     _buildSpeedDialItem(
                       'Nouvelle publication',
-                      Icons.post_add,
+                      Icons.note_add,
                       () async {
                         final authProvider =
                             Provider.of<AuthProvider>(context, listen: false);
@@ -147,7 +147,7 @@ class ProfileSpeedDial extends StatelessWidget {
                     const SizedBox(height: 16),
                     _buildSpeedDialItem(
                       'Nouveau short',
-                      Icons.video_call,
+                      Icons.videocamPlus,
                       () async {
                         final authProvider =
                             Provider.of<AuthProvider>(context, listen: false);

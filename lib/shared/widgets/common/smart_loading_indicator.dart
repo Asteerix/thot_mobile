@@ -200,7 +200,7 @@ class _SmartLoadingIndicatorState extends State<SmartLoadingIndicator>
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            Icons.signal_wifi_statusbar_connected_no_internet_4,
+                            Icons.wifi_off,
                             color: Colors.orange[400],
                             size: 16,
                           ),

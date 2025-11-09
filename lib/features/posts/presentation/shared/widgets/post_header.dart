@@ -76,7 +76,7 @@ class PostHeader extends StatelessWidget {
             ),
             if (onShare != null)
               ListTile(
-                leading: const Icon(Icons.share_outlined, color: Colors.white),
+                leading: Icon(Icons.share, color: Colors.white),
                 title: const Text(
                   'Partager',
                   style: TextStyle(color: Colors.white),
@@ -88,7 +88,7 @@ class PostHeader extends StatelessWidget {
               ),
             if (onReport != null)
               ListTile(
-                leading: const Icon(Icons.flag_outlined, color: Colors.white),
+                leading: Icon(Icons.flag, color: Colors.white),
                 title: const Text(
                   'Signaler',
                   style: TextStyle(color: Colors.white),
@@ -99,7 +99,7 @@ class PostHeader extends StatelessWidget {
                 },
               ),
             ListTile(
-              leading: const Icon(Icons.link, color: Colors.white),
+              leading: Icon(Icons.link, color: Colors.white),
               title: const Text(
                 'Copier le lien',
                 style: TextStyle(color: Colors.white),
@@ -121,19 +121,46 @@ class PostHeader extends StatelessWidget {
                       post.journalist?.id != null &&
                       currentUserId == post.journalist!.id;
     return Container(
-      color: Colors.black,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.black.withOpacity(0.8),
+            Colors.black.withOpacity(0.6),
+            Colors.transparent,
+          ],
+        ),
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: SafeArea(
         bottom: false,
         child: Row(
           children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new),
-              iconSize: 20,
-              color: Colors.white,
-              onPressed: onBack,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.4),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+              child: IconButton(
+                icon: Icon(Icons.arrow_back_ios_new),
+                iconSize: 22,
+                color: Colors.white,
+                onPressed: onBack,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+              ),
             ),
             const SizedBox(width: 8),
             GestureDetector(
@@ -160,7 +187,14 @@ class PostHeader extends StatelessWidget {
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 15,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black,
+                                  blurRadius: 4,
+                                  offset: Offset(0, 1),
+                                ),
+                              ],
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -174,9 +208,17 @@ class PostHeader extends StatelessWidget {
                     ),
                     Text(
                       _getTimeAgo(post.createdAt),
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
+                      style: const TextStyle(
+                        color: Colors.white,
                         fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black,
+                            blurRadius: 4,
+                            offset: Offset(0, 1),
+                          ),
+                        ],
                       ),
                     ),
                   ],

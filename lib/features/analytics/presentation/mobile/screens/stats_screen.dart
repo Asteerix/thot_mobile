@@ -169,7 +169,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 color: Colors.white.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+              child: Icon(Icons.arrow_back, color: Colors.white, size: 20),
             ),
           ),
           const SizedBox(width: 16),
@@ -481,9 +481,9 @@ class _StatsScreenState extends State<StatsScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            _buildContentRow('Postes', postes, Icons.article_outlined),
+            _buildContentRow('Postes', postes, Icons.article),
             const SizedBox(height: 12),
-            _buildContentRow('Shorts', shorts, Icons.video_camera_back_outlined),
+            _buildContentRow('Shorts', shorts, Icons.videocam),
             const SizedBox(height: 12),
             _buildContentRow('Questions', questions, Icons.help_outline),
           ],
@@ -552,7 +552,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 Expanded(
                   child: Column(
                     children: [
-                      Icon(Icons.people_outline, color: Colors.white.withOpacity(0.7), size: 32),
+                      Icon(Icons.group, color: Colors.white.withOpacity(0.7), size: 32),
                       const SizedBox(height: 8),
                       Text(
                         _formatNumber(followers),
@@ -581,7 +581,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 Expanded(
                   child: Column(
                     children: [
-                      Icon(Icons.person_add_outlined, color: Colors.white.withOpacity(0.7), size: 32),
+                      Icon(Icons.person_add, color: Colors.white.withOpacity(0.7), size: 32),
                       const SizedBox(height: 8),
                       Text(
                         _formatNumber(following),

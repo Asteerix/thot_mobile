@@ -451,7 +451,7 @@ class _SavedContentScreenState extends State<SavedContentScreen>
               stretch: true,
               elevation: 0,
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                icon: Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () => SafeNavigation.pop(context),
               ),
               title: Text(
@@ -652,12 +652,12 @@ class _PostsTabState extends State<_PostsTab>
     }
     if (widget.posts.isEmpty) {
       return EmptyState(
-        icon: Icons.bookmark_border,
+        icon: Icons.bookmark,
         title: 'Aucun post enregistré',
         subtitle: 'Enregistrez des posts pour les retrouver ici',
         action: TextButton.icon(
           onPressed: widget.onRefresh,
-          icon: const Icon(Icons.refresh, color: Colors.white),
+          icon: Icon(Icons.refresh, color: Colors.white),
           label: const Text('Actualiser', style: TextStyle(color: Colors.white)),
         ),
       );
@@ -730,12 +730,12 @@ class _ShortsTabState extends State<_ShortsTab>
     }
     if (widget.shorts.isEmpty) {
       return EmptyState(
-        icon: Icons.movie_outlined,
+        icon: Icons.movie,
         title: 'Aucun short enregistré',
         subtitle: 'Enregistrez des shorts pour les retrouver ici',
         action: TextButton.icon(
           onPressed: widget.onRefresh,
-          icon: const Icon(Icons.refresh, color: Colors.white),
+          icon: Icon(Icons.refresh, color: Colors.white),
           label: const Text('Actualiser', style: TextStyle(color: Colors.white)),
         ),
       );
@@ -814,7 +814,7 @@ class _QuestionsTabState extends State<_QuestionsTab>
         subtitle: 'Enregistrez des questions pour les retrouver ici',
         action: TextButton.icon(
           onPressed: widget.onRefresh,
-          icon: const Icon(Icons.refresh, color: Colors.white),
+          icon: Icon(Icons.refresh, color: Colors.white),
           label: const Text('Actualiser', style: TextStyle(color: Colors.white)),
         ),
       );
@@ -954,7 +954,7 @@ class SavedTile extends StatelessWidget {
                             shape: BoxShape.circle,
                           ),
                           padding: const EdgeInsets.all(4),
-                          child: const Icon(Icons.check, size: 16, color: Colors.black),
+                          child: Icon(Icons.check, size: 16, color: Colors.black),
                         ),
                       ),
                     ),
@@ -985,11 +985,11 @@ class _MetaBadge extends StatelessWidget {
         ),
       ),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
-        const Icon(Icons.favorite_border, size: 14, color: Colors.white),
+        Icon(Icons.favorite, size: 14, color: Colors.white),
         const SizedBox(width: 4),
         Text('$likes', style: const TextStyle(color: Colors.white, fontSize: 12)),
         const SizedBox(width: 8),
-        const Icon(Icons.mode_comment_outlined, size: 14, color: Colors.white),
+        Icon(Icons.comment, size: 14, color: Colors.white),
         const SizedBox(width: 4),
         Text('$comments', style: const TextStyle(color: Colors.white, fontSize: 12)),
       ]),
@@ -1208,7 +1208,7 @@ class ErrorState extends StatelessWidget {
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: onRetry,
-              icon: const Icon(Icons.refresh),
+              icon: Icon(Icons.refresh),
               label: const Text('Réessayer'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
@@ -1261,7 +1261,7 @@ class _NetworkImageAdaptive extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
-              Icons.broken_image_outlined,
+              Icons.broken_image,
               color: Colors.white.withOpacity(0.3),
               size: 32,
             ),

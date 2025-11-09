@@ -129,7 +129,7 @@ class _AppScaffoldState extends State<AppScaffold> {
         // TODO: Implémenter la navigation vers l'écran de création de contenu
       },
       tooltip: 'Nouveau contenu',
-      child: const Icon(Icons.add),
+      child: Icon(Icons.add),
     );
   }
 
@@ -166,16 +166,16 @@ class _AppScaffoldState extends State<AppScaffold> {
   (Widget, Widget) _iconsFor(AppTab t) {
     switch (t) {
       case AppTab.home:
-        return (const Icon(Icons.home_outlined), const Icon(Icons.home));
+        return (Icon(Icons.home), Icon(Icons.home));
       case AppTab.shorts:
         return (
-          const Icon(Icons.play_circle_outline),
-          const Icon(Icons.play_circle)
+          Icon(Icons.play_circle),
+          Icon(Icons.play_circle)
         );
       case AppTab.explore:
-        return (const Icon(Icons.search_outlined), const Icon(Icons.search));
+        return (Icon(Icons.search), Icon(Icons.search));
       case AppTab.profile:
-        return (const Icon(Icons.person_outline), const Icon(Icons.person));
+        return (Icon(Icons.person), Icon(Icons.person));
     }
   }
 

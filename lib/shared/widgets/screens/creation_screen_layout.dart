@@ -79,7 +79,7 @@ class CreationScreenLayout extends StatelessWidget {
       elevation: 0,
       leading: Builder(
         builder: (context) => IconButton(
-          icon: const Icon(Icons.close, color: Colors.white),
+          icon: Icon(Icons.close, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -117,7 +117,7 @@ class CreationScreenLayout extends StatelessWidget {
 
   Widget _buildPreviewIconButton() {
     return IconButton(
-      icon: const Icon(Icons.visibility_outlined, color: Colors.white),
+      icon: Icon(Icons.visibility, color: Colors.white),
       onPressed: onPreview,
       tooltip: 'Aperçu',
     );
@@ -181,7 +181,7 @@ class CreationScreenLayout extends StatelessWidget {
       onTap: onPreview,
       backgroundColor: Colors.transparent,
       borderColor: isDark ? Colors.white.withOpacity(0.2) : AppColors.border,
-      icon: Icons.visibility_outlined,
+      icon: Icons.visibility,
       label: 'Aperçu',
       textColor: Colors.white,
     );
@@ -208,7 +208,7 @@ class CreationScreenLayout extends StatelessWidget {
           : null,
       borderColor:
           !isEnabled ? (isDark ? AppColors.darkBorder : AppColors.border) : null,
-      icon: isSubmitting ? null : Icons.check_rounded,
+      icon: isSubmitting ? null : Icons.check,
       label: submitLabel,
       textColor: canSubmit ? Colors.white : Colors.white.withOpacity(0.3),
       isLoading: isSubmitting,

@@ -3,13 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:thot/features/posts/domain/entities/post.dart';
 class PoliticalOrientationUtils {
   static IconData getIconData(PoliticalOrientation? view) {
-    return Icons.public;
+    return switch (view) {
+      PoliticalOrientation.extremelyConservative => Icons.keyboard_double_arrow_left,
+      PoliticalOrientation.conservative => Icons.arrow_back,
+      PoliticalOrientation.neutral => Icons.remove,
+      PoliticalOrientation.progressive => Icons.arrow_forward,
+      PoliticalOrientation.extremelyProgressive => Icons.keyboard_double_arrow_right,
+      null => Icons.public,
+    };
   }
   static Icon getIcon(PoliticalOrientation? view) {
     return Icon(
       getIconData(view),
-      size: 20,
-      color: getColor(view),
+      size: 24,
+      color: Colors.white,
     );
   }
   static String getLabel(PoliticalOrientation? view) {

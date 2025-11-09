@@ -81,7 +81,7 @@ class _NewArticleScreenWebState extends ConsumerState<NewArticleScreenWeb> {
           children: [
             TextButton.icon(
               onPressed: () => widget.onNavigate(RouteNames.home),
-              icon: const Icon(Icons.arrow_back, size: 20),
+              icon: Icon(Icons.arrow_back, size: 20),
               label: const Text('Retour au feed'),
               style: TextButton.styleFrom(
                 foregroundColor: colorScheme.primary,
@@ -308,7 +308,7 @@ class _NewArticleScreenWebState extends ConsumerState<NewArticleScreenWeb> {
                 top: WebTheme.sm,
                 right: WebTheme.sm,
                 child: IconButton(
-                  icon: const Icon(Icons.close),
+                  icon: Icon(Icons.close),
                   onPressed: () => setState(() => _coverImage = null),
                   style: IconButton.styleFrom(
                     backgroundColor: colorScheme.onSurface.withOpacity(0.54),
@@ -337,7 +337,7 @@ class _NewArticleScreenWebState extends ConsumerState<NewArticleScreenWeb> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      Icons.add_photo_alternate_outlined,
+                      Icons.add_photo_alternate,
                       size: 48,
                       color: colorScheme.onSurface.withOpacity(0.4),
                     ),
@@ -424,13 +424,13 @@ class _NewArticleScreenWebState extends ConsumerState<NewArticleScreenWeb> {
           children: [
             ..._tags.map((tag) => Chip(
                   label: Text(tag),
-                  deleteIcon: const Icon(Icons.close, size: 16),
+                  deleteIcon: Icon(Icons.close, size: 16),
                   onDeleted: () {
                     setState(() => _tags.remove(tag));
                   },
                 )),
             ActionChip(
-              avatar: const Icon(Icons.add, size: 16),
+              avatar: Icon(Icons.add, size: 16),
               label: const Text('Ajouter un tag'),
               onPressed: () => _showAddTagDialog(),
             ),
@@ -466,7 +466,7 @@ class _NewArticleScreenWebState extends ConsumerState<NewArticleScreenWeb> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline, size: 20),
+                  icon: Icon(Icons.delete, size: 20),
                   onPressed: () {
                     setState(() => _sources.removeAt(index));
                   },
@@ -477,7 +477,7 @@ class _NewArticleScreenWebState extends ConsumerState<NewArticleScreenWeb> {
         }),
         OutlinedButton.icon(
           onPressed: () => _showAddSourceDialog(),
-          icon: const Icon(Icons.add, size: 18),
+          icon: Icon(Icons.add, size: 18),
           label: const Text('Ajouter une source'),
         ),
       ],

@@ -111,10 +111,10 @@ class _QuestionTypeSelectionScreenState
     final domains = [
       {'value': 'politique', 'label': 'Politique', 'icon': Icons.gavel},
       {'value': 'economie', 'label': 'Économie', 'icon': Icons.trending_up},
-      {'value': 'societe', 'label': 'Société', 'icon': Icons.people},
+      {'value': 'societe', 'label': 'Société', 'icon': Icons.group},
       {'value': 'culture', 'label': 'Culture', 'icon': Icons.palette},
-      {'value': 'sport', 'label': 'Sport', 'icon': Icons.sports_soccer},
-      {'value': 'tech', 'label': 'Tech', 'icon': Icons.computer},
+      {'value': 'sport', 'label': 'Sport', 'icon': Icons.emoji_events},
+      {'value': 'tech', 'label': 'Tech', 'icon': Icons.laptop},
       {'value': 'environnement', 'label': 'Environnement', 'icon': Icons.eco},
       {
         'value': 'international',
@@ -181,7 +181,7 @@ class _QuestionTypeSelectionScreenState
           type: 'poll',
           title: 'Sondage',
           description: 'Les utilisateurs votent parmi des options prédéfinies',
-          icon: Icons.poll,
+          icon: Icons.bar_chart,
         ),
         const SizedBox(height: 12),
         _buildTypeOption(
@@ -257,7 +257,7 @@ class _QuestionTypeSelectionScreenState
             ),
             Icon(
               isSelected
-                  ? Icons.radio_button_checked
+                  ? Icons.radio_button_unchecked
                   : Icons.radio_button_unchecked,
               color: isSelected ? AppColors.blue : AppColors.textSecondary,
             ),

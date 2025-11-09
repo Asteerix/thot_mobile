@@ -424,7 +424,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  Icons.person_search,
+                                  Icons.search,
                                   color: Colors.white.withOpacity(0.3),
                                   size: 32,
                                 ),
@@ -505,7 +505,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              Icons.person_search,
+                              Icons.search,
                               color: Colors.white.withOpacity(0.3),
                               size: 64,
                             ),

@@ -59,7 +59,7 @@ class _NewPodcastScreenWebState extends ConsumerState<NewPodcastScreenWeb> {
                 child: Center(
                   child: FilledButton.icon(
                     onPressed: () {},
-                    icon: const Icon(Icons.upload),
+                    icon: Icon(Icons.cloud_upload),
                     label: const Text('Importer audio'),
                   ),
                 ),

@@ -82,13 +82,13 @@ class NotificationModel {
       case 'post_like':
         return Icons.favorite;
       case 'comment_like':
-        return Icons.favorite_outline;
+        return Icons.favorite;
       case 'comment_reply':
         return Icons.comment;
       case 'new_follower':
         return Icons.person_add;
       case 'post_removed':
-        return Icons.delete_outline;
+        return Icons.delete;
       case 'article_published':
         return Icons.article;
       case 'mention':

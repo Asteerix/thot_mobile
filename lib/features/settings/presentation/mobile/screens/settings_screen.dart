@@ -152,7 +152,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   color: Colors.red.withOpacity(0.1),
                   border: Border.all(color: Colors.red.withOpacity(0.5), width: 2),
                 ),
-                child: Icon(Icons.warning_amber_rounded, color: Colors.red, size: 28),
+                child: Icon(Icons.warning, color: Colors.red, size: 28),
               ),
               const SizedBox(height: 24),
               const Text(
@@ -293,7 +293,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: isJournalist ? 'Compte journaliste' : 'Mon compte',
                     children: [
                       _SettingTile(
-                        icon: Icons.badge_outlined,
+                        icon: Icons.verified,
                         title: isJournalist ? 'Profil professionnel' : 'Mon profil',
                         subtitle: isJournalist
                             ? context.read<AuthProvider>().userProfile?.organization ?? 'Journaliste indépendant'
@@ -307,7 +307,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       if (isJournalist)
                         _SettingTile(
-                          icon: Icons.analytics_outlined,
+                          icon: Icons.bar_chart,
                           title: 'Statistiques',
                           subtitle: 'Performances du contenu',
                           onTap: () {
@@ -325,7 +325,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           },
                         ),
                       _SettingTile(
-                        icon: Icons.bookmark_border,
+                        icon: Icons.bookmark,
                         title: 'Contenu enregistré',
                         subtitle: 'Articles, vidéos, podcasts',
                         onTap: () => context.push(RouteNames.savedContent),
@@ -340,7 +340,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: 'Sécurité',
                 children: [
                   _SettingTile(
-                    icon: Icons.lock_outline,
+                    icon: Icons.lock,
                     title: 'Mot de passe',
                     subtitle: 'Modifier le mot de passe',
                     onTap: () => context.push('/change-password'),
@@ -353,7 +353,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: 'Notifications',
                 children: [
                   _SettingTileSwitcher(
-                    icon: Icons.notifications_active_outlined,
+                    icon: Icons.notifications_active,
                     title: 'Notifications',
                     subtitle: 'Activer/désactiver',
                     value: notifEnabled,
@@ -376,17 +376,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onTap: () => _launchURL('https://help.thot-app.com'),
                   ),
                   _SettingTile(
-                    icon: Icons.bug_report_outlined,
+                    icon: Icons.bug_report,
                     title: 'Signaler un problème',
                     onTap: () => context.push(RouteNames.reportProblem),
                   ),
                   _SettingTile(
-                    icon: Icons.description_outlined,
+                    icon: Icons.article,
                     title: "Conditions d'utilisation",
                     onTap: () => context.push(RouteNames.termsOfService),
                   ),
                   _SettingTile(
-                    icon: Icons.privacy_tip_outlined,
+                    icon: Icons.verified_user,
                     title: 'Politique de confidentialité',
                     onTap: () => context.push(RouteNames.privacyPolicy),
                   ),
@@ -398,7 +398,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: 'À propos',
                 children: [
                   _SettingTile(
-                    icon: Icons.info_outline,
+                    icon: Icons.info,
                     title: "Version de l'application",
                     subtitle: '1.0.0',
                     onTap: () => context.push(RouteNames.about),
@@ -441,7 +441,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           Divider(height: 1, color: Colors.white.withOpacity(0.1)),
                           _SettingTile(
-                            icon: Icons.delete_forever,
+                            icon: Icons.delete,
                             title: 'Supprimer le compte',
                             subtitle: 'Action irréversible',
                             isDanger: true,
@@ -476,22 +476,46 @@ class _ProfileCard extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 56,
-              height: 56,
+              width: 64,
+              height: 64,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.1),
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.purple.withOpacity(0.3),
+                    Colors.blue.withOpacity(0.3),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 border: Border.all(color: Colors.white.withOpacity(0.3), width: 2),
               ),
-              child: Center(
-                child: Text(
-                  (user?.username?.isNotEmpty == true ? user!.username![0] : 'U').toUpperCase(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              child: ClipOval(
+                child: user?.avatarUrl != null && user!.avatarUrl!.isNotEmpty
+                    ? Image.network(
+                        user.avatarUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Center(
+                          child: Text(
+                            (user.name?.isNotEmpty == true ? user.name![0] : 'U').toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      )
+                    : Center(
+                        child: Text(
+                          (user?.name?.isNotEmpty == true ? user!.name![0] : 'U').toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
               ),
             ),
             const SizedBox(width: 16),
@@ -500,31 +524,40 @@ class _ProfileCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    user?.displayName ?? 'Utilisateur',
+                    user?.name ?? user?.username ?? 'Utilisateur',
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 18,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    user?.email ?? '',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.6),
-                      fontSize: 14,
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: (user?.isJournalist ?? false)
+                          ? Colors.blue.withOpacity(0.2)
+                          : Colors.grey.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: (user?.isJournalist ?? false)
+                            ? Colors.blue.withOpacity(0.4)
+                            : Colors.grey.withOpacity(0.4),
+                      ),
+                    ),
+                    child: Text(
+                      (user?.isJournalist ?? false) ? 'Journaliste' : 'Utilisateur',
+                      style: TextStyle(
+                        color: (user?.isJournalist ?? false)
+                            ? Colors.blue[300]
+                            : Colors.grey[300],
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
-            IconButton(
-              onPressed: () {
-                if (user != null) {
-                  context.push(RouteNames.editProfile, extra: user);
-                }
-              },
-              icon: Icon(Icons.edit_outlined, color: Colors.white.withOpacity(0.7)),
             ),
           ],
         ),

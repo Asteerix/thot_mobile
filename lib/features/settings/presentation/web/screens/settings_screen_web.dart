@@ -43,12 +43,12 @@ class _SettingsScreenWebState extends State<SettingsScreenWeb> {
           ),
         ),
         const SizedBox(height: WebTheme.xl),
-        _buildMenuItem(context, 'Account', 'account', Icons.person_outline),
-        _buildMenuItem(context, 'Privacy', 'privacy', Icons.lock_outline),
+        _buildMenuItem(context, 'Account', 'account', Icons.person),
+        _buildMenuItem(context, 'Privacy', 'privacy', Icons.lock),
         _buildMenuItem(context, 'Notifications', 'notifications',
-            Icons.notifications_outline),
+            Icons.notifications),
         _buildMenuItem(
-            context, 'Appearance', 'appearance', Icons.palette_outlined),
+            context, 'Appearance', 'appearance', Icons.palette),
         _buildMenuItem(
             context, 'Accessibility', 'accessibility', Icons.accessibility),
         _buildMenuItem(context, 'Language', 'language', Icons.language),
@@ -56,7 +56,7 @@ class _SettingsScreenWebState extends State<SettingsScreenWeb> {
         Divider(color: colorScheme.outline),
         const SizedBox(height: WebTheme.lg),
         _buildMenuItem(context, 'Help & Support', 'help', Icons.help_outline),
-        _buildMenuItem(context, 'About', 'about', Icons.info_outline),
+        _buildMenuItem(context, 'About', 'about', Icons.info),
       ],
     );
   }
@@ -140,7 +140,7 @@ class _SettingsScreenWebState extends State<SettingsScreenWeb> {
             colorScheme,
             'Profile Information',
             'Update your name, username, and bio',
-            Icons.edit_outlined,
+            Icons.edit,
             () {},
           ),
           _buildSettingCard(
@@ -148,7 +148,7 @@ class _SettingsScreenWebState extends State<SettingsScreenWeb> {
             colorScheme,
             'Email Address',
             'johndoe@example.com',
-            Icons.email_outlined,
+            Icons.mail,
             () {},
           ),
           _buildSettingCard(
@@ -156,7 +156,7 @@ class _SettingsScreenWebState extends State<SettingsScreenWeb> {
             colorScheme,
             'Change Password',
             'Update your password',
-            Icons.lock_outlined,
+            Icons.lock,
             () {},
           ),
           _buildSettingCard(
@@ -164,7 +164,7 @@ class _SettingsScreenWebState extends State<SettingsScreenWeb> {
             colorScheme,
             'Delete Account',
             'Permanently delete your account and data',
-            Icons.delete_outline,
+            Icons.delete,
             () {},
             isDestructive: true,
           ),

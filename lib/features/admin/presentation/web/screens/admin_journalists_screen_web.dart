@@ -130,7 +130,7 @@ class _AdminJournalistsScreenWebState extends State<AdminJournalistsScreenWeb>
             children: [
               Row(
                 children: [
-                  Icon(Icons.badge, size: 32, color: colorScheme.primary),
+                  Icon(Icons.verified, size: 32, color: colorScheme.primary),
                   const SizedBox(width: WebTheme.md),
                   Text(
                     'Gestion des Journalistes',
@@ -149,7 +149,7 @@ class _AdminJournalistsScreenWebState extends State<AdminJournalistsScreenWeb>
                   controller: _searchController,
                   decoration: InputDecoration(
                     hintText: 'Rechercher un journaliste...',
-                    prefixIcon: const Icon(Icons.search),
+                    prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -208,7 +208,7 @@ class _AdminJournalistsScreenWebState extends State<AdminJournalistsScreenWeb>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.badge_outlined, size: 64, color: colorScheme.outline),
+            Icon(Icons.verified, size: 64, color: colorScheme.outline),
             const SizedBox(height: WebTheme.md),
             Text(
               'Aucun journaliste trouvé',
@@ -274,7 +274,7 @@ class _AdminJournalistsScreenWebState extends State<AdminJournalistsScreenWeb>
                       UrlHelper.getImageUrl(journalist.profilePicture!))
                   : null,
               child: journalist.profilePicture == null
-                  ? const Icon(Icons.person)
+                  ? Icon(Icons.person)
                   : null,
             ),
           ),
@@ -361,7 +361,7 @@ class _AdminJournalistsScreenWebState extends State<AdminJournalistsScreenWeb>
                   Tooltip(
                     message: 'Voir la carte de presse',
                     child: IconButton(
-                      icon: const Icon(Icons.image, size: 20),
+                      icon: Icon(Icons.image, size: 20),
                       onPressed: () {
                         _showPressCardDialog(journalist);
                       },
@@ -371,7 +371,7 @@ class _AdminJournalistsScreenWebState extends State<AdminJournalistsScreenWeb>
                   Tooltip(
                     message: 'Retirer la vérification',
                     child: IconButton(
-                      icon: const Icon(Icons.cancel, size: 20),
+                      icon: Icon(Icons.close, size: 20),
                       color: AppColors.error,
                       onPressed: () => _unverifyJournalist(journalist),
                     ),
@@ -380,7 +380,7 @@ class _AdminJournalistsScreenWebState extends State<AdminJournalistsScreenWeb>
                   Tooltip(
                     message: 'Vérifier',
                     child: IconButton(
-                      icon: const Icon(Icons.check_circle, size: 20),
+                      icon: Icon(Icons.check_circle, size: 20),
                       color: AppColors.success,
                       onPressed: () => _verifyJournalist(journalist),
                     ),

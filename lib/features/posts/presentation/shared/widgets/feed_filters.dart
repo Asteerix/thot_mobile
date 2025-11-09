@@ -59,19 +59,66 @@ enum PoliticalView {
   }
 }
 enum ContentCategory {
-  politique('Politique', Icons.gavel),
-  economie('Économie', Icons.trending_up),
-  science('Science', Icons.science),
-  technologie('Technologie', Icons.computer),
-  international('International', Icons.public),
-  societe('Société', Icons.groups),
-  sport('Sport', Icons.sports_soccer),
-  philosophie('Philosophie', Icons.psychology),
-  juridique('Juridique', Icons.balance),
-  psychologie('Psychologie', Icons.psychology_alt);
-  final String label;
-  final IconData icon;
-  const ContentCategory(this.label, this.icon);
+  politique,
+  economie,
+  science,
+  technologie,
+  international,
+  societe,
+  sport,
+  philosophie,
+  juridique,
+  psychologie;
+
+  String get label {
+    switch (this) {
+      case ContentCategory.politique:
+        return 'Politique';
+      case ContentCategory.economie:
+        return 'Économie';
+      case ContentCategory.science:
+        return 'Science';
+      case ContentCategory.technologie:
+        return 'Technologie';
+      case ContentCategory.international:
+        return 'International';
+      case ContentCategory.societe:
+        return 'Société';
+      case ContentCategory.sport:
+        return 'Sport';
+      case ContentCategory.philosophie:
+        return 'Philosophie';
+      case ContentCategory.juridique:
+        return 'Juridique';
+      case ContentCategory.psychologie:
+        return 'Psychologie';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case ContentCategory.politique:
+        return Icons.gavel;
+      case ContentCategory.economie:
+        return Icons.trending_up;
+      case ContentCategory.science:
+        return Icons.science;
+      case ContentCategory.technologie:
+        return Icons.laptop;
+      case ContentCategory.international:
+        return Icons.public;
+      case ContentCategory.societe:
+        return Icons.group;
+      case ContentCategory.sport:
+        return Icons.emoji_events;
+      case ContentCategory.philosophie:
+        return Icons.psychology;
+      case ContentCategory.juridique:
+        return Icons.balance;
+      case ContentCategory.psychologie:
+        return Icons.psychology;
+    }
+  }
 }
 class FeedFilters extends StatefulWidget {
   final PostType? selectedType;
@@ -149,7 +196,7 @@ class _FeedFiltersState extends State<FeedFilters> {
             const SizedBox(width: 8),
             _CompactChip(
               label: 'Articles',
-              icon: Icons.article_outlined,
+              icon: Icons.article,
               isSelected: widget.selectedType == PostType.article,
               onTap: () {
                 HapticFeedback.selectionClick();
@@ -161,7 +208,7 @@ class _FeedFiltersState extends State<FeedFilters> {
             const SizedBox(width: 8),
             _CompactChip(
               label: 'Vidéos',
-              icon: Icons.play_circle_outline,
+              icon: Icons.play_circle,
               isSelected: widget.selectedType == PostType.video,
               onTap: () {
                 HapticFeedback.selectionClick();
@@ -173,7 +220,7 @@ class _FeedFiltersState extends State<FeedFilters> {
             const SizedBox(width: 8),
             _CompactChip(
               label: 'Podcasts',
-              icon: Icons.podcasts_outlined,
+              icon: Icons.podcasts,
               isSelected: widget.selectedType == PostType.podcast,
               onTap: () {
                 HapticFeedback.selectionClick();
@@ -229,7 +276,7 @@ class _FeedFiltersState extends State<FeedFilters> {
             const SizedBox(width: 12),
             _CompactChip(
               label: 'Plus de filtres',
-              icon: Icons.tune_rounded,
+              icon: Icons.tune,
               isAccent: true,
               badge:
                   _activeFilterCount > 0 ? _activeFilterCount.toString() : null,
@@ -584,7 +631,7 @@ class _AdvancedFiltersSheetState extends State<_AdvancedFiltersSheet>
         _SelectionTile(
           title: 'Vidéos',
           subtitle: 'Contenus vidéo et reportages',
-          icon: Icons.play_circle_filled,
+          icon: Icons.play_circle,
           isSelected: _selectedType == PostType.video,
           onTap: () => setState(() => _selectedType =
               _selectedType == PostType.video ? null : PostType.video),
@@ -602,7 +649,7 @@ class _AdvancedFiltersSheetState extends State<_AdvancedFiltersSheet>
         _SelectionTile(
           title: 'Questions',
           subtitle: 'Questions et débats',
-          icon: Icons.help,
+          icon: Icons.help_outline,
           isSelected: _selectedType == PostType.question,
           onTap: () => setState(() => _selectedType =
               _selectedType == PostType.question ? null : PostType.question),
@@ -624,7 +671,7 @@ class _AdvancedFiltersSheetState extends State<_AdvancedFiltersSheet>
         if (index == 0) {
           return _CategoryCard(
             label: 'Toutes',
-            icon: Icons.apps,
+            icon: Icons.grid_on,
             isSelected: _selectedCategory == null,
             onTap: () => setState(() => _selectedCategory = null),
           );

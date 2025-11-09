@@ -61,7 +61,7 @@ class ReportTargetContent extends StatelessWidget {
                         targetDetails['journalist']['avatarUrl']))
                     : null,
                 child: targetDetails['journalist']?['avatarUrl'] == null
-                    ? const Icon(Icons.person, size: 20)
+                    ? Icon(Icons.person, size: 20)
                     : null,
               ),
               SizedBox(width: SpacingConstants.space8),
@@ -111,7 +111,7 @@ class ReportTargetContent extends StatelessWidget {
         SizedBox(height: SpacingConstants.space8),
         Row(
           children: [
-            Icon(Icons.person_outline,
+            Icon(Icons.person,
                 size: 16, color: Theme.of(context).colorScheme.outline),
             SizedBox(width: SpacingConstants.space4),
             Text(
@@ -135,7 +135,7 @@ class ReportTargetContent extends StatelessWidget {
               ? NetworkImage(ImageUtils.getAvatarUrl(targetDetails['avatarUrl']))
               : null,
           child: targetDetails['avatarUrl'] == null
-              ? const Icon(Icons.person, size: 30)
+              ? Icon(Icons.person, size: 30)
               : null,
         ),
         SizedBox(width: SpacingConstants.space12),

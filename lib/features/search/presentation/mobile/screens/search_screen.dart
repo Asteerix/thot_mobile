@@ -97,7 +97,7 @@ class _SearchScreenState extends State<SearchScreen> {
             itemBuilder: (context, index) {
               final search = _recentSearches[index];
               return ListTile(
-                leading: const Icon(Icons.history),
+                leading: Icon(Icons.history),
                 title: Text(search),
                 onTap: () {
                   _searchController.text = search;

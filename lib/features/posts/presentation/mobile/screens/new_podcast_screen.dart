@@ -446,7 +446,7 @@ class _NewPodcastScreenState extends State<NewPodcastScreen> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Center(
-                                child: Icon(Icons.audiotrack,
+                                child: Icon(Icons.music_note,
                                     size: 48, color: Colors.white.withOpacity(0.5)),
                               ),
                             ),
@@ -455,7 +455,7 @@ class _NewPodcastScreenState extends State<NewPodcastScreen> {
                             right: 8,
                             child: IconButton(
                               onPressed: _removeAudio,
-                              icon: Icon(Icons.delete_outline),
+                              icon: Icon(Icons.delete),
                               style: IconButton.styleFrom(
                                 backgroundColor: Colors.black.withOpacity(0.6),
                                 foregroundColor: Colors.white,
@@ -498,7 +498,7 @@ class _NewPodcastScreenState extends State<NewPodcastScreen> {
                             right: 8,
                             child: IconButton(
                               onPressed: _removeThumbnail,
-                              icon: Icon(Icons.delete_outline),
+                              icon: Icon(Icons.delete),
                               style: IconButton.styleFrom(
                                 backgroundColor: Colors.black.withOpacity(0.6),
                                 foregroundColor: Colors.white,

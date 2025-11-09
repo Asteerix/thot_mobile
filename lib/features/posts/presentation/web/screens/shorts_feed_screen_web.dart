@@ -153,7 +153,7 @@ class _ShortsFeedScreenWebState extends ConsumerState<ShortsFeedScreenWeb> {
               FilledButton.icon(
                 onPressed: () {
                 },
-                icon: const Icon(Icons.add, size: 20),
+                icon: Icon(Icons.add, size: 20),
                 label: const Text('Créer un short'),
               ),
             ],
@@ -251,7 +251,7 @@ class _ShortsFeedScreenWebState extends ConsumerState<ShortsFeedScreenWeb> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.video_library_outlined,
+              Icons.videocam,
               size: 64,
               color: colorScheme.onSurface.withOpacity(0.3),
             ),
@@ -332,7 +332,7 @@ class _ShortsFeedScreenWebState extends ConsumerState<ShortsFeedScreenWeb> {
                           height: double.infinity,
                           errorBuilder: (context, error, stackTrace) {
                             return Icon(
-                              Icons.play_circle_outline,
+                              Icons.play_circle,
                               size: 64,
                               color: AppColors.textPrimary.withOpacity(0.8),
                             );
@@ -355,7 +355,7 @@ class _ShortsFeedScreenWebState extends ConsumerState<ShortsFeedScreenWeb> {
                       ),
                       child: const Center(
                         child: Icon(
-                          Icons.play_circle_filled,
+                          Icons.play_circle,
                           size: 56,
                           color: AppColors.textPrimary,
                         ),

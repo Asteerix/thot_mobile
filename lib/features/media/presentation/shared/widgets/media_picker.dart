@@ -198,9 +198,9 @@ class _MediaPickerState extends State<MediaPicker> {
                       ),
                       child: Icon(
                         isVideo
-                            ? Icons.video_library
+                            ? Icons.videocam
                             : isAudio
-                                ? Icons.audiotrack
+                                ? Icons.music_note
                                 : Icons.add_photo_alternate,
                         color: Colors.white,
                         size: 24,
@@ -252,7 +252,7 @@ class _MediaPickerState extends State<MediaPicker> {
                   ),
                   const SizedBox(height: 12),
                   _MediaOption(
-                    icon: isVideo ? Icons.video_library : Icons.photo_library,
+                    icon: isVideo ? Icons.videocam : Icons.image,
                     title: isVideo ? 'Choisir une vidéo' : 'Choisir une photo',
                     onTap: () {
                       SafeNavigation.pop(context);
@@ -261,7 +261,7 @@ class _MediaPickerState extends State<MediaPicker> {
                   ),
                 ] else
                   _MediaOption(
-                    icon: Icons.audiotrack,
+                    icon: Icons.music_note,
                     title: 'Choisir un fichier audio',
                     onTap: () {
                       SafeNavigation.pop(context);
@@ -348,16 +348,17 @@ class _MediaPickerState extends State<MediaPicker> {
                             );
                           },
                           errorBuilder: (context, error, stackTrace) => Icon(
-                            Icons.error,
+                            Icons.error_outline,
                             color: Colors.white.withOpacity(0.5),
                           ),
                         ),
                       )
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.1),
                               shape: BoxShape.circle,
@@ -368,15 +369,15 @@ class _MediaPickerState extends State<MediaPicker> {
                             ),
                             child: Icon(
                               widget.type.isVideoContent
-                                  ? Icons.video_library_outlined
+                                  ? Icons.videocam
                                   : widget.type.isAudioContent
-                                      ? Icons.audiotrack_outlined
-                                      : Icons.add_photo_alternate_outlined,
-                              size: 40,
+                                      ? Icons.music_note
+                                      : Icons.add_photo_alternate,
+                              size: 32,
                               color: Colors.white.withOpacity(0.7),
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 8),
                           Text(
                             widget.type.isVideoContent
                                 ? 'Ajouter une vidéo'
@@ -385,7 +386,7 @@ class _MediaPickerState extends State<MediaPicker> {
                                     : 'Ajouter une image',
                             style: TextStyle(
                               color: Colors.white.withOpacity(0.7),
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -446,7 +447,7 @@ class _MediaOption extends StatelessWidget {
                 ),
               ),
               Icon(
-                Icons.arrow_forward_ios,
+                Icons.chevron_right,
                 color: Colors.white.withOpacity(0.5),
                 size: 16,
               ),

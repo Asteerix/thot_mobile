@@ -222,7 +222,7 @@ class _VotingDialogState extends State<VotingDialog> {
                                       width: 2,
                                     ),
                                   ),
-                                  child: const Icon(Icons.star,
+                                  child: Icon(Icons.star,
                                       size: 10, color: Colors.white),
                                 ),
                               ),

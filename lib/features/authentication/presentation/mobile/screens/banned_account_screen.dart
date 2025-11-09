@@ -67,7 +67,7 @@ class _BannedAccountScreenState extends State<BannedAccountScreen>
     final scheme = theme.colorScheme;
     final isSuspended = widget.isSuspended;
     final statusColor = isSuspended ? scheme.tertiary : scheme.error;
-    final headerIcon = isSuspended ? Icons.hourglass_top_rounded : Icons.block;
+    final headerIcon = isSuspended ? Icons.hourglass_empty : Icons.block;
     final title = isSuspended ? 'Compte suspendu' : 'Compte banni';
     return Scaffold(
       backgroundColor: scheme.surface,
@@ -163,7 +163,7 @@ class _BannedAccountScreenState extends State<BannedAccountScreen>
                                         widget.reason!.trim().isNotEmpty) ...[
                                       const SizedBox(height: 20),
                                       _InfoTile(
-                                        icon: Icons.gavel_rounded,
+                                        icon: Icons.gavel,
                                         label: 'Raison',
                                         accent: scheme.error,
                                         child: _SelectableCopy(
@@ -181,7 +181,7 @@ class _BannedAccountScreenState extends State<BannedAccountScreen>
                                         widget.message!.trim().isNotEmpty) ...[
                                       const SizedBox(height: 12),
                                       _InfoTile(
-                                        icon: Icons.message_outlined,
+                                        icon: Icons.forum,
                                         label: 'Message de l\'administrateur',
                                         accent: scheme.primary,
                                         child: _SelectableCopy(
@@ -342,7 +342,7 @@ class _SelectableCopy extends StatelessWidget {
         Tooltip(
           message: 'Copier',
           child: IconButton(
-            icon: const Icon(Icons.copy_rounded, size: 18),
+            icon: Icon(Icons.copy, size: 18),
             onPressed: () async {
               await Clipboard.setData(ClipboardData(text: text));
               if (!context.mounted) return;
@@ -458,7 +458,7 @@ class _Actions extends StatelessWidget {
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: onSupport,
-                icon: const Icon(Icons.help_center_outlined),
+                icon: Icon(Icons.help_outline),
                 label: const Text('Support'),
               ),
             ),
@@ -466,7 +466,7 @@ class _Actions extends StatelessWidget {
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: onRules,
-                icon: const Icon(Icons.rule_folder_outlined),
+                icon: Icon(Icons.article),
                 label: const Text('Règles'),
               ),
             ),

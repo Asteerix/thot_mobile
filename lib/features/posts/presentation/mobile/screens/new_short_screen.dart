@@ -47,7 +47,7 @@ class _NewShortScreenState extends State<NewShortScreen> {
   String? _error;
   String? _selectedDomain;
   int _currentStep = 0;
-  static const List<Map<String, dynamic>> _domains = [
+  static final List<Map<String, dynamic>> _domains = [
     {
       'id': 'politique',
       'title': 'Politique',
@@ -87,25 +87,25 @@ class _NewShortScreenState extends State<NewShortScreen> {
     {
       'id': 'societe',
       'title': 'Société',
-      'icon': Icons.groups,
+      'icon': Icons.group,
       'color': AppColors.success
     },
     {
       'id': 'psychologie',
       'title': 'Psychologie',
-      'icon': Icons.self_improvement,
+      'icon': Icons.psychology,
       'color': AppColors.red
     },
     {
       'id': 'sport',
       'title': 'Sport',
-      'icon': Icons.sports_soccer,
+      'icon': Icons.emoji_events,
       'color': Colors.amber
     },
     {
       'id': 'technologie',
       'title': 'Technologie',
-      'icon': Icons.computer,
+      'icon': Icons.laptop,
       'color': AppColors.blue
     },
   ];

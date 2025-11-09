@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:thot/core/utils/safe_navigation.dart';
+import 'package:thot/core/navigation/route_names.dart';
 import 'package:thot/features/notifications/domain/entities/notification.dart';
 import 'package:thot/features/posts/presentation/mobile/screens/post_detail_screen.dart';
+import 'package:thot/features/comments/presentation/shared/widgets/comment_sheet.dart';
 import '../../shared/widgets/notification_filter.dart';
 import '../../shared/widgets/notification_card.dart';
 import '../../shared/widgets/notification_empty_state.dart';
@@ -42,7 +44,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             backgroundColor: Colors.black,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () {
                 HapticFeedback.selectionClick();
                 if (Navigator.canPop(context)) {
@@ -65,7 +67,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.done_all_rounded, color: Colors.white),
+                icon: const Icon(Icons.done_all, color: Colors.white),
                 onPressed: _markAllAsRead,
                 tooltip: 'Tout marquer comme lu',
               ),
@@ -231,7 +233,7 @@ class _NotificationListState extends State<NotificationList>
               shape: BoxShape.circle,
             ),
             child: Icon(
-              Icons.error_outline_rounded,
+              Icons.error_outline,
               size: 48,
               color: Colors.red.withOpacity(0.8),
             ),
@@ -261,7 +263,7 @@ class _NotificationListState extends State<NotificationList>
           ElevatedButton.icon(
             onPressed: () =>
                 _controller.loadNotifications(filter: widget.filter, reset: true),
-            icon: const Icon(Icons.refresh_rounded),
+            icon: const Icon(Icons.refresh),
             label: const Text('Réessayer'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
@@ -348,15 +350,88 @@ class _NotificationListState extends State<NotificationList>
     if (!notification.read) {
       _controller.toggleRead(notification);
     }
-    if (notification.type == 'new_follower') {
-      context.push('/user/${notification.sender.id}');
-    } else if (notification.postId != null) {
-      SafeNavigation.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => PostDetailScreen(initialPostId: notification.postId!),
-        ),
-      );
+
+    switch (notification.type) {
+      case 'new_follower':
+        context.push('/profile', extra: {
+          'userId': notification.sender.id,
+          'forceReload': true,
+        });
+        break;
+
+      case 'post_like':
+      case 'new_post_from_followed':
+      case 'article_published':
+        if (notification.postId != null) {
+          SafeNavigation.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => PostDetailScreen(
+                initialPostId: notification.postId!,
+                isFromFeed: true,
+              ),
+            ),
+          );
+        }
+        break;
+
+      case 'comment_reply':
+      case 'comment_like':
+        if (notification.postId != null) {
+          SafeNavigation.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => PostDetailScreen(
+                initialPostId: notification.postId!,
+                isFromFeed: true,
+              ),
+            ),
+          ).then((_) {
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (context.mounted) {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => CommentsBottomSheet(
+                    postId: notification.postId!,
+                  ),
+                );
+              }
+            });
+          });
+        }
+        break;
+
+      case 'mention':
+        if (notification.postId != null) {
+          SafeNavigation.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => PostDetailScreen(
+                initialPostId: notification.postId!,
+                isFromFeed: true,
+              ),
+            ),
+          );
+        }
+        break;
+
+      case 'post_removed':
+        break;
+
+      default:
+        if (notification.postId != null) {
+          SafeNavigation.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => PostDetailScreen(
+                initialPostId: notification.postId!,
+                isFromFeed: true,
+              ),
+            ),
+          );
+        }
     }
   }
   Future<void> _deleteNotification(NotificationModel notification) async {

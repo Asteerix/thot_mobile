@@ -103,7 +103,7 @@ class _TermsScreenState extends State<TermsScreen> {
                         HapticFeedback.selectionClick();
                         context.pop();
                       },
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      icon: Icon(Icons.arrow_back, color: Colors.white),
                     ),
                     const Expanded(
                       child: Text(
@@ -185,7 +185,7 @@ class _TermsScreenState extends State<TermsScreen> {
                       child: Row(
                         children: [
                           Icon(
-                            Icons.info_outline,
+                            Icons.info,
                             color: Colors.white.withOpacity(0.9),
                           ),
                           const SizedBox(width: 16),
@@ -205,47 +205,47 @@ class _TermsScreenState extends State<TermsScreen> {
                     _buildSection(
                       '1. Acceptation des conditions',
                       'En accédant et en utilisant l\'application Thot, vous acceptez d\'être lié par ces conditions d\'utilisation. Si vous n\'acceptez pas ces conditions, veuillez ne pas utiliser notre service.',
-                      Icons.check_circle_outline,
+                      Icons.check_circle,
                     ),
                     _buildSection(
                       '2. Description du service',
                       'Thot est une plateforme de partage d\'informations vérifiées. Nous nous engageons à fournir un contenu de qualité, vérifié par des journalistes professionnels.',
-                      Icons.description_outlined,
+                      Icons.article,
                     ),
                     _buildSection(
                       '3. Compte utilisateur',
                       'Vous êtes responsable de maintenir la confidentialité de votre compte et mot de passe. Vous acceptez la responsabilité de toutes les activités qui se produisent sous votre compte.',
-                      Icons.person_outline,
+                      Icons.person,
                     ),
                     _buildSection(
                       '4. Contenu utilisateur',
                       'En publiant du contenu sur Thot, vous nous accordez une licence mondiale, non exclusive, libre de redevances pour utiliser, reproduire et distribuer ce contenu.',
-                      Icons.article_outlined,
+                      Icons.article,
                     ),
                     _buildSection(
                       '5. Comportement interdit',
                       'Il est interdit de publier du contenu illégal, diffamatoire, harcelant ou violant les droits d\'autrui. Nous nous réservons le droit de supprimer tout contenu inapproprié.',
-                      Icons.block_outlined,
+                      Icons.block,
                     ),
                     _buildSection(
                       '6. Propriété intellectuelle',
                       'Tout le contenu de Thot, y compris les textes, graphiques, logos et logiciels, est la propriété de Thot ou de ses concédants de licence.',
-                      Icons.copyright_outlined,
+                      Icons.copyright,
                     ),
                     _buildSection(
                       '7. Limitation de responsabilité',
                       'Thot ne sera pas responsable des dommages indirects, accidentels, spéciaux ou consécutifs résultant de l\'utilisation ou de l\'impossibilité d\'utiliser le service.',
-                      Icons.warning_outlined,
+                      Icons.warning,
                     ),
                     _buildSection(
                       '8. Modifications',
                       'Nous nous réservons le droit de modifier ces conditions à tout moment. Les modifications entreront en vigueur dès leur publication sur l\'application.',
-                      Icons.edit_outlined,
+                      Icons.edit,
                     ),
                     _buildSection(
                       '9. Contact',
                       'Pour toute question concernant ces conditions, contactez-nous à legal@thot.app',
-                      Icons.mail_outline,
+                      Icons.mail,
                     ),
                     const SizedBox(height: 40),
                   ],

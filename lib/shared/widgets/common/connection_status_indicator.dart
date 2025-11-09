@@ -279,7 +279,7 @@ class _ConnectionStatusIndicatorState extends State<ConnectionStatusIndicator>
             ),
           if (!widget.showPersistentBanner)
             IconButton(
-              icon: const Icon(Icons.close, size: 16),
+              icon: Icon(Icons.close, size: 16),
               color: Colors.white70,
               onPressed: _handleDismiss,
               padding: EdgeInsets.zero,
@@ -364,7 +364,7 @@ class _ConnectionStatusIndicatorState extends State<ConnectionStatusIndicator>
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.close),
+                icon: Icon(Icons.close),
                 color: Colors.white70,
                 onPressed: _handleDismiss,
               ),
@@ -378,7 +378,7 @@ class _ConnectionStatusIndicatorState extends State<ConnectionStatusIndicator>
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: _handleRetry,
-                      icon: const Icon(Icons.refresh, size: 16),
+                      icon: Icon(Icons.refresh, size: 16),
                       label: const Text('Réessayer'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
@@ -392,7 +392,7 @@ class _ConnectionStatusIndicatorState extends State<ConnectionStatusIndicator>
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => context.push('/saved'),
-                    icon: const Icon(Icons.offline_pin, size: 16),
+                    icon: const Icon(Icons.wifi_off, size: 16),
                     label: const Text('Mode hors ligne'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.white,

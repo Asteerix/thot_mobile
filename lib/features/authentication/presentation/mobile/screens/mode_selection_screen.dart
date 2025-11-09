@@ -68,7 +68,7 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
                   IconButton(
                     onPressed: () =>
                         AppRouter.replaceAllTo(context, RouteNames.welcome),
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    icon: Icon(Icons.arrow_back, color: Colors.white),
                   ),
                   const Spacer(),
                 ],
@@ -104,7 +104,7 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
                             children: [
                               Expanded(
                                 child: _OptionCard(
-                                  icon: FontAwesomeIcons.featherPointed,
+                                  icon: Icons.edit,
                                   title: 'Journaliste',
                                   description: 'Je publie du contenu',
                                   isSelected:
@@ -116,7 +116,7 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen>
                               const SizedBox(width: 16),
                               Expanded(
                                 child: _OptionCard(
-                                  icon: FontAwesomeIcons.glasses,
+                                  icon: Icons.visibility,
                                   title: 'Lecteur',
                                   description: 'Je consulte du contenu',
                                   isSelected:

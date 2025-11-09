@@ -192,7 +192,7 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.how_to_vote_outlined,
+              Icons.how_to_vote,
               size: 64,
               color: Theme.of(context)
                   .colorScheme

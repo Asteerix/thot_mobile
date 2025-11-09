@@ -34,11 +34,11 @@ class WebFeedSidebar extends StatelessWidget {
         ),
         const SizedBox(height: WebTheme.md),
         _buildFilterItem(context, 'All Posts', Icons.dashboard, true),
-        _buildFilterItem(context, 'Articles', Icons.article_outlined, false),
+        _buildFilterItem(context, 'Articles', Icons.article, false),
         _buildFilterItem(
-            context, 'Shorts', Icons.video_library_outlined, false),
+            context, 'Shorts', Icons.videocam, false),
         _buildFilterItem(context, 'Questions', Icons.help_outline, false),
-        _buildFilterItem(context, 'Live', Icons.videocam_outlined, false),
+        _buildFilterItem(context, 'Live', Icons.videocam, false),
       ],
     );
   }

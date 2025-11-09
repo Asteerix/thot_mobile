@@ -158,7 +158,7 @@ class _ProfileScreenWebState extends State<ProfileScreenWeb>
                   children: [
                     ElevatedButton.icon(
                       onPressed: () {},
-                      icon: const Icon(Icons.edit, size: 18),
+                      icon: Icon(Icons.edit, size: 18),
                       label: const Text('Edit Profile'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: colorScheme.primary,
@@ -168,7 +168,7 @@ class _ProfileScreenWebState extends State<ProfileScreenWeb>
                     const SizedBox(height: WebTheme.sm),
                     OutlinedButton.icon(
                       onPressed: () {},
-                      icon: const Icon(Icons.share, size: 18),
+                      icon: Icon(Icons.share, size: 18),
                       label: const Text('Share'),
                     ),
                   ],

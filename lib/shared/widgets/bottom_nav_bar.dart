@@ -130,7 +130,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       duration: _animationDuration,
       child: Icon(
         isSelected ? activeIcon : icon,
-        key: ValueKey('$index-$isSelected'),
+        key: ValueKey('icon-$index-${isSelected ? activeIcon.codePoint : icon.codePoint}'),
         size: 22,
         color: iconColor,
       ),
@@ -201,8 +201,8 @@ class _BottomNavBarState extends State<BottomNavBar>
 
     // Home (always visible)
     items.add(_buildNavItem(
-      icon: Icons.home_outlined,
-      activeIcon: Icons.home_rounded,
+      icon: Icons.home,
+      activeIcon: Icons.home,
       label: 'Accueil',
       index: itemIndex++,
     ));
@@ -221,25 +221,25 @@ class _BottomNavBarState extends State<BottomNavBar>
     var index = startIndex;
     return [
       _buildNavItem(
-        icon: Icons.subscriptions_outlined,
+        icon: Icons.subscriptions,
         activeIcon: Icons.subscriptions,
         label: 'Abonnés',
         index: index++,
       ),
       _buildNavItem(
-        icon: Icons.play_circle_outline,
-        activeIcon: Icons.play_circle_filled,
+        icon: Icons.play_circle,
+        activeIcon: Icons.play_circle,
         label: 'Shorts',
         index: index++,
       ),
       _buildNavItem(
-        icon: Icons.explore_outlined,
+        icon: Icons.explore,
         activeIcon: Icons.explore,
         label: 'Explorer',
         index: index++,
       ),
       _buildNavItem(
-        icon: Icons.account_circle_outlined,
+        icon: Icons.person,
         activeIcon: Icons.account_circle,
         label: 'Profil',
         index: index++,
@@ -252,19 +252,19 @@ class _BottomNavBarState extends State<BottomNavBar>
     var index = startIndex;
     return [
       _buildNavItem(
-        icon: Icons.play_circle_outline,
-        activeIcon: Icons.play_circle_filled,
+        icon: Icons.play_circle,
+        activeIcon: Icons.play_circle,
         label: 'Shorts',
         index: index++,
       ),
       _buildNavItem(
-        icon: Icons.explore_outlined,
+        icon: Icons.explore,
         activeIcon: Icons.explore,
         label: 'Explorer',
         index: index++,
       ),
       _buildNavItem(
-        icon: Icons.account_circle_outlined,
+        icon: Icons.person,
         activeIcon: Icons.account_circle,
         label: 'Connexion',
         index: index++,

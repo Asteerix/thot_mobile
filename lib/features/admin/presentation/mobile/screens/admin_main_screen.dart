@@ -35,29 +35,29 @@ class _AdminMainScreenState extends State<AdminMainScreen>
     AdminNavItem(
       id: 'dashboard',
       label: 'Tableau de bord',
-      icon: Icons.dashboard_outlined,
+      icon: Icons.dashboard,
       selectedIcon: Icons.dashboard,
       builder: AdminDashboardScreen.new,
     ),
     AdminNavItem(
       id: 'journalists',
       label: 'Journalistes',
-      icon: Icons.badge_outlined,
-      selectedIcon: Icons.badge,
+      icon: Icons.verified,
+      selectedIcon: Icons.verified,
       builder: AdminJournalistsScreen.new,
     ),
     AdminNavItem(
       id: 'reports',
       label: 'Signalements',
-      icon: Icons.flag_outlined,
+      icon: Icons.flag,
       selectedIcon: Icons.flag,
       builder: AdminReportsScreen.new,
     ),
     AdminNavItem(
       id: 'users',
       label: 'Utilisateurs',
-      icon: Icons.people_outline,
-      selectedIcon: Icons.people,
+      icon: Icons.group,
+      selectedIcon: Icons.group,
       builder: AdminUsersScreen.new,
     ),
   ];
@@ -139,7 +139,7 @@ class _AdminMainScreenState extends State<AdminMainScreen>
           surfaceTintColor: colorScheme.surfaceTint,
           title: Row(
             children: [
-              const Icon(Icons.admin_panel_settings),
+              Icon(Icons.security),
               const SizedBox(width: 8),
               const Text('Administration'),
               const SizedBox(width: 12),
@@ -164,14 +164,14 @@ class _AdminMainScreenState extends State<AdminMainScreen>
             Tooltip(
               message: 'Mode normal',
               child: IconButton(
-                icon: const Icon(Icons.swap_horiz),
+                icon: Icon(Icons.swap_horiz),
                 onPressed: () => _switchToUserMode(context),
               ),
             ),
             Tooltip(
               message: 'Déconnexion',
               child: IconButton(
-                icon: const Icon(Icons.logout),
+                icon: Icon(Icons.logout),
                 onPressed: () => _showLogoutDialog(context),
               ),
             ),

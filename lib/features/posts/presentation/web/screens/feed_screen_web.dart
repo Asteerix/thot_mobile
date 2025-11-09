@@ -164,7 +164,7 @@ class _FeedScreenWebState extends State<FeedScreenWeb> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.inbox_rounded,
+              Icons.inbox,
               size: 64,
               color: colorScheme.onSurface.withOpacity(0.3),
             ),
@@ -179,7 +179,7 @@ class _FeedScreenWebState extends State<FeedScreenWeb> {
             const SizedBox(height: WebTheme.md),
             OutlinedButton.icon(
               onPressed: () => _loadPosts(refresh: true),
-              icon: const Icon(Icons.refresh),
+              icon: Icon(Icons.refresh),
               label: const Text('Actualiser'),
             ),
           ],

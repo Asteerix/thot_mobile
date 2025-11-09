@@ -194,7 +194,7 @@ class _RegistrationScreenWebState extends State<RegistrationScreenWeb> {
                   decoration: InputDecoration(
                     labelText: 'First Name',
                     labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
-                    prefixIcon: Icon(Icons.person_outline, color: Colors.white.withOpacity(0.7)),
+                    prefixIcon: Icon(Icons.person, color: Colors.white.withOpacity(0.7)),
                     filled: true,
                     fillColor: Colors.white.withOpacity(0.05),
                     border: OutlineInputBorder(
@@ -226,7 +226,7 @@ class _RegistrationScreenWebState extends State<RegistrationScreenWeb> {
                   decoration: InputDecoration(
                     labelText: 'Last Name',
                     labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
-                    prefixIcon: Icon(Icons.person_outline, color: Colors.white.withOpacity(0.7)),
+                    prefixIcon: Icon(Icons.person, color: Colors.white.withOpacity(0.7)),
                     filled: true,
                     fillColor: Colors.white.withOpacity(0.05),
                     border: OutlineInputBorder(
@@ -293,7 +293,7 @@ class _RegistrationScreenWebState extends State<RegistrationScreenWeb> {
             decoration: InputDecoration(
               labelText: 'Email',
               labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
-              prefixIcon: Icon(Icons.email_outlined, color: Colors.white.withOpacity(0.7)),
+              prefixIcon: Icon(Icons.mail, color: Colors.white.withOpacity(0.7)),
               filled: true,
               fillColor: Colors.white.withOpacity(0.05),
               border: OutlineInputBorder(
@@ -327,7 +327,7 @@ class _RegistrationScreenWebState extends State<RegistrationScreenWeb> {
             decoration: InputDecoration(
               labelText: 'Password',
               labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
-              prefixIcon: Icon(Icons.lock_outline, color: Colors.white.withOpacity(0.7)),
+              prefixIcon: Icon(Icons.lock, color: Colors.white.withOpacity(0.7)),
               suffixIcon: IconButton(
                 icon: Icon(
                     _obscurePassword ? Icons.visibility : Icons.visibility_off,
@@ -368,7 +368,7 @@ class _RegistrationScreenWebState extends State<RegistrationScreenWeb> {
             decoration: InputDecoration(
               labelText: 'Confirm Password',
               labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
-              prefixIcon: Icon(Icons.lock_outline, color: Colors.white.withOpacity(0.7)),
+              prefixIcon: Icon(Icons.lock, color: Colors.white.withOpacity(0.7)),
               suffixIcon: IconButton(
                 icon: Icon(_obscureConfirmPassword
                     ? Icons.visibility
@@ -494,7 +494,7 @@ class _RegistrationScreenWebState extends State<RegistrationScreenWeb> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(Icons.menu_book, size: 64, color: Colors.white),
+        Icon(Icons.bookOpen, size: 64, color: Colors.white),
         const SizedBox(height: WebTheme.xl),
         Text(
           'Join THOT',
@@ -515,21 +515,21 @@ class _RegistrationScreenWebState extends State<RegistrationScreenWeb> {
         const SizedBox(height: WebTheme.xl),
         _buildInfoItem(
           context,
-          Icons.article_outlined,
+          Icons.article,
           'Share Articles',
           'Write and publish your thoughts',
         ),
         const SizedBox(height: WebTheme.lg),
         _buildInfoItem(
           context,
-          Icons.video_library_outlined,
+          Icons.videocam,
           'Post Shorts',
           'Quick videos and updates',
         ),
         const SizedBox(height: WebTheme.lg),
         _buildInfoItem(
           context,
-          Icons.people_outline,
+          Icons.group,
           'Connect',
           'Build your network of thinkers',
         ),

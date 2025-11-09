@@ -186,7 +186,7 @@ class _FullArticleDialogState extends State<FullArticleDialog> {
                             Container(
                               color: isDark ? const Color(0xFF1C1C1E) : Colors.grey[200],
                               child: Icon(
-                                Icons.image_not_supported,
+                                Icons.broken_image,
                                 size: 48,
                                 color: isDark ? Colors.grey[600] : Colors.grey[400],
                               ),

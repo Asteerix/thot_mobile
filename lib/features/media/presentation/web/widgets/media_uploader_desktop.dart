@@ -40,7 +40,7 @@ class _MediaUploaderDesktopState extends State<MediaUploaderDesktop> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.cloud_upload_outlined,
+            Icons.cloudUpload,
             size: 64,
             color: _isDragging ? AppColors.primary : Colors.grey.shade400,
           ),
@@ -59,7 +59,7 @@ class _MediaUploaderDesktopState extends State<MediaUploaderDesktop> {
           const SizedBox(height: 8),
           ElevatedButton.icon(
             onPressed: _selectFiles,
-            icon: const Icon(Icons.attach_file),
+            icon: Icon(Icons.paperclip),
             label: const Text('Browse Files'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,

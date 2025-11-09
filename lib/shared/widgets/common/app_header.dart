@@ -101,7 +101,7 @@ class _AppHeaderState extends State<AppHeader> {
       clipBehavior: Clip.none,
       children: [
         _buildIconButton(
-          icon: Icons.notifications_outlined,
+          icon: Icons.notifications,
           onPressed: () {
             HapticFeedback.mediumImpact();
             context.go(RouteNames.notifications);
@@ -115,7 +115,7 @@ class _AppHeaderState extends State<AppHeader> {
   /// Bouton des paramètres
   Widget _buildSettingsButton() {
     return _buildIconButton(
-      icon: Icons.settings_outlined,
+      icon: Icons.settings,
       onPressed: () {
         HapticFeedback.mediumImpact();
         context.go(RouteNames.settings);

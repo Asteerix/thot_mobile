@@ -278,13 +278,13 @@ class ConnectivityErrorScreen extends StatelessWidget {
   IconData _getIcon() {
     switch (status) {
       case ConnectivityStatus.offline:
-        return Icons.signal_wifi_off;
+        return Icons.wifi_off;
       case ConnectivityStatus.noBackend:
-        return Icons.cloud_off_outlined;
+        return Icons.cloud_off;
       case ConnectivityStatus.unknown:
         return Icons.help_outline;
       case ConnectivityStatus.online:
-        return Icons.check_circle_outline;
+        return Icons.check_circle;
     }
   }
 

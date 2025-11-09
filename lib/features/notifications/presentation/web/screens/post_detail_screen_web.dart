@@ -28,7 +28,7 @@ class PostDetailScreenWeb extends ConsumerWidget {
               Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back),
+                    icon: Icon(Icons.arrow_back),
                     onPressed: () => onNavigate('/notifications'),
                   ),
                   const SizedBox(width: WebTheme.md),

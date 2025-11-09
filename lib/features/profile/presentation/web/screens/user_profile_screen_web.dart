@@ -96,7 +96,7 @@ class _UserProfileScreenWebState extends ConsumerState<UserProfileScreenWeb>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: Icon(Icons.arrow_back),
                 onPressed: () => widget.onNavigate('/feed'),
               ),
               const SizedBox(height: WebTheme.lg),
@@ -110,7 +110,7 @@ class _UserProfileScreenWebState extends ConsumerState<UserProfileScreenWeb>
                             UrlHelper.getImageUrl(user.profilePicture!))
                         : null,
                     child: user.profilePicture == null
-                        ? const Icon(Icons.person, size: 60)
+                        ? Icon(Icons.person, size: 60)
                         : null,
                   ),
                   const SizedBox(width: WebTheme.xl),
@@ -184,7 +184,7 @@ class _UserProfileScreenWebState extends ConsumerState<UserProfileScreenWeb>
                         const SizedBox(height: WebTheme.lg),
                         FilledButton.icon(
                           onPressed: () {},
-                          icon: const Icon(Icons.person_add),
+                          icon: Icon(Icons.person_add),
                           label: const Text('Suivre'),
                           style: FilledButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
@@ -251,7 +251,7 @@ class _UserProfileScreenWebState extends ConsumerState<UserProfileScreenWeb>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.article_outlined,
+            Icons.article,
             size: 64,
             color: Theme.of(context).colorScheme.outline,
           ),

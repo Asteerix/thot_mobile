@@ -179,7 +179,7 @@ class _OppositionItem extends StatelessWidget {
               width: 60,
               height: 60,
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              child: Icon(Icons.article_outlined, color: AppColors.textSecondary),
+              child: Icon(Icons.article, color: AppColors.textSecondary),
             );
           }
         } else {

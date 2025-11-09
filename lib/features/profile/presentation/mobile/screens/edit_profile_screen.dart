@@ -294,7 +294,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         color: Colors.white.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.close, color: Colors.white, size: 20),
+                      child: Icon(Icons.close, color: Colors.white, size: 20),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -357,20 +357,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           _buildTextField(
                             controller: _fullNameController,
                             label: 'Nom complet',
-                            icon: Icons.person_outline,
+                            icon: Icons.person,
                           ),
                           const SizedBox(height: 16),
                           _buildTextField(
                             controller: _bioController,
                             label: 'Bio',
-                            icon: Icons.edit_outlined,
+                            icon: Icons.edit,
                             maxLines: 4,
                           ),
                           const SizedBox(height: 16),
                           _buildTextField(
                             controller: _locationController,
                             label: 'Localisation',
-                            icon: Icons.location_on_outlined,
+                            icon: Icons.location_on,
                           ),
                           if (_currentProfile?.isJournalist == true) ...[
                             const SizedBox(height: 40),
@@ -379,13 +379,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             _buildTextField(
                               controller: _organizationController,
                               label: 'Organisation',
-                              icon: Icons.business_outlined,
+                              icon: Icons.business,
                             ),
                             const SizedBox(height: 16),
                             _buildTextField(
                               controller: _journalistRoleController,
                               label: 'Fonction',
-                              icon: Icons.work_outline,
+                              icon: Icons.work,
                             ),
                             const SizedBox(height: 40),
                             _buildSectionTitle('RÉSEAUX SOCIAUX'),
@@ -475,7 +475,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.photo_camera_outlined, color: Colors.white, size: 20),
+                        Icon(Icons.camera_alt, color: Colors.white, size: 20),
                         SizedBox(width: 8),
                         Text(
                           'Modifier la couverture',
@@ -511,7 +511,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
                           color: Colors.white.withOpacity(0.1),
-                          child: const Icon(Icons.person, size: 60, color: Colors.white),
+                          child: Icon(Icons.person, size: 60, color: Colors.white),
                         );
                       },
                     ),
@@ -527,7 +527,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.black, width: 2),
                     ),
-                    child: const Icon(Icons.add_a_photo, color: Colors.black, size: 18),
+                    child: const Icon(Icons.camera_alt, color: Colors.black, size: 18),
                   ),
                 ),
               ],
@@ -544,7 +544,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.photo_outlined, size: 48, color: Colors.white.withOpacity(0.5)),
+            Icon(Icons.image, size: 48, color: Colors.white.withOpacity(0.5)),
             const SizedBox(height: 8),
             Text(
               'Aucune photo de couverture',
@@ -641,7 +641,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  icon: Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
                     setState(() {
                       _experiences.removeAt(index);
@@ -652,15 +652,61 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           );
         }),
-        const SizedBox(height: 8),
-        OutlinedButton.icon(
-          onPressed: () => _showAddExperienceBottomSheet(),
-          icon: const Icon(Icons.add, color: Colors.white),
-          label: const Text('Ajouter une expérience', style: TextStyle(color: Colors.white)),
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            side: BorderSide(color: Colors.white.withOpacity(0.3)),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withOpacity(0.1),
+                  Colors.white.withOpacity(0.05),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.3),
+                width: 1.5,
+              ),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => _showAddExperienceBottomSheet(),
+                borderRadius: BorderRadius.circular(16),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Ajouter une expérience',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ],
@@ -714,7 +760,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  icon: Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
                     setState(() {
                       _formations.removeAt(index);
@@ -725,15 +771,61 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           );
         }),
-        const SizedBox(height: 8),
-        OutlinedButton.icon(
-          onPressed: () => _showAddFormationBottomSheet(),
-          icon: const Icon(Icons.add, color: Colors.white),
-          label: const Text('Ajouter une formation', style: TextStyle(color: Colors.white)),
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            side: BorderSide(color: Colors.white.withOpacity(0.3)),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withOpacity(0.1),
+                  Colors.white.withOpacity(0.05),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.3),
+                width: 1.5,
+              ),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => _showAddFormationBottomSheet(),
+                borderRadius: BorderRadius.circular(16),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Ajouter une formation',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ],
@@ -855,7 +947,7 @@ class _ExperienceBottomSheetState extends State<_ExperienceBottomSheet> {
                       color: Colors.white.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(Icons.close, color: Colors.white, size: 20),
+                    child: Icon(Icons.close, color: Colors.white, size: 20),
                   ),
                 ),
               ],
@@ -1015,7 +1107,7 @@ class _FormationBottomSheetState extends State<_FormationBottomSheet> {
                       color: Colors.white.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(Icons.close, color: Colors.white, size: 20),
+                    child: Icon(Icons.close, color: Colors.white, size: 20),
                   ),
                 ),
               ],

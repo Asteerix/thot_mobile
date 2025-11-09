@@ -22,17 +22,17 @@ class ProfileGridItem extends StatelessWidget {
   (IconData, String) _typeVisual() {
     switch (type) {
       case PostTypes.video:
-        return (Icons.play_circle_fill, 'Vidéo');
+        return (Icons.play_circle, 'Vidéo');
       case PostTypes.short:
-        return (Icons.view_carousel_outlined, 'Short');
+        return (Icons.images, 'Short');
       case PostTypes.podcast:
-        return (Icons.mic_none, 'Podcast');
+        return (Icons.mic, 'Podcast');
       case PostTypes.question:
-        return (Icons.question_answer_outlined, 'Question');
+        return (Icons.comment, 'Question');
       case PostTypes.article:
-        return (Icons.article_outlined, 'Article');
+        return (Icons.article, 'Article');
       default:
-        return (Icons.article_outlined, 'Contenu');
+        return (Icons.article, 'Contenu');
     }
   }
   static const _grayscaleMatrix = <double>[
@@ -200,7 +200,7 @@ class _EmptyPlaceholder extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(color: colorScheme.surfaceContainerHighest),
       child: const Center(
-        child: Icon(Icons.image_not_supported, size: 40, color: Colors.white70),
+        child: Icon(Icons.broken_image, size: 40, color: Colors.white70),
       ),
     );
   }
@@ -213,7 +213,7 @@ class _ErrorPlaceholder extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(color: colorScheme.errorContainer),
       child: Center(
-        child: Icon(Icons.broken_image_outlined,
+        child: Icon(Icons.broken_image,
             size: 36, color: colorScheme.onErrorContainer),
       ),
     );

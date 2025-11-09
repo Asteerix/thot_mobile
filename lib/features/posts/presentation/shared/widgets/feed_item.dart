@@ -282,7 +282,7 @@ class _FeedItemState extends State<FeedItem>
                                         shape: BoxShape.circle,
                                       ),
                                       child: Icon(
-                                        Icons.play_arrow_rounded,
+                                        Icons.play_arrow,
                                         color: colorScheme.onSurface,
                                         size: 28,
                                       ),
@@ -460,8 +460,8 @@ class _FeedItemState extends State<FeedItem>
                               children: [
                                 _buildStatChip(
                                   displayPost.isLiked
-                                      ? Icons.favorite_rounded
-                                      : Icons.favorite_border_rounded,
+                                      ? Icons.favorite
+                                      : Icons.favorite,
                                   _formatCount(displayPost.interactions.likes),
                                   color: displayPost.isLiked
                                       ? colorScheme.error
@@ -471,7 +471,7 @@ class _FeedItemState extends State<FeedItem>
                                 ),
                                 const SizedBox(width: 16),
                                 _buildStatChip(
-                                  Icons.mode_comment_outlined,
+                                  Icons.comment,
                                   _formatCount(
                                       displayPost.interactions.comments),
                                   color: colorScheme.onSurface,
@@ -492,8 +492,8 @@ class _FeedItemState extends State<FeedItem>
                                 const Spacer(),
                                 _buildStatChip(
                                   displayPost.isSaved
-                                      ? Icons.bookmark_rounded
-                                      : Icons.bookmark_border_rounded,
+                                      ? Icons.bookmark
+                                      : Icons.bookmark,
                                   '',
                                   color: colorScheme.onSurface,
                                   compact: false,
@@ -657,16 +657,16 @@ class _FeedItemState extends State<FeedItem>
   }
   IconData _getTypeIcon(PostType type) {
     return switch (type) {
-      PostType.article => Icons.article_outlined,
-      PostType.video => Icons.play_circle_outline_rounded,
-      PostType.podcast => Icons.mic_none_rounded,
-      PostType.short => Icons.videocam_outlined,
-      PostType.question => Icons.help_outline_rounded,
-      PostType.live => Icons.live_tv_rounded,
-      PostType.poll => Icons.poll_outlined,
-      PostType.testimony => Icons.record_voice_over_outlined,
-      PostType.documentation => Icons.folder_outlined,
-      PostType.opinion => Icons.chat_bubble_outline_rounded,
+      PostType.article => Icons.article,
+      PostType.video => Icons.play_circle,
+      PostType.podcast => Icons.mic,
+      PostType.short => Icons.videocam,
+      PostType.question => Icons.help_outline,
+      PostType.live => Icons.tv,
+      PostType.poll => Icons.bar_chart,
+      PostType.testimony => Icons.mic,
+      PostType.documentation => Icons.folder,
+      PostType.opinion => Icons.comment,
     };
   }
   Color _getTypeColor(PostType type) {

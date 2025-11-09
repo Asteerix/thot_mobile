@@ -15,7 +15,7 @@ class AboutScreen extends StatelessWidget {
         backgroundColor: Colors.black,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             HapticFeedback.selectionClick();
             context.pop();
@@ -67,13 +67,13 @@ class AboutScreen extends StatelessWidget {
                     ),
                   ),
                   LinkTile(
-                    icon: Icons.privacy_tip_outlined,
+                    icon: Icons.verified_user,
                     title: 'Politique de confidentialité',
                     subtitle: 'Données, stockage et droits',
                     onTap: () => context.push(RouteNames.privacyPolicy),
                   ),
                   LinkTile(
-                    icon: Icons.description_outlined,
+                    icon: Icons.article,
                     title: 'Conditions d\'utilisation',
                     subtitle: 'Règles et obligations',
                     onTap: () => context.push(RouteNames.termsOfService),
@@ -82,7 +82,7 @@ class AboutScreen extends StatelessWidget {
                   const _SectionHeader('Contact'),
                   const SizedBox(height: 12),
                   LinkTile(
-                    icon: Icons.email_outlined,
+                    icon: Icons.mail,
                     title: 'Équipe support',
                     subtitle: 'support@thot-app.com',
                     onTap: () => _composeEmail(
@@ -124,7 +124,7 @@ class _Header extends StatelessWidget {
               width: 2,
             ),
           ),
-          child: const Icon(Icons.newspaper, size: 64, color: Colors.white),
+          child: Icon(Icons.article, size: 64, color: Colors.white),
         ),
         const SizedBox(height: 20),
         const Text(
@@ -186,7 +186,7 @@ class _DescriptionCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(Icons.info_outline, size: 36, color: Colors.white.withOpacity(0.9)),
+          Icon(Icons.info, size: 36, color: Colors.white.withOpacity(0.9)),
           const SizedBox(height: 16),
           Text(
             'THOT est une plateforme de journalisme citoyen permettant aux journalistes professionnels de publier des contenus vérifiés et aux citoyens de s\'informer en toute transparence.',

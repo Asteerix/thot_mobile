@@ -133,7 +133,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           backgroundColor: Colors.black,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => SafeNavigation.pop(context),
           ),
           title: const Text(
@@ -327,7 +327,7 @@ class _PasswordFieldState extends State<_PasswordField> {
             labelText: widget.label,
             labelStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
             prefixIcon: Icon(
-              Icons.lock_outline,
+              Icons.lock,
               color: Colors.white.withOpacity(0.6),
             ),
             suffixIcon: GestureDetector(
@@ -337,8 +337,8 @@ class _PasswordFieldState extends State<_PasswordField> {
                 tooltip: (widget.obscure && !_peek) ? 'Afficher' : 'Masquer',
                 icon: Icon(
                   (widget.obscure && !_peek)
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
+                      ? Icons.visibility
+                      : Icons.visibility_off,
                   color: Colors.white.withOpacity(0.6),
                 ),
                 onPressed: widget.onToggleObscure,

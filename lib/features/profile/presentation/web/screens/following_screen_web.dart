@@ -28,7 +28,7 @@ class FollowingScreenWeb extends ConsumerWidget {
               Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back),
+                    icon: Icon(Icons.arrow_back),
                     onPressed: () => onNavigate('/profile/$userId'),
                   ),
                   const SizedBox(width: WebTheme.md),
@@ -48,7 +48,7 @@ class FollowingScreenWeb extends ConsumerWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.people_outline,
+                      Icon(Icons.group,
                           size: 64, color: colorScheme.outline),
                       const SizedBox(height: WebTheme.md),
                       Text(

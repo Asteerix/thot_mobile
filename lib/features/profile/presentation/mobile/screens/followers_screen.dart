@@ -274,7 +274,7 @@ class _FollowersScreenState extends State<FollowersScreen> {
                   backgroundColor: cs.surface,
                   pinned: true,
                   leading: IconButton(
-                    icon: const Icon(Icons.arrow_back),
+                    icon: Icon(Icons.arrow_back),
                     onPressed: () => SafeNavigation.pop(context),
                   ),
                   title: const Text('Abonnés'),
@@ -327,7 +327,7 @@ class _FollowersScreenState extends State<FollowersScreen> {
                     hasScrollBody: false,
                     child: Center(
                       child: EmptyState(
-                        icon: Icons.people_outline,
+                        icon: Icons.group,
                         title: 'Aucun abonné',
                         subtitle: _searchQuery.isNotEmpty
                             ? 'Aucun résultat pour "$_searchQuery"'
@@ -399,7 +399,7 @@ class _SearchField extends StatelessWidget {
       style: Theme.of(context).textTheme.bodyLarge,
       decoration: InputDecoration(
         hintText: 'Rechercher…',
-        prefixIcon: const Icon(Icons.search_rounded),
+        prefixIcon: Icon(Icons.search),
         filled: true,
         fillColor: cs.surfaceContainerHighest,
         isDense: true,
@@ -428,15 +428,15 @@ class _FilterBar extends StatelessWidget {
       const ButtonSegment(
           value: FollowersFilter.all,
           label: Text('Tous'),
-          icon: Icon(Icons.people_alt_outlined)),
+          icon: Icon(Icons.group)),
       const ButtonSegment(
           value: FollowersFilter.journalists,
           label: Text('Journalistes'),
-          icon: Icon(Icons.badge_outlined)),
+          icon: Icon(Icons.verified)),
       const ButtonSegment(
           value: FollowersFilter.banned,
           label: Text('Bannis'),
-          icon: Icon(Icons.block_outlined)),
+          icon: Icon(Icons.block)),
     ];
     return SegmentedButton<FollowersFilter>(
       segments: segments,
@@ -607,7 +607,7 @@ class _Avatar extends StatelessWidget {
             backgroundImage: follower.avatarUrl != null
                 ? NetworkImage(ImageUtils.getAvatarUrl(follower.avatarUrl!))
                 : null,
-            child: follower.avatarUrl == null ? const Icon(Icons.person) : null,
+            child: follower.avatarUrl == null ? Icon(Icons.person) : null,
           ),
         ),
       ),
@@ -666,7 +666,7 @@ class _DismissBackground extends StatelessWidget {
       alignment: Alignment.centerRight,
       padding: const EdgeInsets.symmetric(horizontal: 24),
       color: cs.errorContainer,
-      child: Icon(Icons.delete_forever_rounded, color: cs.onErrorContainer),
+      child: Icon(Icons.delete, color: cs.onErrorContainer),
     );
   }
 }

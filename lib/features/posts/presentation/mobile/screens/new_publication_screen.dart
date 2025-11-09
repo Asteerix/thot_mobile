@@ -49,7 +49,7 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
   Domain? _selectedDomain;
   ContentFormat? _selectedFormat;
   String _searchQuery = '';
-  static const _domains = <Domain>[
+  static final _domains = <Domain>[
     Domain(
       id: 'politique',
       title: 'Politique',
@@ -96,51 +96,51 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
       id: 'societe',
       title: 'Société',
       description: 'Questions sociales et sociétales',
-      icon: Icons.groups,
+      icon: Icons.group,
       color: AppColors.success,
     ),
     Domain(
       id: 'psychologie',
       title: 'Psychologie',
       description: 'Comportement humain et mental',
-      icon: Icons.self_improvement,
+      icon: Icons.psychology,
       color: AppColors.red,
     ),
     Domain(
       id: 'sport',
       title: 'Sport',
       description: 'Actualités sportives et résultats',
-      icon: Icons.sports_soccer,
+      icon: Icons.emoji_events,
       color: AppColors.warning,
     ),
     Domain(
       id: 'technologie',
       title: 'Technologie',
       description: 'Innovation et nouvelles technologies',
-      icon: Icons.computer,
+      icon: Icons.laptop,
       color: AppColors.blue,
     ),
   ];
-  static const _formats = <ContentFormat>[
+  static final _formats = <ContentFormat>[
     ContentFormat(
       id: 'article',
       title: 'Article',
       description: 'Rédigez un article détaillé',
-      icon: Icons.article_outlined,
+      icon: Icons.article,
       color: AppColors.blue,
     ),
     ContentFormat(
       id: 'video',
       title: 'Vidéo',
       description: 'Créez une vidéo explicative',
-      icon: Icons.videocam_outlined,
+      icon: Icons.videocam,
       color: AppColors.red,
     ),
     ContentFormat(
       id: 'podcast',
       title: 'Podcast',
       description: 'Enregistrez un podcast audio',
-      icon: Icons.podcasts_outlined,
+      icon: Icons.podcasts,
       color: AppColors.purple,
     ),
   ];
@@ -369,7 +369,7 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.arrow_forward_rounded,
+                          Icons.arrow_forward,
                           size: 20,
                           color: _selectedDomain != null && _selectedFormat != null
                               ? Colors.black

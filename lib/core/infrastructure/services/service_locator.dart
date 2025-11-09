@@ -24,6 +24,7 @@ import 'package:thot/features/posts/data/repositories/post_repository_impl.dart'
 import 'package:thot/features/comments/data/repositories/comment_repository_impl.dart';
 import 'package:thot/features/admin/data/repositories/admin_repository_impl.dart';
 import 'package:thot/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:thot/features/notifications/data/repositories/notification_repository_impl.dart';
 enum InitPhase {
   idle,
   coreServices,
@@ -48,6 +49,7 @@ class ServiceLocator {
   CommentRepositoryImpl? _commentRepository;
   AdminRepositoryImpl? _adminRepository;
   ProfileRepositoryImpl? _profileRepository;
+  NotificationRepositoryImpl? _notificationRepository;
   ThemeProvider? _themeProvider;
   AuthProvider? _authProvider;
   posts_state.PostsStateProvider? _postsStateProvider;
@@ -163,6 +165,7 @@ class ServiceLocator {
     instance._commentRepository = null;
     instance._adminRepository = null;
     instance._profileRepository = null;
+    instance._notificationRepository = null;
     instance._themeProvider = null;
     instance._authProvider = null;
     instance._postsStateProvider = null;
@@ -334,6 +337,7 @@ class ServiceLocator {
       _commentRepository = CommentRepositoryImpl(_apiService!);
       _adminRepository = AdminRepositoryImpl(_apiService!);
       _profileRepository = ProfileRepositoryImpl(_apiService!);
+      _notificationRepository = NotificationRepositoryImpl(_apiService!);
       if (kDebugMode) {
         LoggerService.instance.debug('Data repositories initialized');
       }
@@ -387,6 +391,9 @@ class ServiceLocator {
   ProfileRepositoryImpl get profileRepository =>
       _profileRepository ??
       (throw StateError('ProfileRepository not initialized'));
+  NotificationRepositoryImpl get notificationRepository =>
+      _notificationRepository ??
+      (throw StateError('NotificationRepository not initialized'));
   ThemeProvider get themeProvider =>
       _themeProvider ?? (throw StateError('ThemeProvider not initialized'));
   AuthProvider get authProvider =>

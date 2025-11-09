@@ -116,7 +116,7 @@ class _PostContentState extends State<PostContent>
                 color: Colors.black.withOpacity(0.3),
               ),
               child: const Icon(
-                Icons.play_circle_outline,
+                Icons.play_circle,
                 size: 64,
                 color: Colors.white,
               ),
@@ -165,7 +165,7 @@ class _PostContentState extends State<PostContent>
                       Row(
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.replay_10,
+                            icon: Icon(Icons.fast_rewind,
                                 color: Colors.white),
                             onPressed: () {
                               final newPosition =
@@ -192,7 +192,7 @@ class _PostContentState extends State<PostContent>
                             },
                           ),
                           IconButton(
-                            icon: const Icon(Icons.forward_10,
+                            icon: Icon(Icons.forward,
                                 color: Colors.white),
                             onPressed: () {
                               final newPosition =
@@ -350,7 +350,7 @@ class _PostContentState extends State<PostContent>
                       children: [
                         IconButton(
                           icon:
-                              const Icon(Icons.replay_10, color: Colors.white),
+                              Icon(Icons.fast_rewind, color: Colors.white),
                           onPressed: () {
                           },
                         ),
@@ -363,7 +363,7 @@ class _PostContentState extends State<PostContent>
                             color: AppColors.info,
                           ),
                           child: IconButton(
-                            icon: const Icon(Icons.play_arrow, size: 32),
+                            icon: Icon(Icons.play_arrow, size: 32),
                             color: Colors.white,
                             onPressed: () {
                             },
@@ -372,7 +372,7 @@ class _PostContentState extends State<PostContent>
                         const SizedBox(width: 16),
                         IconButton(
                           icon:
-                              const Icon(Icons.forward_10, color: Colors.white),
+                              Icon(Icons.forward, color: Colors.white),
                           onPressed: () {
                           },
                         ),

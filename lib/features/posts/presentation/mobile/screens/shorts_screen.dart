@@ -150,7 +150,7 @@ class _ShortsScreenState extends State<ShortsScreen>
                                 strokeWidth: 2,
                               ),
                             )
-                          : const Icon(Icons.refresh, color: Colors.white),
+                          : Icon(Icons.refresh, color: Colors.white),
                       label: Text(
                         _isLoading ? 'Loading...' : 'Retry',
                         style: const TextStyle(color: Colors.white),

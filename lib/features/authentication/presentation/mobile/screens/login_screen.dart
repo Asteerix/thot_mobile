@@ -242,7 +242,7 @@ class _LoginScreenState extends State<LoginScreen>
                                               AuthTextField(
                                                 controller: _emailController,
                                                 labelText: 'Email',
-                                                prefixIcon: Icons.email_outlined,
+                                                prefixIcon: Icons.mail,
                                                 keyboardType:
                                                     TextInputType.emailAddress,
                                                 textInputAction:
@@ -254,7 +254,7 @@ class _LoginScreenState extends State<LoginScreen>
                                               AuthTextField(
                                                 controller: _passwordController,
                                                 labelText: 'Mot de passe',
-                                                prefixIcon: Icons.lock_outline,
+                                                prefixIcon: Icons.lock,
                                                 obscureText: true,
                                                 showPasswordToggle: true,
                                                 textInputAction:

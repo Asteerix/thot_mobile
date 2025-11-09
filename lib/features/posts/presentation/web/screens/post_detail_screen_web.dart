@@ -26,7 +26,7 @@ class PostDetailScreenWeb extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: Icon(Icons.arrow_back),
                 onPressed: () => onNavigate('/feed'),
               ),
               const SizedBox(height: WebTheme.lg),

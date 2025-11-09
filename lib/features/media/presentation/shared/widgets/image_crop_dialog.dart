@@ -62,7 +62,7 @@ class _ImageCropDialogState extends State<ImageCropDialog> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white),
+                    icon: Icon(Icons.close, color: Colors.white),
                     onPressed: _isCropping ? null : _handleCancel,
                   ),
                 ],

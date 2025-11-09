@@ -26,7 +26,7 @@ class CropErrorScreen extends StatelessWidget {
         backgroundColor: isDark ? AppColors.darkSurface : Colors.black87,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.white),
+          icon: Icon(Icons.close, color: Colors.white),
           onPressed: onCancel,
         ),
         title: const Text(

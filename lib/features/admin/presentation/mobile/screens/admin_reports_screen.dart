@@ -83,7 +83,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
               elevation: 0,
               actions: [
                 PopupMenuButton<String>(
-                  icon: const Icon(Icons.filter_list),
+                  icon: Icon(Icons.filter),
                   onSelected: (status) {
                     setState(() {
                       _currentStatus = status;
@@ -95,7 +95,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                       value: 'pending',
                       child: Row(
                         children: [
-                          Icon(Icons.pending,
+                          Icon(Icons.hourglass_empty,
                               color: _currentStatus == 'pending'
                                   ? Theme.of(context).primaryColor
                                   : null),
@@ -134,7 +134,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                       value: 'dismissed',
                       child: Row(
                         children: [
-                          Icon(Icons.cancel,
+                          Icon(Icons.close,
                               color: _currentStatus == 'dismissed'
                                   ? Theme.of(context).primaryColor
                                   : null),
@@ -187,7 +187,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.flag_outlined,
+            Icon(Icons.flag,
                 size: ResponsiveUtils.getAdaptiveIconSize(context, large: 64),
                 color: Theme.of(context).colorScheme.outline),
             SizedBox(height: SpacingConstants.space16),
@@ -344,7 +344,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                               value: 'dismiss',
                               child: ListTile(
                                 dense: true,
-                                leading: Icon(Icons.cancel, color: Theme.of(context).colorScheme.outline),
+                                leading: Icon(Icons.close, color: Theme.of(context).colorScheme.outline),
                                 title: Text('Ignorer'),
                               ),
                             ),
@@ -468,7 +468,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                         Expanded(
                           child: Row(
                             children: [
-                              Icon(Icons.person_outline,
+                              Icon(Icons.person,
                                   size: 16, color: Theme.of(context).colorScheme.outline),
                               SizedBox(width: SpacingConstants.space4),
                               Flexible(
@@ -550,7 +550,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.comment_bank_outlined,
+            Icon(Icons.forum,
                 size: ResponsiveUtils.getAdaptiveIconSize(context, large: 64),
                 color: Theme.of(context).colorScheme.outline),
             SizedBox(height: SpacingConstants.space16),
@@ -616,7 +616,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.person_off_outlined,
+            Icon(Icons.person_off,
                 size: ResponsiveUtils.getAdaptiveIconSize(context, large: 64),
                 color: Theme.of(context).colorScheme.outline),
             SizedBox(height: SpacingConstants.space16),
@@ -645,7 +645,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                     ? NetworkImage(ImageUtils.getAvatarUrl(user['avatarUrl']))
                     : null,
                 child:
-                    user['avatarUrl'] == null ? const Icon(Icons.person) : null,
+                    user['avatarUrl'] == null ? Icon(Icons.person) : null,
               ),
               title: Text(user['name'] ?? user['username'] ?? 'Utilisateur'),
               subtitle: Column(
@@ -875,7 +875,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                     ),
                     IconButton(
                       icon: Icon(
-                        Icons.arrow_forward_ios,
+                        Icons.chevron_right,
                         color: ColorUtils.ensureContrast(AppColors.red,
                             ColorUtils.getSafeAccentColor(context, AppColors.red)),
                       ),
@@ -930,7 +930,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                         .toString()),
                 _DetailItem(Icons.alternate_email, 'Nom d\'utilisateur',
                     (post['journalist']?['username'] ?? 'N/A').toString()),
-                _DetailItem(Icons.email, 'Email',
+                _DetailItem(Icons.mail, 'Email',
                     (post['journalist']?['email'] ?? 'N/A').toString()),
                 if (post['journalist']?['verified'] == true)
                   _DetailItem(Icons.verified, 'Statut', 'Journaliste vérifié'),
@@ -972,7 +972,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.person_outline,
+                          Icon(Icons.person,
                               size: ResponsiveUtils.getAdaptiveIconSize(context,
                                   small: 16),
                               color: Theme.of(context).colorScheme.outline),
@@ -1042,7 +1042,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                       SafeNavigation.pop(context);
                       _navigateToPost(post);
                     },
-                    icon: const Icon(Icons.visibility),
+                    icon: Icon(Icons.visibility),
                     label: const Text('Voir la publication complète'),
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(
@@ -1055,7 +1055,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                       SafeNavigation.pop(context);
                       _showDeleteConfirmation(post);
                     },
-                    icon: const Icon(Icons.delete),
+                    icon: Icon(Icons.delete),
                     label: const Text('Supprimer la publication'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.error,
@@ -1069,7 +1069,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
                       SafeNavigation.pop(context);
                       _showBanUserConfirmation(post);
                     },
-                    icon: const Icon(Icons.block),
+                    icon: Icon(Icons.block),
                     label: const Text('Bannir l\'auteur'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.orange,
@@ -1289,7 +1289,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
       case 'podcast':
         return Icons.mic;
       default:
-        return Icons.post_add;
+        return Icons.note_add;
     }
   }
   String _getPostTypeLabel(String? type) {

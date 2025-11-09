@@ -54,7 +54,7 @@ class _ModeSelectionScreenWebState extends State<ModeSelectionScreenWeb> {
                       child: IconButton(
                         onPressed: () =>
                             AppRouter.replaceAllTo(context, RouteNames.welcome),
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        icon: Icon(Icons.arrow_back, color: Colors.white),
                       ),
                     ),
                     const SizedBox(height: WebTheme.lg),
@@ -77,7 +77,7 @@ class _ModeSelectionScreenWebState extends State<ModeSelectionScreenWeb> {
                         children: [
                           Expanded(
                             child: _OptionCard(
-                              icon: FontAwesomeIcons.featherPointed,
+                              icon: FontAwesomeIcons.editPointed,
                               title: 'Journaliste',
                               description: 'Je publie du contenu',
                               isSelected: _selectedType == ProfileType.journalist,
@@ -87,7 +87,7 @@ class _ModeSelectionScreenWebState extends State<ModeSelectionScreenWeb> {
                           const SizedBox(width: WebTheme.xl),
                           Expanded(
                             child: _OptionCard(
-                              icon: FontAwesomeIcons.glasses,
+                              icon: FontAwesomeIcons.visibility,
                               title: 'Lecteur',
                               description: 'Je consulte du contenu',
                               isSelected: _selectedType == ProfileType.reader,

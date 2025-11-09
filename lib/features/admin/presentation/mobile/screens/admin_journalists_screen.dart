@@ -105,10 +105,10 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
                         decoration: InputDecoration(
                           hintText:
                               'Rechercher par nom, email, organisation...',
-                          prefixIcon: const Icon(Icons.search),
+                          prefixIcon: Icon(Icons.search),
                           suffixIcon: _searchQuery.isNotEmpty
                               ? IconButton(
-                                  icon: const Icon(Icons.clear),
+                                  icon: Icon(Icons.close),
                                   onPressed: () {
                                     _searchController.clear();
                                     setState(() => _searchQuery = '');
@@ -138,7 +138,7 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.people,
+                              Icon(Icons.group,
                                   size: ResponsiveUtils.getAdaptiveIconSize(
                                       context,
                                       small: 16,
@@ -159,7 +159,7 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.pending,
+                              Icon(Icons.hourglass_empty,
                                   size: ResponsiveUtils.getAdaptiveIconSize(
                                       context,
                                       small: 16,
@@ -308,7 +308,7 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
                                 ],
                               ),
                               child: Icon(
-                                Icons.badge,
+                                Icons.verified,
                                 size: ResponsiveUtils.getAdaptiveIconSize(
                                     context,
                                     small: 16,
@@ -402,7 +402,7 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
                             SizedBox(height: SpacingConstants.space4),
                             Row(
                               children: [
-                                Icon(Icons.badge,
+                                Icon(Icons.verified,
                                     size: ResponsiveUtils.getAdaptiveIconSize(
                                         context,
                                         small: 14,
@@ -503,7 +503,7 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
                         SizedBox(height: SpacingConstants.space8),
                         IconButton(
                           onPressed: () => _showQuickActions(journalist),
-                          icon: const Icon(Icons.more_vert),
+                          icon: Icon(Icons.more_vert),
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                         ),
@@ -568,7 +568,7 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
             ),
             if (journalist.role != 'admin')
               ListTile(
-                leading: Icon(Icons.admin_panel_settings,
+                leading: Icon(Icons.security,
                     color: Theme.of(context).colorScheme.primary),
                 title: const Text('Promouvoir Admin'),
                 onTap: () {
@@ -578,7 +578,7 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
               ),
             if (journalist.role == 'admin')
               ListTile(
-                leading: const Icon(Icons.person, color: AppColors.orange),
+                leading: Icon(Icons.person, color: AppColors.orange),
                 title: const Text('Rétrograder en Journaliste'),
                 onTap: () {
                   SafeNavigation.pop(context);
@@ -588,7 +588,7 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
             const Divider(),
             if (!journalist.isVerified)
               ListTile(
-                leading: const Icon(Icons.check_circle, color: AppColors.success),
+                leading: Icon(Icons.check_circle, color: AppColors.success),
                 title: const Text('Vérifier le journaliste'),
                 onTap: () {
                   SafeNavigation.pop(context);
@@ -597,7 +597,7 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
               ),
             if (journalist.isVerified)
               ListTile(
-                leading: const Icon(Icons.remove_circle, color: AppColors.orange),
+                leading: Icon(Icons.remove_circle_outline, color: AppColors.orange),
                 title: const Text('Retirer la vérification'),
                 onTap: () {
                   SafeNavigation.pop(context);
@@ -843,7 +843,7 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
                                         child: Icon(
                                           journalist.isVerified
                                               ? Icons.check
-                                              : Icons.pending,
+                                              : Icons.hourglass_empty,
                                           size: ResponsiveUtils
                                               .getAdaptiveIconSize(context,
                                                   small: 14,
@@ -894,7 +894,7 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
                                                 : AppColors.orange,
                                             icon: journalist.isVerified
                                                 ? Icons.verified
-                                                : Icons.pending,
+                                                : Icons.hourglass_empty,
                                           ),
                                           if (journalist.role == 'admin')
                                             _buildStatusBadge(
@@ -902,7 +902,7 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
                                               color: Theme.of(context)
                                                   .colorScheme
                                                   .error,
-                                              icon: Icons.admin_panel_settings,
+                                              icon: Icons.security,
                                             ),
                                           if (journalist.status == 'banned')
                                             _buildStatusBadge(
@@ -943,7 +943,7 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
                                         shape: BoxShape.circle,
                                       ),
                                       child: Icon(
-                                        Icons.badge,
+                                        Icons.verified,
                                         color: AppColors.success,
                                         size:
                                             ResponsiveUtils.getAdaptiveIconSize(
@@ -1072,23 +1072,23 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
                       SizedBox(height: SpacingConstants.space24),
                       _buildDetailCard(
                         title: 'Informations personnelles',
-                        icon: Icons.person_outline,
+                        icon: Icons.person,
                         children: [
                           _buildDetailRow(
-                              'Email', journalist.email, Icons.email),
+                              'Email', journalist.email, Icons.mail),
                           if (journalist.organization != null)
                             _buildDetailRow('Organisation',
                                 journalist.organization!, Icons.business),
                           if (journalist.bio != null)
                             _buildDetailRow('Biographie', journalist.bio!,
-                                Icons.info_outline),
+                                Icons.info),
                           if (journalist.role != null)
                             _buildDetailRow(
                                 'Rôle',
                                 journalist.role == 'admin'
                                     ? 'Administrateur'
                                     : 'Journaliste',
-                                Icons.security),
+                                Icons.shield),
                         ],
                       ),
                       SizedBox(height: SpacingConstants.space16),
@@ -1099,7 +1099,7 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
                           _buildStatRow('Articles publiés',
                               journalist.postsCount, Icons.article),
                           _buildStatRow('Abonnés', journalist.followersCount,
-                              Icons.people),
+                              Icons.group),
                         ],
                       ),
                       SizedBox(height: SpacingConstants.space24),
@@ -1123,7 +1123,7 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
                         },
                         icon: journalist.isVerified
                             ? Icons.remove_circle_outline
-                            : Icons.check_circle_outline,
+                            : Icons.check_circle,
                         label: journalist.isVerified
                             ? 'RETIRER LA VÉRIFICATION'
                             : 'VÉRIFIER LE JOURNALISTE',
@@ -1164,7 +1164,7 @@ class _AdminJournalistsScreenState extends State<AdminJournalistsScreen>
                                   SafeNavigation.pop(context);
                                   _promoteToAdmin(journalist);
                                 },
-                                icon: Icons.admin_panel_settings,
+                                icon: Icons.security,
                                 label: 'Admin',
                                 color: Theme.of(context).colorScheme.primary,
                               ),

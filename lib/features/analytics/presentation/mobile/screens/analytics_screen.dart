@@ -43,28 +43,28 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         List<double>.generate(n, (_) => 50 + rnd.nextInt(100).toDouble());
     _stats = <_Stat>[
       _Stat(
-        icon: Icons.remove_red_eye_outlined,
+        icon: Icons.visibility,
         label: 'Vues totales',
         value: 7500 + _tf.index * 1800,
         deltaPct: 12.4 - (_tf.index * 2.1),
         series: series(16),
       ),
       _Stat(
-        icon: Icons.article_outlined,
+        icon: Icons.article,
         label: 'Publications',
         value: 15 + _tf.index * 3,
         deltaPct: -4.2 + (_tf.index * 1.5),
         series: series(16),
       ),
       _Stat(
-        icon: Icons.thumb_up_alt_outlined,
+        icon: Icons.thumb_up,
         label: 'J\'aime',
         value: 1320 + _tf.index * 240,
         deltaPct: 6.8 + (_tf.index * 0.9),
         series: series(16),
       ),
       _Stat(
-        icon: Icons.group_outlined,
+        icon: Icons.group,
         label: 'Nouveaux abonnés',
         value: 210 + _tf.index * 60,
         deltaPct: 18.3 - (_tf.index * 3),
@@ -126,12 +126,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 IconButton(
                   tooltip: 'Exporter',
                   onPressed: () {},
-                  icon: const Icon(Icons.download_outlined),
+                  icon: const Icon(Icons.download),
                 ),
                 IconButton(
                   tooltip: 'Paramètres',
                   onPressed: () {},
-                  icon: const Icon(Icons.tune_outlined),
+                  icon: const Icon(Icons.tune),
                 ),
               ],
               bottom: PreferredSize(
@@ -153,7 +153,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                           decoration: InputDecoration(
                             isDense: true,
                             hintText: 'Rechercher une publication',
-                            prefixIcon: const Icon(Icons.search),
+                            prefixIcon: Icon(Icons.search),
                             border: const OutlineInputBorder(),
                           ),
                         ),
@@ -284,7 +284,7 @@ class _SortButton extends StatelessWidget {
       ],
       child: const Row(
         children: [
-          Icon(Icons.sort),
+          Icon(Icons.compare_arrows),
           SizedBox(width: 6),
           Text('Trier'),
         ],
@@ -315,7 +315,7 @@ class _PublicationTile extends StatelessWidget {
                   width: 72,
                   height: 72,
                   color: cs.onSurfaceVariant.withOpacity(0.1),
-                  child: const Icon(Icons.play_arrow_rounded, size: 36),
+                  child: Icon(Icons.play_arrow, size: 36),
                 ),
               ),
               const SizedBox(width: 12),
@@ -335,16 +335,16 @@ class _PublicationTile extends StatelessWidget {
                         runSpacing: 4,
                         children: [
                           InlineMetric(
-                              icon: Icons.remove_red_eye_outlined,
+                              icon: Icons.visibility,
                               label: pub.views.toCompactFr()),
                           InlineMetric(
-                              icon: Icons.thumb_up_off_alt_outlined,
+                              icon: Icons.thumb_up,
                               label: pub.likes.toCompactFr()),
                           InlineMetric(
-                              icon: Icons.mode_comment_outlined,
+                              icon: Icons.comment,
                               label: pub.comments.toCompactFr()),
                           InlineMetric(
-                              icon: Icons.schedule_outlined,
+                              icon: Icons.schedule,
                               label: '${pub.durationSec}s'),
                         ],
                       ),
@@ -366,7 +366,7 @@ class _PublicationTile extends StatelessWidget {
                       value: 'details', child: Text('Voir les détails')),
                   PopupMenuItem(value: 'share', child: Text('Partager')),
                 ],
-                icon: const Icon(Icons.more_horiz),
+                icon: Icon(Icons.more_horiz),
               ),
             ],
           ),

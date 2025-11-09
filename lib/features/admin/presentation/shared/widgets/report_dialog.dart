@@ -114,7 +114,7 @@ class _ReportFormState extends State<ReportForm> {
   bool _isSubmitting = false;
   String? _selected;
   static const List<_Reason> _reasons = [
-    _Reason('spam', 'Spam ou contenu indésirable', Icons.report),
+    _Reason('spam', 'Spam ou contenu indésirable', Icons.flag),
     _Reason('harassment', 'Harcèlement ou intimidation', Icons.block),
     _Reason('hate_speech', 'Discours haineux', Icons.gavel),
     _Reason('violence', 'Violence ou contenu choquant', Icons.shield),
@@ -184,7 +184,7 @@ class _ReportFormState extends State<ReportForm> {
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.close),
+                icon: Icon(Icons.close),
                 onPressed: () => SafeNavigation.pop(context),
                 visualDensity: VisualDensity.compact,
               ),
@@ -211,7 +211,7 @@ class _ReportFormState extends State<ReportForm> {
               leading: Icon(r.icon),
               title: Text(r.label),
               trailing: _selected == r.code
-                  ? const Icon(Icons.radio_button_checked)
+                  ? Icon(Icons.radio_button_unchecked)
                   : const Icon(Icons.radio_button_unchecked),
               onTap: () {
                 setState(() => _selected = r.code);

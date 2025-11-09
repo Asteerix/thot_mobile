@@ -14,6 +14,7 @@ import 'package:thot/features/profile/presentation/shared/widgets/badges.dart';
 import 'package:thot/core/utils/safe_navigation.dart';
 import 'package:thot/features/posts/presentation/shared/widgets/voting_dialog.dart';
 import 'package:thot/features/authentication/application/providers/auth_provider.dart';
+import 'package:thot/features/comments/presentation/shared/widgets/comment_sheet.dart';
 class ArticleDetailScreen extends StatefulWidget {
   final String postId;
   final bool? isSaved;
@@ -142,6 +143,15 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
   }
   Future<void> _handleInteraction(String type, String action) async {
     if (!mounted) return;
+    if (type == 'comment' && action == 'add') {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => CommentsBottomSheet(postId: widget.postId),
+      );
+      return;
+    }
     try {
       await _postRepository.interactWithPost(widget.postId, type, action);
       await _loadPost();
@@ -208,7 +218,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                                       Container(
                                     color: colorScheme.surfaceContainerHighest,
                                     child: Icon(
-                                      Icons.error,
+                                      Icons.error_outline,
                                       color: colorScheme.error,
                                     ),
                                   ),
@@ -216,7 +226,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                               : Container(
                                   color: colorScheme.surfaceContainerHighest,
                                   child: Icon(
-                                    Icons.image_not_supported,
+                                    Icons.broken_image,
                                     size: 48,
                                     color: colorScheme.onSurfaceVariant,
                                   ),
@@ -226,9 +236,30 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                 _buildTypeOverlay(colorScheme),
               ],
             ),
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
-              onPressed: () => SafeNavigation.pop(context),
+            leading: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.4),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+              child: IconButton(
+                icon: Icon(Icons.arrow_back_ios_new),
+                iconSize: 20,
+                color: Colors.white,
+                onPressed: () => SafeNavigation.pop(context),
+                padding: EdgeInsets.zero,
+              ),
             ),
           ),
           if (widget.showTabs)
@@ -373,7 +404,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
             const SizedBox(height: UIConstants.paddingL),
             FilledButton.icon(
               onPressed: _loadPost,
-              icon: const Icon(Icons.refresh),
+              icon: Icon(Icons.refresh),
               label: const Text('Réessayer'),
             ),
           ],
@@ -438,7 +469,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
           const SizedBox(height: UIConstants.paddingS),
           Row(
             children: [
-              Icon(Icons.remove_red_eye,
+              Icon(Icons.visibility,
                   size: 16, color: colorScheme.onSurfaceVariant),
               const SizedBox(width: 4),
               Text(
@@ -449,7 +480,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
               ),
               const SizedBox(width: UIConstants.paddingM),
               Icon(
-                _isLiked ? Icons.thumb_up : Icons.thumb_up_outlined,
+                _isLiked ? Icons.thumb_up : Icons.thumb_up,
                 size: 16,
                 color: _isLiked
                     ? _getPoliticalViewColor(
@@ -467,7 +498,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                     ),
               ),
               const SizedBox(width: UIConstants.paddingM),
-              Icon(Icons.comment_outlined,
+              Icon(Icons.comment,
                   size: 16, color: colorScheme.onSurfaceVariant),
               const SizedBox(width: 4),
               Text(
@@ -573,7 +604,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildActionButton(
-            _isLiked ? Icons.thumb_up : Icons.thumb_up_outlined,
+            _isLiked ? Icons.thumb_up : Icons.thumb_up,
             '$_optimisticLikes',
             _handleLikeToggle,
             colorScheme,
@@ -581,7 +612,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
             isLoading: _isProcessingLike,
           ),
           _buildActionButton(
-            Icons.comment_outlined,
+            Icons.comment,
             '${_post!.interactions.comments}',
             () => _handleInteraction('comment', 'add'),
             colorScheme,
@@ -675,7 +706,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                         width: 40,
                         height: 40,
                         errorBuilder: (context, error, stackTrace) => Icon(
-                          Icons.article_outlined,
+                          Icons.article,
                           color: colorScheme.onSurfaceVariant,
                         ),
                       ),
@@ -685,7 +716,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                 return CircleAvatar(
                   backgroundColor: colorScheme.surfaceContainerHighest,
                   child: Icon(
-                    Icons.article_outlined,
+                    Icons.article,
                     color: colorScheme.onSurfaceVariant,
                   ),
                 );

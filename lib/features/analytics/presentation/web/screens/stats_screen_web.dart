@@ -60,7 +60,7 @@ class StatsScreenWeb extends ConsumerWidget {
                       context,
                       'Abonnés',
                       '1.8K',
-                      Icons.people,
+                      Icons.group,
                       AppColors.purple,
                     ),
                   ),

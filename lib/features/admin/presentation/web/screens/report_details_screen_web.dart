@@ -151,7 +151,7 @@ class _ReportDetailsScreenWebState extends State<ReportDetailsScreenWeb> {
           const SizedBox(height: WebTheme.xl),
           FilledButton.icon(
             onPressed: () => widget.onNavigate('/admin/reports'),
-            icon: const Icon(Icons.arrow_back),
+            icon: Icon(Icons.arrow_back),
             label: const Text('Retour aux signalements'),
           ),
         ],
@@ -166,7 +166,7 @@ class _ReportDetailsScreenWebState extends State<ReportDetailsScreenWeb> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: Icon(Icons.arrow_back),
                 onPressed: () => widget.onNavigate('/admin/reports'),
               ),
               const SizedBox(width: WebTheme.md),
@@ -369,7 +369,7 @@ class _ReportDetailsScreenWebState extends State<ReportDetailsScreenWeb> {
                 Expanded(
                   child: FilledButton.icon(
                     onPressed: () => _showDeleteDialog(),
-                    icon: const Icon(Icons.delete),
+                    icon: Icon(Icons.delete),
                     label: const Text('Supprimer le contenu'),
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.error,
@@ -381,7 +381,7 @@ class _ReportDetailsScreenWebState extends State<ReportDetailsScreenWeb> {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => _showDismissDialog(),
-                    icon: const Icon(Icons.close),
+                    icon: Icon(Icons.close),
                     label: const Text('Rejeter les signalements'),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.all(WebTheme.md),

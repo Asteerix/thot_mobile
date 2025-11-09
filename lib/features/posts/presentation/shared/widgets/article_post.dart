@@ -41,7 +41,7 @@ class ArticlePost extends StatelessWidget {
         color: const Color(0xFF1A1A1A),
         child: Center(
           child: Icon(
-            Icons.article_outlined,
+            Icons.article,
             color: Colors.white.withOpacity(0.3),
             size: 56,
           ),
@@ -73,7 +73,7 @@ class ArticlePost extends StatelessWidget {
         ),
         errorWidget: (context, url, error) => Center(
           child: Icon(
-            Icons.broken_image_outlined,
+            Icons.broken_image,
             color: Colors.white.withOpacity(0.3),
             size: 56,
           ),
@@ -127,12 +127,12 @@ class ArticlePost extends StatelessWidget {
           Row(
             children: [
               _buildMetadataChip(
-                icon: Icons.schedule_outlined,
+                icon: Icons.schedule,
                 label: '${_calculateReadingTime()} min',
               ),
               const SizedBox(width: 16),
               _buildMetadataChip(
-                icon: Icons.visibility_outlined,
+                icon: Icons.visibility,
                 label: NumberFormatter.format(post.stats.views),
               ),
             ],

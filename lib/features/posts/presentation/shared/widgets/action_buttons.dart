@@ -11,7 +11,7 @@ class AddShortButton extends StatelessWidget {
     return FloatingActionButton.extended(
       onPressed: onPressed,
       backgroundColor: Colors.blue,
-      icon: const Icon(Icons.add),
+      icon: Icon(Icons.add),
       label: const Text(
         'Ajouter un short',
         style: TextStyle(
@@ -32,7 +32,7 @@ class AddQuestionButton extends StatelessWidget {
     return FloatingActionButton.extended(
       onPressed: onPressed,
       backgroundColor: Colors.green,
-      icon: const Icon(Icons.help_outline),
+      icon: Icon(Icons.help_outline),
       label: const Text(
         'Question citoyenne',
         style: TextStyle(
@@ -68,7 +68,7 @@ class QuickActionButtons extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
-              icon: const Icon(Icons.add, size: 20),
+              icon: Icon(Icons.add, size: 20),
               label: const Text(
                 'Short',
                 style: TextStyle(
@@ -89,7 +89,7 @@ class QuickActionButtons extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
-              icon: const Icon(Icons.help_outline, size: 20),
+              icon: Icon(Icons.help_outline, size: 20),
               label: const Text(
                 'Question',
                 style: TextStyle(
@@ -121,19 +121,19 @@ class ActionSpeedDial extends StatelessWidget {
         FloatingActionButton.small(
           onPressed: onAddArticle,
           backgroundColor: AppColors.error,
-          child: const Icon(Icons.article),
+          child: Icon(Icons.article),
         ),
         const SizedBox(height: 8),
         FloatingActionButton.small(
           onPressed: onAddShort,
           backgroundColor: Colors.blue,
-          child: const Icon(Icons.video_call),
+          child: Icon(Icons.videocamPlus),
         ),
         const SizedBox(height: 8),
         FloatingActionButton(
           onPressed: onAddQuestion,
           backgroundColor: Colors.green,
-          child: const Icon(Icons.add),
+          child: Icon(Icons.add),
         ),
       ],
     );

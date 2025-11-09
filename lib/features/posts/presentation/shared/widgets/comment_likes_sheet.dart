@@ -174,7 +174,7 @@ class _CommentLikesSheetState extends ConsumerState<CommentLikesSheet> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.favorite_outline,
+              Icons.favorite,
               size: 64,
               color: Theme.of(context).colorScheme.outline,
             ),

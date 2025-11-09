@@ -52,13 +52,13 @@ class AdminDashboardScreenWeb extends StatelessWidget {
       childAspectRatio: 2,
       children: [
         _buildStatCard(context, colorScheme, 'Total Users', '12,458', '+12%',
-            Icons.people, AppColors.blue),
+            Icons.group, AppColors.blue),
         _buildStatCard(context, colorScheme, 'Total Posts', '45,892', '+8%',
             Icons.article, AppColors.success),
         _buildStatCard(context, colorScheme, 'Active Reports', '23', '-5%',
             Icons.flag, AppColors.orange),
         _buildStatCard(context, colorScheme, 'Revenue', '\$89,450', '+15%',
-            Icons.attach_money, AppColors.purple),
+            Icons.dollarSign, AppColors.purple),
       ],
     );
   }

@@ -450,7 +450,7 @@ class _NewVideoScreenState extends State<NewVideoScreen> {
                               height: 200,
                               color: Colors.black,
                               child: Center(
-                                child: Icon(Icons.play_circle_outline,
+                                child: Icon(Icons.play_circle,
                                     size: 64, color: Colors.white),
                               ),
                             ),
@@ -459,7 +459,7 @@ class _NewVideoScreenState extends State<NewVideoScreen> {
                             right: 8,
                             child: IconButton(
                               onPressed: _removeVideo,
-                              icon: Icon(Icons.delete_outline),
+                              icon: Icon(Icons.delete),
                               style: IconButton.styleFrom(
                                 backgroundColor: Colors.black.withOpacity(0.6),
                                 foregroundColor: Colors.white,
@@ -502,7 +502,7 @@ class _NewVideoScreenState extends State<NewVideoScreen> {
                             right: 8,
                             child: IconButton(
                               onPressed: _removeThumbnail,
-                              icon: Icon(Icons.delete_outline),
+                              icon: Icon(Icons.delete),
                               style: IconButton.styleFrom(
                                 backgroundColor: Colors.black.withOpacity(0.6),
                                 foregroundColor: Colors.white,
@@ -553,7 +553,7 @@ class _NewVideoScreenState extends State<NewVideoScreen> {
                                   color: isDark ? AppColors.darkCard : AppColors.surface,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: Icon(Icons.video_library,
+                                child: Icon(Icons.videocam,
                                     color: Colors.white.withOpacity(0.5)),
                               ),
                         title: Text(

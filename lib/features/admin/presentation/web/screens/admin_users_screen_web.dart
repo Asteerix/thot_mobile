@@ -151,7 +151,7 @@ class _AdminUsersScreenWebState extends State<AdminUsersScreenWeb>
             children: [
               Row(
                 children: [
-                  Icon(Icons.people, size: 32, color: colorScheme.primary),
+                  Icon(Icons.group, size: 32, color: colorScheme.primary),
                   const SizedBox(width: WebTheme.md),
                   Text(
                     'Gestion des Utilisateurs',
@@ -172,7 +172,7 @@ class _AdminUsersScreenWebState extends State<AdminUsersScreenWeb>
                       controller: _searchController,
                       decoration: InputDecoration(
                         hintText: 'Rechercher un utilisateur...',
-                        prefixIcon: const Icon(Icons.search),
+                        prefixIcon: Icon(Icons.search),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -241,7 +241,7 @@ class _AdminUsersScreenWebState extends State<AdminUsersScreenWeb>
                                 _loadUsers();
                               }
                             : null,
-                        icon: const Icon(Icons.arrow_back),
+                        icon: Icon(Icons.arrow_back),
                       ),
                       const SizedBox(width: WebTheme.md),
                       Text(
@@ -256,7 +256,7 @@ class _AdminUsersScreenWebState extends State<AdminUsersScreenWeb>
                                 _loadUsers();
                               }
                             : null,
-                        icon: const Icon(Icons.arrow_forward),
+                        icon: Icon(Icons.arrow_forward),
                       ),
                     ],
                   ),
@@ -273,7 +273,7 @@ class _AdminUsersScreenWebState extends State<AdminUsersScreenWeb>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.people_outline, size: 64, color: colorScheme.outline),
+            Icon(Icons.group, size: 64, color: colorScheme.outline),
             const SizedBox(height: WebTheme.md),
             Text(
               'Aucun utilisateur trouvé',
@@ -337,7 +337,7 @@ class _AdminUsersScreenWebState extends State<AdminUsersScreenWeb>
                   ? NetworkImage(UrlHelper.getImageUrl(user.profilePicture!))
                   : null,
               child: user.profilePicture == null
-                  ? const Icon(Icons.person)
+                  ? Icon(Icons.person)
                   : null,
             ),
           ),
@@ -400,7 +400,7 @@ class _AdminUsersScreenWebState extends State<AdminUsersScreenWeb>
                     Tooltip(
                       message: 'Débannir',
                       child: IconButton(
-                        icon: const Icon(Icons.check_circle, size: 20),
+                        icon: Icon(Icons.check_circle, size: 20),
                         color: AppColors.success,
                         onPressed: () => _unbanUser(user),
                       ),
@@ -409,7 +409,7 @@ class _AdminUsersScreenWebState extends State<AdminUsersScreenWeb>
                     Tooltip(
                       message: 'Bannir',
                       child: IconButton(
-                        icon: const Icon(Icons.block, size: 20),
+                        icon: Icon(Icons.block, size: 20),
                         color: AppColors.error,
                         onPressed: () => _showBanDialog(user),
                       ),

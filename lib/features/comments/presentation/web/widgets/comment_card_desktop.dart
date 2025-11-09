@@ -173,7 +173,7 @@ class _CommentCardDesktopState extends State<CommentCardDesktop> {
                       if (widget.canDelete && _isHovered)
                         IconButton(
                           icon: Icon(
-                            Icons.delete_outline,
+                            Icons.delete,
                             size: 20,
                             color: AppColors.red
                           ),
@@ -200,7 +200,7 @@ class _CommentCardDesktopState extends State<CommentCardDesktop> {
                               Icon(
                                 widget.isLiked
                                     ? Icons.favorite
-                                    : Icons.favorite_border,
+                                    : Icons.favorite,
                                 size: 18,
                                 color: widget.isLiked
                                     ? AppColors.red
@@ -279,8 +279,8 @@ class _CommentCardDesktopState extends State<CommentCardDesktop> {
                               children: [
                                 Icon(
                                   _showReplies
-                                      ? Icons.expand_less
-                                      : Icons.expand_more,
+                                      ? Icons.keyboard_arrow_up
+                                      : Icons.keyboard_arrow_down,
                                   size: 18,
                                   color: colorScheme.primary,
                                 ),
@@ -304,7 +304,7 @@ class _CommentCardDesktopState extends State<CommentCardDesktop> {
                       if (widget.canReport && _isHovered)
                         IconButton(
                           icon: Icon(
-                            Icons.flag_outlined,
+                            Icons.flag,
                             size: 18,
                             color: colorScheme.onSurface.withOpacity(0.6),
                           ),

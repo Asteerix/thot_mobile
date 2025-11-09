@@ -80,19 +80,19 @@ class ChatHeader extends StatelessWidget {
           if (showActions) ...[
             if (onVideoCall != null)
               IconButton(
-                icon: const Icon(Icons.videocam),
+                icon: Icon(Icons.videocam),
                 onPressed: onVideoCall,
                 tooltip: 'Video call',
               ),
             if (onVoiceCall != null)
               IconButton(
-                icon: const Icon(Icons.call),
+                icon: const Icon(Icons.phone),
                 onPressed: onVoiceCall,
                 tooltip: 'Voice call',
               ),
             if (onInfo != null)
               IconButton(
-                icon: const Icon(Icons.info_outline),
+                icon: Icon(Icons.info),
                 onPressed: onInfo,
                 tooltip: 'Info',
               ),

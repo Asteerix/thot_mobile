@@ -92,7 +92,7 @@ class _ArticleCardDesktopState extends State<ArticleCardDesktop> {
           errorBuilder: (context, error, stackTrace) => Container(
             color: colorScheme.surfaceContainerHighest,
             child: Icon(
-              Icons.image_not_supported,
+              Icons.broken_image,
               size: 48,
               color: colorScheme.onSurface.withOpacity(0.3),
             ),
@@ -143,7 +143,7 @@ class _ArticleCardDesktopState extends State<ArticleCardDesktop> {
         WebActionButton(
           icon: widget.post.interactions.isLiked
               ? Icons.favorite
-              : Icons.favorite_border,
+              : Icons.favorite,
           label: '${widget.post.stats.likes}',
           onTap: widget.onLike,
           isActive: widget.post.interactions.isLiked,
@@ -151,14 +151,14 @@ class _ArticleCardDesktopState extends State<ArticleCardDesktop> {
         ),
         const SizedBox(width: WebTheme.md),
         WebActionButton(
-          icon: Icons.comment_outlined,
+          icon: Icons.comment,
           label: '${widget.post.stats.comments}',
           onTap: widget.onComment,
           colorScheme: colorScheme,
         ),
         const SizedBox(width: WebTheme.md),
         WebActionButton(
-          icon: Icons.share_outlined,
+          icon: Icons.share,
           label: '${widget.post.stats.shares}',
           onTap: widget.onShare,
           colorScheme: colorScheme,
@@ -167,7 +167,7 @@ class _ArticleCardDesktopState extends State<ArticleCardDesktop> {
         WebActionButton(
           icon: widget.post.interactions.isSaved
               ? Icons.bookmark
-              : Icons.bookmark_border,
+              : Icons.bookmark,
           label: '',
           onTap: widget.onSave,
           isActive: widget.post.interactions.isSaved,

@@ -12,7 +12,7 @@ class SelectableCopyText extends StatelessWidget {
     this.textStyle,
     this.onCopiedTooltip,
     this.copyButtonTooltip = 'Copier',
-    this.copyIcon = Icons.copy_rounded,
+    this.copyIcon = Icons.copy,
   });
   Future<void> _copyToClipboard(BuildContext context) async {
     await Clipboard.setData(ClipboardData(text: text));

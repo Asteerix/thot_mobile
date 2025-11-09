@@ -278,42 +278,48 @@ class AppRouter {
       GoRoute(
         path: RouteNames.postDetail,
         builder: (context, state) {
-          final id = state.pathParameters['id']!;
+          final extra = state.extra as Map<String, dynamic>?;
+          final id = extra?['postId'] as String? ?? '';
           return PostDetailScreen(initialPostId: id);
         },
       ),
       GoRoute(
         path: RouteNames.articleDetail,
         builder: (context, state) {
-          final id = state.pathParameters['id']!;
+          final extra = state.extra as Map<String, dynamic>?;
+          final id = extra?['postId'] as String? ?? '';
           return ArticleDetailScreen(postId: id);
         },
       ),
       GoRoute(
         path: RouteNames.videoDetail,
         builder: (context, state) {
-          final id = state.pathParameters['id']!;
+          final extra = state.extra as Map<String, dynamic>?;
+          final id = extra?['postId'] as String? ?? '';
           return VideoDetailScreen(initialPostId: id);
         },
       ),
       GoRoute(
         path: RouteNames.podcastDetail,
         builder: (context, state) {
-          final id = state.pathParameters['id']!;
+          final extra = state.extra as Map<String, dynamic>?;
+          final id = extra?['postId'] as String? ?? '';
           return PodcastDetailScreen(postId: id);
         },
       ),
       GoRoute(
         path: RouteNames.pollDetail,
         builder: (context, state) {
-          final id = state.pathParameters['id']!;
+          final extra = state.extra as Map<String, dynamic>?;
+          final id = extra?['postId'] as String? ?? '';
           return PollDetailScreen(postId: id);
         },
       ),
       GoRoute(
         path: RouteNames.questionDetail,
         builder: (context, state) {
-          final id = state.pathParameters['id']!;
+          final extra = state.extra as Map<String, dynamic>?;
+          final id = extra?['questionId'] as String? ?? '';
           return QuestionDetailScreen(questionId: id);
         },
       ),

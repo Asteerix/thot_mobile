@@ -351,7 +351,7 @@ class UploadProgressDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.signal_wifi_statusbar_connected_no_internet_4,
+              Icons.wifi_off,
               size: 20,
               color: Colors.orange.shade300,
             ),

@@ -20,12 +20,12 @@ class _NewShortScreenWebState extends ConsumerState<NewShortScreenWeb> {
   final _descriptionController = TextEditingController();
   String? _selectedDomain;
   bool _isUploading = false;
-  static const List<Map<String, dynamic>> _domains = [
+  static final List<Map<String, dynamic>> _domains = [
     {'name': 'Politique', 'icon': Icons.account_balance},
-    {'name': 'Économie', 'icon': Icons.show_chart},
+    {'name': 'Économie', 'icon': Icons.trending_up},
     {'name': 'Culture', 'icon': Icons.theater_comedy},
-    {'name': 'Sport', 'icon': Icons.sports_soccer},
-    {'name': 'Tech', 'icon': Icons.computer},
+    {'name': 'Sport', 'icon': Icons.emoji_events},
+    {'name': 'Tech', 'icon': Icons.laptop},
   ];
   @override
   void dispose() {
@@ -127,7 +127,7 @@ class _NewShortScreenWebState extends ConsumerState<NewShortScreenWeb> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: Icon(Icons.arrow_back),
                 onPressed: () => setState(() => _selectedDomain = null),
               ),
               Text(
@@ -165,11 +165,11 @@ class _NewShortScreenWebState extends ConsumerState<NewShortScreenWeb> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.video_library, size: 64, color: colorScheme.outline),
+                  Icon(Icons.videocam, size: 64, color: colorScheme.outline),
                   const SizedBox(height: WebTheme.md),
                   FilledButton.icon(
                     onPressed: () {},
-                    icon: const Icon(Icons.upload),
+                    icon: Icon(Icons.cloud_upload),
                     label: const Text('Choisir une vidéo'),
                   ),
                 ],

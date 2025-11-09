@@ -134,6 +134,23 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
       _ => AspectPreset.square,
     };
   }
+
+  List<AspectPreset> _getAllowedPresets(MediaType t) {
+    switch (t) {
+      case MediaType.question:
+        return [AspectPreset.landscape169];
+      case MediaType.short:
+      case MediaType.shortThumbnail:
+        return [AspectPreset.portrait916];
+      case MediaType.video:
+        return [AspectPreset.landscape169];
+      case MediaType.article:
+      case MediaType.podcast:
+        return [AspectPreset.square, AspectPreset.landscape169];
+      default:
+        return [AspectPreset.square, AspectPreset.post45, AspectPreset.landscape169];
+    }
+  }
   double? _aspectFromPreset(AspectPreset p) {
     return switch (p) {
       AspectPreset.free => null,
@@ -151,6 +168,22 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
       AspectPreset.landscape169 => '16:9',
       AspectPreset.portrait916 => '9:16',
     };
+  }
+
+  String _getMediaTypeLabel(MediaType t) {
+    switch (t) {
+      case MediaType.question:
+        return '(16:9)';
+      case MediaType.short:
+      case MediaType.shortThumbnail:
+        return '(9:16)';
+      case MediaType.video:
+        return '(16:9)';
+      case MediaType.article:
+      case MediaType.podcast:
+      default:
+        return '';
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -173,7 +206,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
           onPressed: _isCropping ? null : _onCancel,
         ),
         title: Text(
-          'Recadrer',
+          'Recadrer ${_getMediaTypeLabel(widget.type)}',
           style: TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -270,10 +303,11 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                       height: 36,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        itemCount: AspectPreset.values.length,
+                        itemCount: _getAllowedPresets(widget.type).length,
                         separatorBuilder: (_, __) => SizedBox(width: 8),
                         itemBuilder: (context, index) {
-                          final p = AspectPreset.values[index];
+                          final allowedPresets = _getAllowedPresets(widget.type);
+                          final p = allowedPresets[index];
                           final selected = p == _preset;
                           return AspectPresetChip(
                             label: _presetLabel(p),
@@ -306,7 +340,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                           onPressed: _flipH,
                         ),
                         ImageToolButton(
-                          icon: Icons.flip_camera_android,
+                          icon: Icons.flip,
                           tooltip: 'Miroir V',
                           enabled: !_isCropping && bytes != null,
                           onPressed: _flipV,
@@ -344,7 +378,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                Icons.check_rounded,
+                                Icons.check,
                                 size: 20,
                                 color: !_isCropping && bytes != null ? Colors.white : Colors.white.withOpacity(0.3),
                               ),

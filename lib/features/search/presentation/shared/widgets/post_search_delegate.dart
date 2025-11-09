@@ -109,7 +109,7 @@ class PostSearchDelegate extends SearchDelegate<String?> {
             ? const SizedBox(width: 0, height: 0)
             : IconButton(
                 key: const ValueKey('clear'),
-                icon: const Icon(Icons.close),
+                icon: Icon(Icons.close),
                 tooltip: 'Effacer',
                 onPressed: () {
                   query = '';
@@ -125,7 +125,7 @@ class PostSearchDelegate extends SearchDelegate<String?> {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.arrow_back),
+      icon: Icon(Icons.arrow_back),
       tooltip: 'Fermer',
       onPressed: () {
         HapticFeedback.selectionClick();
@@ -377,7 +377,7 @@ class _ResultTile extends StatelessWidget {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       leading: leadingUrl == null
-          ? const CircleAvatar(child: Icon(Icons.notes))
+          ? const CircleAvatar(child: Icon(Icons.article))
           : CircleAvatar(
               backgroundImage: NetworkImage(leadingUrl!),
               backgroundColor: Colors.grey[800],

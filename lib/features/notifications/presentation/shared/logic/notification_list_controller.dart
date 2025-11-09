@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:thot/features/notifications/domain/entities/notification.dart';
+import 'package:thot/core/infrastructure/dependency_injection.dart';
 import '../widgets/notification_filter.dart';
 class NotificationSection {
   final String label;
@@ -13,6 +14,7 @@ class NotificationListController extends ChangeNotifier {
   String _errorMessage = '';
   int _currentPage = 1;
   int _totalPages = 1;
+  final _repository = ServiceLocator.instance.notificationRepository;
   List<NotificationModel> get notifications => List.unmodifiable(_notifications);
   bool get loading => _loading;
   bool get error => _error;
@@ -29,22 +31,36 @@ class NotificationListController extends ChangeNotifier {
     if (reset) {
       _error = false;
       _errorMessage = '';
+      _currentPage = 1;
     }
     notifyListeners();
     try {
-      final Map<String, dynamic> result = {
-        'notifications': [],
-        'currentPage': 1,
-        'totalPages': 1,
-      };
       if (reset) _notifications.clear();
+
+      final String? filterType = filter.apiParam;
+
+      final result = await _repository.getNotificationsPaginated(
+        page: _currentPage,
+        limit: 20,
+        type: filterType,
+      );
+
       if (result['notifications'] is List) {
         _notifications.addAll(
             (result['notifications'] as List).cast<NotificationModel>());
       }
-      _currentPage = (result['currentPage'] as int?) ?? 1;
+      final newPage = (result['currentPage'] as int?) ?? 1;
       _totalPages = (result['totalPages'] as int?) ?? 1;
+
+      // Increment page for next load if we're not resetting
+      if (!reset) {
+        _currentPage = newPage + 1;
+      } else {
+        _currentPage = newPage;
+      }
+
       _loading = false;
+      _error = false;
       notifyListeners();
     } catch (e) {
       _loading = false;
@@ -55,11 +71,16 @@ class NotificationListController extends ChangeNotifier {
   }
   Future<void> markAllAsRead() async {
     try {
+      await _repository.markAllAsRead();
       for (var i = 0; i < _notifications.length; i++) {
         _notifications[i] = _notifications[i].copyWith(read: true);
       }
       notifyListeners();
-    } catch (_) {
+    } catch (e) {
+      _error = true;
+      _errorMessage = e.toString();
+      notifyListeners();
+      rethrow;
     }
   }
   Future<void> deleteNotification(NotificationModel notification) async {
@@ -68,7 +89,8 @@ class NotificationListController extends ChangeNotifier {
     _notifications.removeAt(index);
     notifyListeners();
     try {
-    } catch (_) {
+      await _repository.deleteNotification(notification.id);
+    } catch (e) {
       _notifications.insert(index, notification);
       notifyListeners();
       rethrow;
@@ -78,10 +100,14 @@ class NotificationListController extends ChangeNotifier {
     final index = _notifications.indexWhere((n) => n.id == notification.id);
     if (index < 0) return;
     final oldNotification = _notifications[index];
-    _notifications[index] = notification.copyWith(read: !notification.read);
+    final newReadStatus = !notification.read;
+    _notifications[index] = notification.copyWith(read: newReadStatus);
     notifyListeners();
     try {
-    } catch (_) {
+      if (newReadStatus) {
+        await _repository.markAsRead(notification.id);
+      }
+    } catch (e) {
       _notifications[index] = oldNotification;
       notifyListeners();
       rethrow;

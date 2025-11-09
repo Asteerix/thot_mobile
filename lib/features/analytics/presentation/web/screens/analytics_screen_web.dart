@@ -85,7 +85,7 @@ class _AnalyticsScreenWebState extends State<AnalyticsScreenWeb> {
           'Vues totales',
           '12,543',
           '+12.5%',
-          Icons.visibility_outlined,
+          Icons.visibility,
           colorScheme.primary,
         ),
         _buildStatCard(
@@ -93,7 +93,7 @@ class _AnalyticsScreenWebState extends State<AnalyticsScreenWeb> {
           'Likes',
           '3,245',
           '+8.2%',
-          Icons.favorite_outline,
+          Icons.favorite,
           colorScheme.error,
         ),
         _buildStatCard(
@@ -101,7 +101,7 @@ class _AnalyticsScreenWebState extends State<AnalyticsScreenWeb> {
           'Commentaires',
           '892',
           '+15.3%',
-          Icons.comment_outlined,
+          Icons.comment,
           colorScheme.primary,
         ),
         _buildStatCard(
@@ -109,7 +109,7 @@ class _AnalyticsScreenWebState extends State<AnalyticsScreenWeb> {
           'Partages',
           '1,543',
           '+5.7%',
-          Icons.share_outlined,
+          Icons.share,
           colorScheme.primary,
         ),
       ],
@@ -244,7 +244,7 @@ class _AnalyticsScreenWebState extends State<AnalyticsScreenWeb> {
               colorScheme,
               'Nouvel article publié',
               'Il y a ${index + 1}h',
-              Icons.article_outlined,
+              Icons.article,
             );
           }),
         ],

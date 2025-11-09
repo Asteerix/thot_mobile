@@ -246,7 +246,7 @@ class _ShortsFeedScreenState extends State<ShortsFeedScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error, color: AppColors.red, size: 48),
+                Icon(Icons.error_outline, color: AppColors.red, size: 48),
                 const SizedBox(height: 8),
                 Text(
                   'Erreur vidéo',
@@ -313,7 +313,7 @@ class _ShortsFeedScreenState extends State<ShortsFeedScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  Icons.live_tv,
+                  Icons.tv,
                   color: Colors.white,
                   size: 16,
                 ),
@@ -506,7 +506,7 @@ class _ShortsFeedScreenState extends State<ShortsFeedScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            Icons.live_tv,
+                            Icons.tv,
                             color: Colors.white,
                             size: 16,
                           ),
@@ -526,8 +526,8 @@ class _ShortsFeedScreenState extends State<ShortsFeedScreen> {
                       IconButton(
                         icon: Icon(
                           _isFrontCamera
-                              ? Icons.camera_front
-                              : Icons.camera_rear,
+                              ? Icons.camera_alt
+                              : Icons.camera_alt,
                           color: Colors.white,
                         ),
                         onPressed: _switchCamera,
@@ -548,7 +548,7 @@ class _ShortsFeedScreenState extends State<ShortsFeedScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        Icons.live_tv,
+                        Icons.tv,
                         color: Colors.white,
                         size: 16,
                       ),
@@ -565,7 +565,7 @@ class _ShortsFeedScreenState extends State<ShortsFeedScreen> {
                 ),
               const SizedBox(height: 16),
               IconButton(
-                icon: Icon(Icons.favorite_border),
+                icon: Icon(Icons.favorite),
                 color: Colors.white,
                 onPressed: () {},
               ),
@@ -575,7 +575,7 @@ class _ShortsFeedScreenState extends State<ShortsFeedScreen> {
               ),
               const SizedBox(height: 16),
               IconButton(
-                icon: Icon(Icons.comment_outlined),
+                icon: Icon(Icons.comment),
                 color: Colors.white,
                 onPressed: () {},
               ),
@@ -801,7 +801,7 @@ class _ShortsFeedScreenState extends State<ShortsFeedScreen> {
         automaticallyImplyLeading: false,
         leading: SafeArea(
           child: IconButton(
-            icon: const Icon(Icons.arrow_back, size: 28),
+            icon: Icon(Icons.arrow_back, size: 28),
             color: Colors.white,
             onPressed: () {
               _logger.info('Back button pressed');

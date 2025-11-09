@@ -70,7 +70,7 @@ class _BannedAccountScreenWebState extends State<BannedAccountScreenWeb> {
     final scheme = theme.colorScheme;
     final isSuspended = widget.isSuspended;
     final statusColor = isSuspended ? scheme.tertiary : scheme.error;
-    final headerIcon = isSuspended ? Icons.hourglass_top_rounded : Icons.block;
+    final headerIcon = isSuspended ? Icons.hourglass_empty : Icons.block;
     final title = isSuspended ? 'Compte suspendu' : 'Compte banni';
     return Scaffold(
       backgroundColor: scheme.surface,
@@ -144,7 +144,7 @@ class _BannedAccountScreenWebState extends State<BannedAccountScreenWeb> {
                                 widget.reason!.trim().isNotEmpty) ...[
                               const SizedBox(height: 24),
                               InfoTile(
-                                icon: Icons.gavel_rounded,
+                                icon: Icons.gavel,
                                 label: 'Raison',
                                 accent: scheme.error,
                                 child: SelectableCopyText(
@@ -162,7 +162,7 @@ class _BannedAccountScreenWebState extends State<BannedAccountScreenWeb> {
                                 widget.message!.trim().isNotEmpty) ...[
                               const SizedBox(height: 16),
                               InfoTile(
-                                icon: Icons.message_outlined,
+                                icon: Icons.forum,
                                 label: 'Message de l\'administrateur',
                                 accent: scheme.primary,
                                 child: SelectableCopyText(
@@ -269,7 +269,7 @@ class _BannedAccountScreenWebState extends State<BannedAccountScreenWeb> {
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: widget.onContactSupport,
-                icon: const Icon(Icons.help_center_outlined),
+                icon: Icon(Icons.help_outline),
                 label: const Text('Support'),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size(0, WebTheme.buttonHeightLarge),
@@ -280,7 +280,7 @@ class _BannedAccountScreenWebState extends State<BannedAccountScreenWeb> {
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: widget.onOpenRules,
-                icon: const Icon(Icons.rule_folder_outlined),
+                icon: Icon(Icons.article),
                 label: const Text('Règles'),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size(0, WebTheme.buttonHeightLarge),

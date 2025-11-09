@@ -11,7 +11,7 @@ class AdminModeSwitch extends StatelessWidget {
     if (!authProvider.isAdmin) return const SizedBox.shrink();
     return PopupMenuButton<String>(
       icon: Icon(
-        Icons.admin_panel_settings,
+        Icons.security,
         color: authProvider.isAdminMode ? Colors.amber : Colors.white,
       ),
       onSelected: (value) async {
@@ -35,7 +35,7 @@ class AdminModeSwitch extends StatelessWidget {
               Icon(
                 authProvider.isAdminMode
                     ? Icons.person
-                    : Icons.admin_panel_settings,
+                    : Icons.security,
                 color: Theme.of(context).primaryColor,
                 size: 20,
               ),

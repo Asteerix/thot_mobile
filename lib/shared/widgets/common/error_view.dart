@@ -48,9 +48,9 @@ class _ErrorViewState extends State<ErrorView> {
     } else if (errorStr.contains('serveur')) {
       return Icons.cloud_off;
     } else if (errorStr.contains('timeout')) {
-      return Icons.access_time;
+      return Icons.schedule;
     } else if (errorStr.contains('permission') || errorStr.contains('refusé')) {
-      return Icons.lock_outline;
+      return Icons.lock;
     } else if (errorStr.contains('introuvable')) {
       return Icons.search_off;
     }
@@ -161,7 +161,7 @@ class _ErrorViewState extends State<ErrorView> {
                               colorScheme.onError),
                         ),
                       )
-                    : const Icon(Icons.refresh),
+                    : Icon(Icons.refresh),
                 label: const Text('Réessayer'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: errorColor,

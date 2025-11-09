@@ -51,21 +51,21 @@ class ProfileTabs extends StatelessWidget implements PreferredSizeWidget {
           onTap: (_) => HapticFeedback.selectionClick(),
           tabs: [
             _tab(
-                icon: Icons.article_outlined,
+                icon: Icons.article,
                 text: showText ? 'Posts' : null,
                 tooltip: 'Publications'),
             if (isJournalist) ...[
               _tab(
-                  icon: Icons.video_library_outlined,
+                  icon: Icons.videocam,
                   text: showText ? 'Vidéos' : null,
                   tooltip: 'Courts formats'),
               _tab(
-                  icon: Icons.question_answer_outlined,
+                  icon: Icons.comment,
                   text: showText ? 'Questions' : null,
                   tooltip: 'Questions'),
             ] else
               _tab(
-                  icon: Icons.bookmark_border,
+                  icon: Icons.bookmark,
                   text: showText ? 'Enregistrés' : null,
                   tooltip: 'Enregistrés'),
           ],

@@ -33,7 +33,7 @@ class _JournalistQuestionState extends State<JournalistQuestion> {
           elevation: 0,
           leading: IconButton(
             tooltip: 'Retour',
-            icon: const Icon(Icons.arrow_back),
+            icon: Icon(Icons.arrow_back),
             onPressed: () {
               HapticFeedback.selectionClick();
               AppRouter.replaceAllTo(context, RouteNames.welcome);
@@ -130,7 +130,7 @@ class _JournalistQuestionState extends State<JournalistQuestion> {
                                             },
                                           );
                                         },
-                                  icon: const Icon(Icons.arrow_forward),
+                                  icon: Icon(Icons.arrow_forward),
                                   label: const Text('Continuer'),
                                 ),
                               ),

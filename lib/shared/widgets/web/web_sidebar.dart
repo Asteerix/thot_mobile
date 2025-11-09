@@ -61,19 +61,19 @@ class WebSidebar extends StatefulWidget {
 
 class _WebSidebarState extends State<WebSidebar> {
   static const List<_NavigationItem> _navigationItems = [
-    _NavigationItem(label: 'Feed', icon: Icons.home_outlined, route: '/'),
+    _NavigationItem(label: 'Feed', icon: Icons.home, route: '/'),
     _NavigationItem(
-        label: 'Explore', icon: Icons.explore_outlined, route: '/explore'),
+        label: 'Explore', icon: Icons.explore, route: '/explore'),
     _NavigationItem(
         label: 'Notifications',
-        icon: Icons.notifications_outlined,
+        icon: Icons.notifications,
         route: '/notifications'),
     _NavigationItem(
-        label: 'Messages', icon: Icons.mail_outline, route: '/messages'),
+        label: 'Messages', icon: Icons.mail, route: '/messages'),
     _NavigationItem(
-        label: 'Profile', icon: Icons.person_outline, route: '/profile'),
+        label: 'Profile', icon: Icons.person, route: '/profile'),
     _NavigationItem(
-        label: 'Settings', icon: Icons.settings_outlined, route: '/settings'),
+        label: 'Settings', icon: Icons.settings, route: '/settings'),
   ];
 
   @override
@@ -142,7 +142,7 @@ class _WebSidebarState extends State<WebSidebar> {
       child: Center(
         child: isCollapsed
             ? Icon(
-                Icons.menu_book,
+                Icons.bookOpen,
                 size: 32,
                 color: colorScheme.primary,
               )
@@ -260,7 +260,7 @@ class _WebSidebarState extends State<WebSidebar> {
   Widget _buildCollapseToggle(ColorScheme colorScheme) {
     return IconButton(
       icon: Icon(
-        widget.collapsed ? Icons.chevron_right : Icons.chevron_left,
+        widget.collapsed ? Icons.chevron_right : Icons.arrow_back_ios_new,
         color: colorScheme.onSurface,
       ),
       onPressed: widget.onToggleCollapse,

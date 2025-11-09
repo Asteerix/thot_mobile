@@ -237,7 +237,7 @@ class _EditProfileScreenWebState extends State<EditProfileScreenWeb> {
                     child: OutlinedButton.icon(
                       onPressed: () {
                       },
-                      icon: const Icon(Icons.upload),
+                      icon: Icon(Icons.cloud_upload),
                       label: const Text('Upload Cover Photo'),
                     ),
                   ),
@@ -272,7 +272,7 @@ class _EditProfileScreenWebState extends State<EditProfileScreenWeb> {
                     OutlinedButton.icon(
                       onPressed: () {
                       },
-                      icon: const Icon(Icons.upload),
+                      icon: Icon(Icons.cloud_upload),
                       label: const Text('Change Avatar'),
                     ),
                   ],
@@ -325,7 +325,7 @@ class _EditProfileScreenWebState extends State<EditProfileScreenWeb> {
                         controller: _displayNameController,
                         label: 'Display Name',
                         hint: 'Enter your display name',
-                        prefixIcon: Icons.person_outline,
+                        prefixIcon: Icons.person,
                         colorScheme: colorScheme,
                       ),
                     ],
@@ -348,7 +348,7 @@ class _EditProfileScreenWebState extends State<EditProfileScreenWeb> {
                         controller: _displayNameController,
                         label: 'Display Name',
                         hint: 'Enter your display name',
-                        prefixIcon: Icons.person_outline,
+                        prefixIcon: Icons.person,
                         colorScheme: colorScheme,
                       ),
                     ),

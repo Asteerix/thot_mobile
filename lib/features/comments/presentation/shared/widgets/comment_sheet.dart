@@ -611,7 +611,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              Icons.chat_bubble_outline,
+                              Icons.comment,
                               size: 64,
                               color: Colors.grey[800],
                             ),
@@ -679,14 +679,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                                     ),
                                   );
                                 }),
-                              ] else if (comment.replyCount > 0)
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 16, top: 4),
-                                  child: Text(
-                                    'DEBUG: Comment has ${comment.replyCount} replies but isExpanded=$isExpanded, hasRepliesInMap=$hasRepliesInMap',
-                                    style: TextStyle(color: Colors.red, fontSize: 10),
-                                  ),
-                                ),
+                              ],
                             ],
                           );
                         },
@@ -871,7 +864,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                                           ),
                                         )
                                       : Icon(
-                                          Icons.send_rounded,
+                                          Icons.send,
                                           color: hasText
                                               ? Colors.white
                                               : Colors.grey[700],
@@ -1061,7 +1054,7 @@ class _InstagramCommentItemState extends State<_InstagramCommentItem>
                           child: Icon(
                             widget.comment.isLiked
                                 ? Icons.favorite
-                                : Icons.favorite_border,
+                                : Icons.favorite,
                             size: 12,
                             color: widget.comment.isLiked
                                 ? Colors.red

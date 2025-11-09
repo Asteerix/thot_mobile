@@ -380,7 +380,7 @@ class _CommentListState extends State<CommentList> {
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.send, color: Colors.white),
+                icon: Icon(Icons.send, color: Colors.white),
                 onPressed: _addComment,
               ),
             ],

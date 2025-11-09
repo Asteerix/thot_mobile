@@ -42,7 +42,7 @@ class VerificationScreenWeb extends StatelessWidget {
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
-                            Icons.mail_outline,
+                            Icons.mail,
                             size: 64,
                             color: colorScheme.onPrimaryContainer,
                           ),
@@ -97,7 +97,7 @@ class VerificationScreenWeb extends StatelessWidget {
                         if (onResendCode != null)
                           TextButton.icon(
                             onPressed: onResendCode,
-                            icon: const Icon(Icons.refresh),
+                            icon: Icon(Icons.refresh),
                             label: const Text('Resend Verification Email'),
                           ),
                         const SizedBox(height: WebTheme.md),

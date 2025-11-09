@@ -202,7 +202,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
       content: Row(
         children: [
           Icon(
-            isError ? Icons.error_outline : Icons.check_circle_outline,
+            isError ? Icons.error_outline : Icons.check_circle,
             color: Colors.white,
             size: 20,
           ),
@@ -307,11 +307,11 @@ class _RegistrationStepperState extends State<RegistrationStepper>
     IconData icon;
     switch (step) {
       case 0:
-        icon = widget.isJournalist ? Icons.badge : Icons.person;
+        icon = widget.isJournalist ? Icons.verified : Icons.person;
         content = _buildIdentityStep();
         break;
       case 1:
-        icon = Icons.email;
+        icon = Icons.mail;
         content = _buildEmailStep();
         break;
       case 2:
@@ -397,7 +397,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                     _buildTextField(
                       controller: _firstNameController,
                       label: 'Prénom',
-                      icon: Icons.person_outline,
+                      icon: Icons.person,
                       hasStartedTyping: _hasStartedTypingFirstName,
                       inputFormatters: [CapitalizeFirstLetterFormatter()],
                       validator: (value) {
@@ -423,7 +423,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                     _buildTextField(
                       controller: _lastNameController,
                       label: 'Nom',
-                      icon: Icons.person_outline,
+                      icon: Icons.person,
                       hasStartedTyping: _hasStartedTypingLastName,
                       inputFormatters: [CapitalizeFirstLetterFormatter()],
                       validator: (value) {
@@ -468,7 +468,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                     _buildTextField(
                       controller: _pressCardController,
                       label: 'Carte de presse (optionnel)',
-                      icon: Icons.badge,
+                      icon: Icons.verified,
                       keyboardType: TextInputType.number,
                       hasStartedTyping: _hasStartedTypingPressCard,
                       validator: (value) {
@@ -494,7 +494,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                     _buildTextField(
                       controller: _usernameController,
                       label: 'Nom d\'utilisateur',
-                      icon: Icons.person_outline,
+                      icon: Icons.person,
                       hasStartedTyping: _hasStartedTypingUsername,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
@@ -549,7 +549,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
               _buildTextField(
                 controller: _emailController,
                 label: 'Adresse email',
-                icon: Icons.email_outlined,
+                icon: Icons.mail,
                 keyboardType: TextInputType.emailAddress,
                 hasStartedTyping: _hasStartedTypingEmail,
                 validator: (value) {
@@ -579,7 +579,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
               _buildTextField(
                 controller: _emailConfirmController,
                 label: 'Confirmer l\'email',
-                icon: Icons.check_circle_outline,
+                icon: Icons.check_circle,
                 keyboardType: TextInputType.emailAddress,
                 hasStartedTyping: _hasStartedTypingEmailConfirm,
                 validator: (value) {
@@ -626,7 +626,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
               _buildTextField(
                 controller: _passwordController,
                 label: 'Mot de passe',
-                icon: Icons.lock_outline,
+                icon: Icons.lock,
                 obscureText: _obscurePassword,
                 hint: '8 caractères minimum',
                 hasStartedTyping: _hasStartedTypingPassword,
@@ -664,7 +664,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
               _buildTextField(
                 controller: _passwordConfirmController,
                 label: 'Confirmer le mot de passe',
-                icon: Icons.check_circle_outline,
+                icon: Icons.check_circle,
                 obscureText: _obscurePasswordConfirm,
                 hasStartedTyping: _hasStartedTypingPasswordConfirm,
                 validator: (value) {
@@ -803,7 +803,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                               child: Row(
                                 children: [
                                   Icon(
-                                    Icons.description_outlined,
+                                    Icons.article,
                                     color: Colors.white.withOpacity(0.7),
                                   ),
                                   SizedBox(width: 16),
@@ -817,7 +817,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                                     ),
                                   ),
                                   Icon(
-                                    Icons.arrow_forward_ios,
+                                    Icons.chevron_right,
                                     color: Colors.white.withOpacity(0.7),
                                     size: 16,
                                   ),
@@ -847,7 +847,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                               child: Row(
                                 children: [
                                   Icon(
-                                    Icons.privacy_tip_outlined,
+                                    Icons.verified_user,
                                     color: Colors.white.withOpacity(0.7),
                                   ),
                                   SizedBox(width: 16),
@@ -861,7 +861,7 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                                     ),
                                   ),
                                   Icon(
-                                    Icons.arrow_forward_ios,
+                                    Icons.chevron_right,
                                     color: Colors.white.withOpacity(0.7),
                                     size: 16,
                                   ),

@@ -12,12 +12,18 @@ enum NotificationFilter {
         NotificationFilter.comment => 'Commentaires',
         NotificationFilter.newFollower => 'Abonnés',
       };
-  String? get apiParam => this == NotificationFilter.all ? null : name;
+  String? get apiParam => switch (this) {
+        NotificationFilter.all => null,
+        NotificationFilter.mention => 'mention',
+        NotificationFilter.postLike => 'post_like',
+        NotificationFilter.comment => 'comment',
+        NotificationFilter.newFollower => 'new_follower',
+      };
   IconData get icon => switch (this) {
-        NotificationFilter.all => Icons.inbox_rounded,
+        NotificationFilter.all => Icons.inbox,
         NotificationFilter.mention => Icons.alternate_email,
-        NotificationFilter.postLike => Icons.favorite_rounded,
-        NotificationFilter.comment => Icons.chat_bubble_rounded,
-        NotificationFilter.newFollower => Icons.group_add_rounded,
+        NotificationFilter.postLike => Icons.favorite,
+        NotificationFilter.comment => Icons.comment,
+        NotificationFilter.newFollower => Icons.person_add,
       };
 }

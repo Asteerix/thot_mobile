@@ -70,7 +70,7 @@ class _NotificationsScreenWebState extends State<NotificationsScreenWeb> {
         const SizedBox(height: WebTheme.lg),
         TextButton.icon(
           onPressed: _markAllAsRead,
-          icon: const Icon(Icons.check_circle),
+          icon: Icon(Icons.check_circle),
           label: const Text('Tout marquer comme lu'),
           style: TextButton.styleFrom(
             alignment: Alignment.centerLeft,
@@ -143,7 +143,7 @@ class _NotificationsScreenWebState extends State<NotificationsScreenWeb> {
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.settings_outlined),
+              icon: const Icon(Icons.settings),
               onPressed: () => widget.onNavigate('/settings/notifications'),
               tooltip: 'Paramètres de notification',
             ),
@@ -181,7 +181,7 @@ class _NotificationsScreenWebState extends State<NotificationsScreenWeb> {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              Icons.error_outline_rounded,
+              Icons.error_outline,
               size: 56,
               color: cs.error,
             ),
@@ -205,7 +205,7 @@ class _NotificationsScreenWebState extends State<NotificationsScreenWeb> {
           FilledButton.icon(
             onPressed: () =>
                 _controller.loadNotifications(filter: _selectedFilter, reset: true),
-            icon: const Icon(Icons.refresh_rounded),
+            icon: const Icon(Icons.refresh),
             label: const Text('Réessayer'),
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(

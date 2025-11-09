@@ -147,7 +147,7 @@ class _MessagesScreenWebState extends State<MessagesScreenWeb> {
                 ),
                 const Spacer(),
                 IconButton(
-                  icon: const Icon(Icons.edit_outlined),
+                  icon: Icon(Icons.edit),
                   onPressed: () {
                   },
                   tooltip: 'New message',
@@ -160,7 +160,7 @@ class _MessagesScreenWebState extends State<MessagesScreenWeb> {
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search messages',
-                prefixIcon: const Icon(Icons.search, size: 20),
+                prefixIcon: Icon(Icons.search, size: 20),
                 filled: true,
                 fillColor: colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(

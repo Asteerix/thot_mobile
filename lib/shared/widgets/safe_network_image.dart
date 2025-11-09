@@ -49,7 +49,7 @@ class SafeNetworkImage extends StatelessWidget {
     this.memCacheWidth,
     this.memCacheHeight,
     this.showErrorBadge = true,
-    this.errorBadgeIcon = Icons.image_not_supported_outlined,
+    this.errorBadgeIcon = Icons.broken_image,
   });
 
   final String? url;
@@ -359,7 +359,7 @@ class DecoratedSafeNetworkImage extends StatelessWidget {
           Positioned(
             right: 8,
             top: 8,
-            child: _Badge(icon: Icons.image_not_supported_outlined),
+            child: _Badge(icon: Icons.broken_image),
           ),
       ],
     );

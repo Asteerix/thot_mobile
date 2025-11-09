@@ -121,7 +121,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
                 tabs: const [
                   Tab(
                     text: 'Tous',
-                    icon: Icon(Icons.people),
+                    icon: Icon(Icons.group),
                   ),
                   Tab(
                     text: 'Actifs',
@@ -166,7 +166,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
                       Row(
                         children: [
                           Icon(
-                            Icons.manage_accounts,
+                            Icons.admin_panel_settings,
                             size: ResponsiveUtils.getAdaptiveIconSize(context,
                                 small: 24, medium: 28, large: 32),
                             color: Theme.of(context).colorScheme.primary,
@@ -230,7 +230,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
                                         shape: BoxShape.circle,
                                       ),
                                       child: Icon(
-                                        Icons.clear,
+                                        Icons.close,
                                         size:
                                             ResponsiveUtils.getAdaptiveIconSize(
                                                 context,
@@ -311,7 +311,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
-                                  Icons.people,
+                                  Icons.group,
                                   size: ResponsiveUtils.getAdaptiveIconSize(
                                       context,
                                       small: 16,
@@ -385,7 +385,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.people_outline,
+                            Icon(Icons.group,
                                 size: ResponsiveUtils.getAdaptiveIconSize(
                                     context,
                                     small: 48,
@@ -651,7 +651,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
                                         IconButton(
                                           onPressed: () =>
                                               _showUserActions(user),
-                                          icon: const Icon(Icons.more_vert),
+                                          icon: Icon(Icons.more_vert),
                                         ),
                                       ],
                                     ),
@@ -675,12 +675,12 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
       case 'admin':
         color = Theme.of(context).colorScheme.error;
         label = 'Admin';
-        icon = Icons.admin_panel_settings;
+        icon = Icons.security;
         break;
       case 'journalist':
         color = Theme.of(context).colorScheme.primary;
         label = 'Journaliste';
-        icon = Icons.newspaper;
+        icon = Icons.article;
         break;
       case 'user':
       default:
@@ -836,7 +836,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.info),
+              leading: Icon(Icons.info),
               title: const Text('Voir les détails'),
               onTap: () {
                 SafeNavigation.pop(context);
@@ -863,7 +863,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
             if (user.role != 'admin')
               ListTile(
                 leading:
-                    const Icon(Icons.admin_panel_settings, color: AppColors.blue),
+                    Icon(Icons.security, color: AppColors.blue),
                 title: const Text('Promouvoir Admin'),
                 onTap: () {
                   SafeNavigation.pop(context);
@@ -873,7 +873,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
             if (user.role == 'admin' &&
                 user.email != 'lucas@admin.com')
               ListTile(
-                leading: const Icon(Icons.person, color: AppColors.orange),
+                leading: Icon(Icons.person, color: AppColors.orange),
                 title: const Text('Rétrograder en User'),
                 onTap: () {
                   SafeNavigation.pop(context);
@@ -963,10 +963,10 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
                 _DetailItem(Icons.person, 'Nom', user.name ?? user.username),
                 if (user.username.isNotEmpty && user.name != user.username)
                   _DetailItem(Icons.alternate_email, 'Nom d\'utilisateur', user.username),
-                _DetailItem(Icons.email, 'Email', user.email),
+                _DetailItem(Icons.mail, 'Email', user.email),
                 if (user.bio != null) _DetailItem(Icons.info, 'Bio', user.bio!),
                 if (user.status != null)
-                  _DetailItem(Icons.info_outline, 'Statut',
+                  _DetailItem(Icons.info, 'Statut',
                       _getStatusLabel(user.status!)),
               ]),
               SizedBox(height: SpacingConstants.space24),
@@ -974,7 +974,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
                 _DetailItem(Icons.article, 'Articles publiés',
                     user.postsCount.toString()),
                 _DetailItem(
-                    Icons.people, 'Abonnés', user.followersCount.toString()),
+                    Icons.group, 'Abonnés', user.followersCount.toString()),
                 _DetailItem(Icons.person_add, 'Abonnements',
                     user.followingCount.toString()),
               ]),
@@ -1008,7 +1008,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
                     SafeNavigation.pop(context);
                     _promoteToAdmin(user);
                   },
-                  icon: Icon(Icons.admin_panel_settings),
+                  icon: Icon(Icons.security),
                   label: Text('Promouvoir Admin'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
@@ -1391,7 +1391,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen>
               ),
               SizedBox(width: SpacingConstants.space8),
               Icon(
-                Icons.arrow_drop_down,
+                Icons.keyboard_arrow_down,
                 size: ResponsiveUtils.getAdaptiveIconSize(context,
                     small: 20, medium: 22, large: 24),
                 color: isActive

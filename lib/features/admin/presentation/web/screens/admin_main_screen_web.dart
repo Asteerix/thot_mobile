@@ -93,7 +93,7 @@ class _AdminMainScreenWebState extends State<AdminMainScreenWeb> {
                     const SizedBox(height: WebTheme.xl),
                     FilledButton.icon(
                       onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.arrow_back),
+                      icon: Icon(Icons.arrow_back),
                       label: const Text('Retour'),
                       style: FilledButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
@@ -142,7 +142,7 @@ class _AdminMainScreenWebState extends State<AdminMainScreenWeb> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.admin_panel_settings,
+                      Icon(Icons.security,
                           color: colorScheme.primary, size: 28),
                       const SizedBox(width: WebTheme.sm),
                       Column(
@@ -192,14 +192,14 @@ class _AdminMainScreenWebState extends State<AdminMainScreenWeb> {
                       ),
                       _buildNavItem(
                         context,
-                        icon: Icons.badge,
+                        icon: Icons.verified,
                         label: 'Journalistes',
                         route: '/admin/journalists',
                         colorScheme: colorScheme,
                       ),
                       _buildNavItem(
                         context,
-                        icon: Icons.people,
+                        icon: Icons.group,
                         label: 'Utilisateurs',
                         route: '/admin/users',
                         colorScheme: colorScheme,

@@ -665,18 +665,18 @@ class _ProfileScreenState extends State<ProfileScreen>
     _tabItems = [
       TabItemData(
         title: 'Publications',
-        icon: Icons.article_outlined,
-        activeIcon: Icons.article_rounded,
+        icon: Icons.article,
+        activeIcon: Icons.article,
       ),
       TabItemData(
         title: 'Shorts',
-        icon: Icons.video_library_outlined,
-        activeIcon: Icons.video_library,
+        icon: Icons.videocam,
+        activeIcon: Icons.videocam,
       ),
       TabItemData(
         title: 'Questions',
-        icon: Icons.question_answer_outlined,
-        activeIcon: Icons.question_answer_rounded,
+        icon: Icons.help_outline,
+        activeIcon: Icons.help_outline,
       ),
     ];
     return SliverPersistentHeader(
@@ -852,7 +852,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         EmptyContentView(
-          icon: Icons.inbox_rounded,
+          icon: Icons.inbox,
           title: title,
           subtitle: subtitle,
         ),
@@ -938,7 +938,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 right: 8,
                 child: Icon(
                   post.type == PostType.video
-                      ? Icons.play_circle_fill
+                      ? Icons.play_circle
                       : post.type == PostType.podcast
                           ? Icons.headphones
                           : Icons.article,
@@ -1029,7 +1029,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           label = 'Nouveau';
           break;
         case 1:
-          icon = Icons.video_call;
+          icon = Icons.videocam;
           label = 'Nouveau';
           break;
         case 2:
@@ -1125,7 +1125,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Icon(
-                      Icons.video_library_outlined,
+                      Icons.videocam,
                       color: Colors.white,
                       size: 20,
                     ),
@@ -1383,7 +1383,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.person_off_outlined,
+                    Icons.person_off,
                     size: 64,
                     color: Colors.white.withOpacity(0.3),
                   ),

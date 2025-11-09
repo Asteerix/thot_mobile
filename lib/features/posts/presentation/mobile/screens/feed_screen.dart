@@ -18,10 +18,11 @@ import 'package:thot/features/profile/presentation/shared/widgets/badges.dart';
 import 'package:thot/features/posts/presentation/shared/widgets/feed_app_header.dart';
 import 'package:thot/shared/widgets/common/filters_header_delegate.dart';
 import 'package:thot/shared/widgets/common/empty_content_view.dart';
+import 'package:thot/core/storage/search_history_service.dart';
 enum ViewMode { feed, list }
 class YouTubeSearchDelegate extends SearchDelegate<String?> {
   final PostRepositoryImpl postService;
-  final List<String> recentSearches;
+  List<String> recentSearches;
   final List<String> suggestions;
   final ViewMode viewMode;
   final void Function(String postId)? onPostTap;
@@ -37,13 +38,18 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
     required this.postService,
     required this.viewMode,
     this.onPostTap,
-    this.recentSearches = const [],
+    List<String>? recentSearches,
     this.suggestions = const [],
     this.selectedType,
     this.selectedPoliticalView,
     this.selectedCategory,
-  }) {
+  }) : recentSearches = recentSearches ?? [] {
     _scrollController.addListener(_onScroll);
+    _loadRecentSearches();
+  }
+
+  Future<void> _loadRecentSearches() async {
+    recentSearches = await SearchHistoryService.getRecentSearches();
   }
   void _onScroll() {
     if (_scrollController.position.pixels >=
@@ -127,7 +133,7 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
     return [
       if (query.isNotEmpty)
         IconButton(
-          icon: Icon(Icons.clear),
+          icon: Icon(Icons.close),
           onPressed: () {
             query = '';
             showSuggestions(context);
@@ -150,6 +156,10 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
     _searchResultPosts.clear();
     _currentPage = 1;
     _hasMore = true;
+
+    if (query.trim().isNotEmpty) {
+      SearchHistoryService.addRecentSearch(query.trim());
+    }
     return StatefulBuilder(
       builder: (context, setState) {
         return Column(
@@ -322,54 +332,108 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
   @override
   Widget buildSuggestions(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final List<String> suggestionList = query.isEmpty
-        ? [...recentSearches, ...suggestions]
-        : suggestions
-            .where((s) => s.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-    if (suggestionList.isEmpty && query.isNotEmpty) {
-      return Center(
-        child: Text(
-          'Tapez pour rechercher',
-          style: TextStyle(color: isDark ? Colors.white.withOpacity(0.54) : Colors.black45),
-        ),
-      );
-    }
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: suggestionList.length,
-      itemBuilder: (context, index) {
-        final suggestion = suggestionList[index];
-        final isRecent = recentSearches.contains(suggestion);
-        return ListTile(
-          leading: Icon(
-            isRecent ? Icons.history : Icons.search,
-            color: isDark ? Colors.white.withOpacity(0.54) : Colors.black54,
-            size: 20,
-          ),
-          title: Text(
-            suggestion,
-            style: TextStyle(
-              fontSize: 15,
-              color: isDark ? Colors.white : Colors.black87,
+
+    return FutureBuilder<List<String>>(
+      future: query.isEmpty
+          ? SearchHistoryService.getRecentSearches()
+          : SearchHistoryService.getSuggestions(query),
+      builder: (context, snapshot) {
+        final List<String> suggestionList = snapshot.data ?? [];
+        final combinedList = query.isEmpty
+            ? [...suggestionList, ...suggestions]
+            : suggestionList.isEmpty
+                ? suggestions.where((s) => s.toLowerCase().contains(query.toLowerCase())).toList()
+                : suggestionList;
+
+        if (combinedList.isEmpty && query.isNotEmpty) {
+          return Center(
+            child: Text(
+              'Tapez pour rechercher',
+              style: TextStyle(color: isDark ? Colors.white.withOpacity(0.54) : Colors.black45),
             ),
-          ),
-          trailing: isRecent
-              ? IconButton(
-                  icon: Icon(
-                    Icons.north_west,
-                    size: 18,
-                    color: isDark ? Colors.white.withOpacity(0.38) : Colors.black38,
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          itemCount: combinedList.length + (query.isEmpty && combinedList.isNotEmpty ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (query.isEmpty && index == 0 && combinedList.isNotEmpty) {
+              return ListTile(
+                leading: Icon(
+                  Icons.history,
+                  color: isDark ? Colors.white.withOpacity(0.54) : Colors.black54,
+                  size: 20,
+                ),
+                title: Text(
+                  'Recherches récentes',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white.withOpacity(0.7) : Colors.black54,
                   ),
-                  onPressed: () {
-                    query = suggestion;
+                ),
+                trailing: TextButton(
+                  onPressed: () async {
+                    await SearchHistoryService.clearRecentSearches();
                     showSuggestions(context);
                   },
-                )
-              : null,
-          onTap: () {
-            query = suggestion;
-            showResults(context);
+                  child: Text(
+                    'Effacer',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: isDark ? Colors.white.withOpacity(0.7) : Colors.blue,
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            final actualIndex = query.isEmpty ? index - 1 : index;
+            final suggestion = combinedList[actualIndex];
+            final isRecent = suggestionList.contains(suggestion);
+
+            return ListTile(
+              leading: Icon(
+                isRecent ? Icons.history : Icons.search,
+                color: isDark ? Colors.white.withOpacity(0.54) : Colors.black54,
+                size: 20,
+              ),
+              title: Text(
+                suggestion,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+              ),
+              trailing: isRecent
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.close,
+                        size: 18,
+                        color: isDark ? Colors.white.withOpacity(0.38) : Colors.black38,
+                      ),
+                      onPressed: () async {
+                        await SearchHistoryService.removeRecentSearch(suggestion);
+                        showSuggestions(context);
+                      },
+                    )
+                  : IconButton(
+                      icon: Icon(
+                        Icons.north_west,
+                        size: 18,
+                        color: isDark ? Colors.white.withOpacity(0.38) : Colors.black38,
+                      ),
+                      onPressed: () {
+                        query = suggestion;
+                        showSuggestions(context);
+                      },
+                    ),
+              onTap: () {
+                query = suggestion;
+                showResults(context);
+              },
+            );
           },
         );
       },
@@ -426,6 +490,96 @@ class _FeedScreenState extends State<FeedScreen> with AuthAwareMixin {
       _isLoading = false;
       _error = null;
     });
+  }
+
+  List<String> _getSearchSuggestions() {
+    final baseSuggestions = [
+      'Politique France',
+      'Économie mondiale',
+      'Intelligence artificielle',
+      'Changement climatique',
+      'Élections 2027',
+      'Technologies émergentes',
+      'Réforme des retraites',
+      'Union européenne',
+      'Géopolitique Moyen-Orient',
+      'Transition énergétique',
+      'Santé publique',
+      'Éducation nationale',
+      'Sécurité sociale',
+      'Budget 2025',
+      'Immigration France',
+    ];
+
+    if (_selectedCategory != null) {
+      switch (_selectedCategory!.name.toLowerCase()) {
+        case 'politique':
+          return [
+            'Élections présidentielles',
+            'Assemblée nationale',
+            'Réformes gouvernement',
+            'Partis politiques',
+            'Débat public',
+          ];
+        case 'economie':
+          return [
+            'Inflation France',
+            'Croissance économique',
+            'Emploi chômage',
+            'Fiscalité entreprises',
+            'Bourse CAC 40',
+          ];
+        case 'technologie':
+          return [
+            'Intelligence artificielle',
+            'ChatGPT',
+            'Cybersécurité',
+            'Start-ups françaises',
+            '5G déploiement',
+          ];
+        case 'sport':
+          return [
+            'Jeux Olympiques Paris',
+            'Équipe de France',
+            'Ligue 1',
+            'Roland-Garros',
+            'Tour de France',
+          ];
+        case 'culture':
+          return [
+            'Cinéma français',
+            'Festivals 2025',
+            'Musées expositions',
+            'Littérature prix',
+            'Spectacles concerts',
+          ];
+        case 'science':
+          return [
+            'Recherche médicale',
+            'Espace exploration',
+            'Climat études',
+            'Vaccins nouveaux',
+            'Archéologie découvertes',
+          ];
+        default:
+          break;
+      }
+    }
+
+    if (_selectedType != null) {
+      switch (_selectedType!) {
+        case PostType.video:
+          return baseSuggestions.map((s) => '$s vidéo').toList();
+        case PostType.podcast:
+          return baseSuggestions.map((s) => '$s podcast').toList();
+        case PostType.question:
+          return baseSuggestions.map((s) => '$s débat').toList();
+        default:
+          break;
+      }
+    }
+
+    return baseSuggestions;
   }
   @override
   Widget build(BuildContext context) {
@@ -525,8 +679,8 @@ class _FeedScreenState extends State<FeedScreen> with AuthAwareMixin {
             title: 'Thot',
             showViewToggle: true,
             viewModeIcon: _viewMode == ViewMode.feed
-                ? Icons.view_agenda_rounded
-                : Icons.dashboard_rounded,
+                ? Icons.view_list
+                : Icons.grid_view,
             onViewToggle: () {
               setState(() {
                 _viewMode = _viewMode == ViewMode.feed
@@ -542,14 +696,7 @@ class _FeedScreenState extends State<FeedScreen> with AuthAwareMixin {
                   viewMode: _viewMode,
                   selectedType: _selectedType,
                   selectedPoliticalView: _selectedPoliticalOrientation,
-                  recentSearches: [],
-                  suggestions: [
-                    'Politique France',
-                    'Économie mondiale',
-                    'Technologies IA',
-                    'Sports actualités',
-                    'Culture événements',
-                  ],
+                  suggestions: _getSearchSuggestions(),
                 ),
               );
               if (result != null && mounted) {
@@ -725,7 +872,7 @@ class _FeedListState extends State<_FeedList>
     }
     if (_posts.isEmpty && !_isLoading) {
       return EmptyContentView(
-        icon: Icons.inbox_rounded,
+        icon: Icons.inbox,
         title: 'Aucun contenu disponible',
         actionLabel: 'Actualiser',
         onAction: () => _loadPosts(refresh: true),
@@ -837,7 +984,7 @@ class ModernFeedCard extends StatelessWidget {
                               fit: BoxFit.cover,
                               errorBuilder: (_, __, ___) => Center(
                                 child: Icon(
-                                  Icons.image_outlined,
+                                  Icons.image,
                                   size: 48,
                                   color:
                                       isDark ? Theme.of(context).colorScheme.onSurface.withOpacity(0.24) : Colors.black26,
@@ -847,10 +994,10 @@ class ModernFeedCard extends StatelessWidget {
                           : Center(
                               child: Icon(
                                 post.type == PostType.video
-                                    ? Icons.play_circle_outline
+                                    ? Icons.play_circle
                                     : post.type == PostType.podcast
-                                        ? Icons.podcasts_outlined
-                                        : Icons.article_outlined,
+                                        ? Icons.podcasts
+                                        : Icons.article,
                                 size: 48,
                                 color: isDark ? Theme.of(context).colorScheme.onSurface.withOpacity(0.24) : Colors.black26,
                               ),
@@ -862,16 +1009,27 @@ class ModernFeedCard extends StatelessWidget {
                   Positioned.fill(
                     child: Center(
                       child: Container(
-                        width: 48,
-                        height: 48,
+                        width: 56,
+                        height: 56,
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.8),
+                          color: Colors.black.withOpacity(0.7),
                           shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.8),
+                            width: 3,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.4),
+                              blurRadius: 8,
+                              spreadRadius: 2,
+                            ),
+                          ],
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.play_arrow,
-                          color: Theme.of(context).colorScheme.surface,
-                          size: 32,
+                          color: Colors.white,
+                          size: 36,
                         ),
                       ),
                     ),
@@ -910,8 +1068,8 @@ class ModernFeedCard extends StatelessWidget {
                                   : post.type == PostType.question
                                       ? Icons.help_outline
                                       : Icons.article,
-                          size: 12,
-                          color: Theme.of(context).colorScheme.surface,
+                          size: 14,
+                          color: Colors.white,
                         ),
                         SizedBox(width: 4),
                         Text(
@@ -922,8 +1080,8 @@ class ModernFeedCard extends StatelessWidget {
                                   : post.type == PostType.question
                                       ? 'Question'
                                       : 'Article',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.surface,
+                          style: const TextStyle(
+                            color: Colors.white,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                           ),
@@ -941,8 +1099,15 @@ class ModernFeedCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: _getPoliticalColor(
                               context, post.politicalOrientation.displayOrientation)
-                          .withOpacity(0.9),
+                          .withOpacity(0.95),
                       borderRadius: BorderRadius.circular(6),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -950,15 +1115,15 @@ class ModernFeedCard extends StatelessWidget {
                         Icon(
                           _getPoliticalIcon(
                               post.politicalOrientation.displayOrientation),
-                          size: 12,
-                          color: Theme.of(context).colorScheme.surface,
+                          size: 14,
+                          color: Colors.white,
                         ),
                         SizedBox(width: 4),
                         Text(
                           _getPoliticalLabel(
                               post.politicalOrientation.displayOrientation),
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.surface,
+                          style: const TextStyle(
+                            color: Colors.white,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                           ),
@@ -1055,7 +1220,7 @@ class ModernFeedCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
-                            color: isDark ? Theme.of(context).colorScheme.surface : Colors.black87,
+                            color: isDark ? Colors.white : Colors.black87,
                             height: 1.2,
                           ),
                           maxLines: 2,
@@ -1092,7 +1257,7 @@ class ModernFeedCard extends StatelessWidget {
                               ' • ',
                               style: TextStyle(
                                 fontSize: 10,
-                                color: isDark ? Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.38) : Colors.black38,
+                                color: isDark ? Colors.white60 : Colors.black38,
                               ),
                             ),
                             Text(
@@ -1111,7 +1276,7 @@ class ModernFeedCard extends StatelessWidget {
                               '${_formatNumber(post.stats.views)} vues',
                               style: TextStyle(
                                 fontSize: 11,
-                                color: isDark ? Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.54) : Colors.black45,
+                                color: isDark ? Colors.white70 : Colors.black45,
                               ),
                             ),
                             if (post.interactions.likes > 0) ...[
@@ -1120,7 +1285,7 @@ class ModernFeedCard extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 10,
                                   color:
-                                      isDark ? Colors.white38 : Colors.black38,
+                                      isDark ? Colors.white60 : Colors.black38,
                                 ),
                               ),
                               Text(
@@ -1128,7 +1293,7 @@ class ModernFeedCard extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 11,
                                   color:
-                                      isDark ? Colors.white54 : Colors.black45,
+                                      isDark ? Colors.white70 : Colors.black45,
                                 ),
                               ),
                             ],
@@ -1136,7 +1301,7 @@ class ModernFeedCard extends StatelessWidget {
                               ' • ',
                               style: TextStyle(
                                 fontSize: 10,
-                                color: isDark ? Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.38) : Colors.black38,
+                                color: isDark ? Colors.white60 : Colors.black38,
                               ),
                             ),
                             Container(
@@ -1163,14 +1328,14 @@ class ModernFeedCard extends StatelessWidget {
                               ' • ',
                               style: TextStyle(
                                 fontSize: 10,
-                                color: isDark ? Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.38) : Colors.black38,
+                                color: isDark ? Colors.white60 : Colors.black38,
                               ),
                             ),
                             Text(
                               _formatTime(post.createdAt),
                               style: TextStyle(
                                 fontSize: 11,
-                                color: isDark ? Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.54) : Colors.black45,
+                                color: isDark ? Colors.white70 : Colors.black45,
                               ),
                             ),
                           ],
@@ -1312,13 +1477,28 @@ class YouTubeListItem extends StatelessWidget {
                 if (post.type == PostType.video)
                   Positioned.fill(
                     child: Center(
-                      child: CircleAvatar(
-                        radius: 18,
-                        backgroundColor: Theme.of(context).colorScheme.surface,
-                        child: Icon(
-                          Icons.play_arrow_rounded,
-                          size: 24,
-                          color: Theme.of(context).colorScheme.onSurface,
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.7),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.8),
+                            width: 2.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.4),
+                              blurRadius: 6,
+                              spreadRadius: 1,
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.play_arrow,
+                          size: 26,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -1350,10 +1530,10 @@ class YouTubeListItem extends StatelessWidget {
                                   : post.type == PostType.question
                                       ? Icons.help_outline
                                       : Icons.article,
-                          size: 10,
-                          color: Theme.of(context).colorScheme.surface,
+                          size: 12,
+                          color: Colors.white,
                         ),
-                        SizedBox(width: 2),
+                        SizedBox(width: 3),
                         Text(
                           post.type == PostType.video
                               ? 'Vidéo'
@@ -1362,8 +1542,8 @@ class YouTubeListItem extends StatelessWidget {
                                   : post.type == PostType.question
                                       ? 'Question'
                                       : 'Article',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.surface,
+                          style: const TextStyle(
+                            color: Colors.white,
                             fontSize: 9,
                             fontWeight: FontWeight.bold,
                           ),
@@ -1377,12 +1557,19 @@ class YouTubeListItem extends StatelessWidget {
                   right: 4,
                   child: Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                     decoration: BoxDecoration(
                       color: _getPoliticalColor(
                               context, post.politicalOrientation.displayOrientation)
-                          .withOpacity(0.9),
+                          .withOpacity(0.95),
                       borderRadius: BorderRadius.circular(4),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 3,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -1390,15 +1577,15 @@ class YouTubeListItem extends StatelessWidget {
                         Icon(
                           _getPoliticalIcon(
                               post.politicalOrientation.displayOrientation),
-                          size: 10,
-                          color: Theme.of(context).colorScheme.surface,
+                          size: 11,
+                          color: Colors.white,
                         ),
-                        SizedBox(width: 2),
+                        SizedBox(width: 3),
                         Text(
                           _getPoliticalLabel(
                               post.politicalOrientation.displayOrientation),
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.surface,
+                          style: const TextStyle(
+                            color: Colors.white,
                             fontSize: 9,
                             fontWeight: FontWeight.bold,
                           ),
@@ -1455,7 +1642,7 @@ class YouTubeListItem extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: isDark ? Theme.of(context).colorScheme.surface : Colors.black87,
+                      color: isDark ? Colors.white : Colors.black87,
                       height: 1.2,
                     ),
                   ),
@@ -1501,7 +1688,7 @@ class YouTubeListItem extends StatelessWidget {
                         '${_formatNumber(post.stats.views)} vues',
                         style: TextStyle(
                           fontSize: 11,
-                          color: isDark ? Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.54) : Colors.black45,
+                          color: isDark ? Colors.white70 : Colors.black45,
                         ),
                       ),
                       if (post.interactions.likes > 0) ...[
@@ -1509,14 +1696,14 @@ class YouTubeListItem extends StatelessWidget {
                           ' • ',
                           style: TextStyle(
                             fontSize: 10,
-                            color: isDark ? Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.38) : Colors.black38,
+                            color: isDark ? Colors.white60 : Colors.black38,
                           ),
                         ),
                         Text(
                           '${_formatNumber(post.interactions.likes)} j\'aime',
                           style: TextStyle(
                             fontSize: 11,
-                            color: isDark ? Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.54) : Colors.black45,
+                            color: isDark ? Colors.white70 : Colors.black45,
                           ),
                         ),
                       ],
@@ -1524,14 +1711,14 @@ class YouTubeListItem extends StatelessWidget {
                         ' • ',
                         style: TextStyle(
                           fontSize: 10,
-                          color: isDark ? Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.38) : Colors.black38,
+                          color: isDark ? Colors.white60 : Colors.black38,
                         ),
                       ),
                       Text(
                         _formatTime(post.createdAt),
                         style: TextStyle(
                           fontSize: 11,
-                          color: isDark ? Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.54) : Colors.black45,
+                          color: isDark ? Colors.white70 : Colors.black45,
                         ),
                       ),
                     ],
@@ -1565,15 +1752,20 @@ class YouTubeListItem extends StatelessWidget {
     );
   }
   Widget _buildPlaceholder(BuildContext context, Post post, bool isDark) {
-    return Center(
-      child: Icon(
-        post.type == PostType.video
-            ? Icons.play_circle_outline
-            : post.type == PostType.podcast
-                ? Icons.podcasts
-                : Icons.article_outlined,
-        size: 32,
-        color: isDark ? Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3) : Colors.black26,
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: isDark ? Colors.grey[900] : Colors.grey[200],
+      child: Center(
+        child: Icon(
+          post.type == PostType.video
+              ? Icons.play_circle
+              : post.type == PostType.podcast
+                  ? Icons.podcasts
+                  : Icons.article,
+          size: 48,
+          color: isDark ? Colors.white.withOpacity(0.3) : Colors.black26,
+        ),
       ),
     );
   }

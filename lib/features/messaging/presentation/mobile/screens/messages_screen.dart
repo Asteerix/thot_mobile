@@ -40,7 +40,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
         title: Text(widget.recipient.username),
         actions: [
           IconButton(
-            icon: const Icon(Icons.info_outline),
+            icon: Icon(Icons.info),
             onPressed: () {
             },
             tooltip: 'Conversation info',
@@ -54,7 +54,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 ? const EmptyMessagesState(
                     message: 'No messages yet',
                     subtitle: 'Start the conversation!',
-                    icon: Icons.chat_bubble_outline,
+                    icon: Icons.comment,
                   )
                 : ListView.builder(
                     padding: const EdgeInsets.symmetric(

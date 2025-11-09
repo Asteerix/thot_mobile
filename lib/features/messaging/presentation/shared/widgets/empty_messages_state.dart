@@ -7,7 +7,7 @@ class EmptyMessagesState extends StatelessWidget {
   const EmptyMessagesState({
     super.key,
     this.message = 'Select a conversation',
-    this.icon = Icons.message_outlined,
+    this.icon = Icons.forum,
     this.subtitle,
   });
   @override

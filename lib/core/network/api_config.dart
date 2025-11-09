@@ -13,7 +13,7 @@ class ApiConfigService {
   Future<String>? _resolutionInProgress;
   static const String _localAndroid = 'http://10.0.2.2:3000';
   static const String _localIosWeb = 'http://localhost:3000';
-  static const String _production = 'https://app-b73e2919-0361-42d6-ba77-d154856cefb3.cleverapps.io/api';
+  static const String _production = 'http://37.59.106.113';
   static const Duration _healthTimeout = Duration(seconds: 3);
   static const Duration _ngrokTimeout = Duration(seconds: 5);
   static Future<String> getApiBaseUrl({bool forceRefresh = false}) async {

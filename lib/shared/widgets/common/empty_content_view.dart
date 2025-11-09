@@ -17,7 +17,7 @@ import 'package:flutter/material.dart';
 //
 // AVANT:
 // EmptyContentView(
-//   icon: Icons.inbox_rounded,
+//   icon: Icons.inbox,
 //   title: 'Aucun contenu',
 //   subtitle: 'Description',
 //   actionLabel: 'Actualiser',
@@ -26,7 +26,7 @@ import 'package:flutter/material.dart';
 //
 // APRÈS:
 // EmptyState(
-//   icon: Icons.inbox_rounded,
+//   icon: Icons.inbox,
 //   title: 'Aucun contenu',
 //   subtitle: 'Description',
 //   action: ElevatedButton.icon(
@@ -120,7 +120,7 @@ class EmptyContentView extends StatelessWidget {
                   color: isDark ? Colors.white.withOpacity(0.5) : cs.outline,
                 ),
               ),
-              icon: const Icon(Icons.refresh),
+              icon: Icon(Icons.refresh),
               label: Text(actionLabel!),
             ),
           ],

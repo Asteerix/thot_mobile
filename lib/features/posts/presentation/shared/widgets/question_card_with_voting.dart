@@ -321,9 +321,9 @@ class _QuestionCardWithVotingState extends State<QuestionCardWithVoting> {
                     isMultiple
                         ? (isSelected
                             ? Icons.check_box
-                            : Icons.check_box_outline_blank)
+                            : Icons.stop)
                         : (isSelected
-                            ? Icons.radio_button_checked
+                            ? Icons.radio_button_unchecked
                             : Icons.radio_button_unchecked),
                     color: isSelected
                         ? AppColors.blue
@@ -472,7 +472,7 @@ class _QuestionCardWithVotingState extends State<QuestionCardWithVoting> {
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
-                                Icons.poll,
+                                Icons.bar_chart,
                                 color: Theme.of(context)
                                     .colorScheme
                                     .onSurfaceVariant,

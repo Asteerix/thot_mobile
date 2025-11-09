@@ -156,8 +156,8 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
                       IconButton(
                         icon: Icon(
                           positionData.isPlaying
-                              ? Icons.pause_circle_filled
-                              : Icons.play_circle_filled,
+                              ? Icons.pause_circle
+                              : Icons.play_circle,
                           size: 48,
                           color: Theme.of(context).colorScheme.surface,
                         ),
@@ -223,11 +223,46 @@ class _PodcastDetailScreenState extends State<PodcastDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
+        leading: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.4),
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: Colors.white.withOpacity(0.3),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 8,
+                spreadRadius: 1,
+              ),
+            ],
+          ),
+          child: IconButton(
+            icon: Icon(Icons.arrow_back_ios_new),
+            iconSize: 20,
+            color: Colors.white,
+            onPressed: () => Navigator.of(context).pop(),
+            padding: EdgeInsets.zero,
+          ),
+        ),
         title: Text(
           _post!.title,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 18,
             fontFamily: 'Tailwind',
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+            shadows: [
+              Shadow(
+                color: Colors.black,
+                blurRadius: 4,
+                offset: Offset(0, 1),
+              ),
+            ],
           ),
         ),
       ),

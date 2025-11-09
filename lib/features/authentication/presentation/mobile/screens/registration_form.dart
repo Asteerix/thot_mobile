@@ -174,7 +174,7 @@ class _RegistrationFormState extends State<RegistrationForm>
       SnackBar(
         content: Row(
           children: [
-            Icon(Icons.check_circle_outline,
+            Icon(Icons.check_circle,
                 color: Theme.of(context).colorScheme.onSurface),
             const SizedBox(width: 12),
             Text(
@@ -566,7 +566,7 @@ class _RegistrationFormState extends State<RegistrationForm>
             controller: _firstNameController,
             focusNode: _focusNodes['firstName'],
             nextFocusNode: _focusNodes['lastName'],
-            icon: Icons.person_outline,
+            icon: Icons.person,
             cs: cs,
             inputFormatters: [CapitalizeFirstLetterFormatter()],
             validator: (value) {
@@ -594,7 +594,7 @@ class _RegistrationFormState extends State<RegistrationForm>
             controller: _lastNameController,
             focusNode: _focusNodes['lastName'],
             nextFocusNode: _focusNodes['pressCard'],
-            icon: Icons.person_outline,
+            icon: Icons.person,
             cs: cs,
             inputFormatters: [CapitalizeFirstLetterFormatter()],
             validator: (value) {
@@ -622,7 +622,7 @@ class _RegistrationFormState extends State<RegistrationForm>
             controller: _pressCardController,
             focusNode: _focusNodes['pressCard'],
             nextFocusNode: _focusNodes['organization'],
-            icon: Icons.badge_outlined,
+            icon: Icons.verified,
             keyboardType: TextInputType.number,
             cs: cs,
             validator: (value) {
@@ -646,7 +646,7 @@ class _RegistrationFormState extends State<RegistrationForm>
             label: 'Organisation',
             controller: _organizationController,
             focusNode: _focusNodes['organization'],
-            icon: Icons.business_outlined,
+            icon: Icons.business,
             cs: cs,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
@@ -666,7 +666,7 @@ class _RegistrationFormState extends State<RegistrationForm>
             label: 'Nom d\'utilisateur',
             controller: _usernameController,
             focusNode: _focusNodes['username'],
-            icon: Icons.person_outline,
+            icon: Icons.person,
             cs: cs,
             helperText: 'Lettres, chiffres et underscore uniquement',
             validator: (value) {
@@ -704,7 +704,7 @@ class _RegistrationFormState extends State<RegistrationForm>
           controller: _emailController,
           focusNode: _focusNodes['email'],
           nextFocusNode: _focusNodes['emailConfirm'],
-          icon: Icons.email_outlined,
+          icon: Icons.mail,
           keyboardType: TextInputType.emailAddress,
           cs: cs,
           validator: (value) {
@@ -722,7 +722,7 @@ class _RegistrationFormState extends State<RegistrationForm>
           label: 'Confirmer l\'email',
           controller: _emailConfirmController,
           focusNode: _focusNodes['emailConfirm'],
-          icon: Icons.email_outlined,
+          icon: Icons.mail,
           keyboardType: TextInputType.emailAddress,
           cs: cs,
           validator: (value) {
@@ -893,7 +893,7 @@ class _RegistrationFormState extends State<RegistrationForm>
             color: cs.onSurfaceVariant,
             fontFamily: 'Tailwind',
           ),
-          prefixIcon: Icon(Icons.lock_outline, color: cs.onSurfaceVariant),
+          prefixIcon: Icon(Icons.lock, color: cs.onSurfaceVariant),
           suffixIcon: IconButton(
             icon: Icon(
               obscure ? Icons.visibility_off : Icons.visibility,
@@ -987,7 +987,7 @@ class _RegistrationFormState extends State<RegistrationForm>
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            satisfied ? Icons.check_circle : Icons.circle_outlined,
+            satisfied ? Icons.check_circle : Icons.radio_button_unchecked,
             size: 12,
             color: satisfied ? cs.primary : cs.outline,
           ),
@@ -1118,7 +1118,7 @@ class _RegistrationFormState extends State<RegistrationForm>
           Expanded(
             child: OutlinedButton.icon(
               onPressed: _previousStep,
-              icon: const Icon(Icons.arrow_back),
+              icon: Icon(Icons.arrow_back),
               label: const Text('Retour'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: cs.onSurface,
@@ -1136,7 +1136,7 @@ class _RegistrationFormState extends State<RegistrationForm>
           Expanded(
             child: FilledButton.icon(
               onPressed: _canProceedToNextStep() ? _nextStep : null,
-              icon: const Icon(Icons.arrow_forward),
+              icon: Icon(Icons.arrow_forward),
               label: const Text('Continuer'),
               style: FilledButton.styleFrom(
                 padding: EdgeInsets.symmetric(vertical: 16),

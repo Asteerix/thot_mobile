@@ -97,7 +97,7 @@ class PostHelpers {
       case 'podcast':
         return Icons.mic;
       default:
-        return Icons.post_add;
+        return Icons.note_add;
     }
   }
 }

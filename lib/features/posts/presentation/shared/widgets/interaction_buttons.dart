@@ -58,7 +58,7 @@ class InteractionButtons extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _ActionButton(
-            icon: Icons.thumb_up_outlined,
+            icon: Icons.thumb_up,
             activeIcon: Icons.thumb_up,
             active: likeActive,
             color: likeActive ? cs.primary : onSurface,
@@ -72,7 +72,7 @@ class InteractionButtons extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           _ActionButton(
-            icon: Icons.thumb_down_outlined,
+            icon: Icons.thumb_down,
             activeIcon: Icons.thumb_down,
             active: dislikeActive,
             color: dislikeActive ? cs.error : onSurface,
@@ -86,7 +86,7 @@ class InteractionButtons extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           _ActionButton(
-            icon: Icons.comment_outlined,
+            icon: Icons.comment,
             activeIcon: Icons.comment,
             active: false,
             color: onSurface,
@@ -162,7 +162,7 @@ class InteractionButtons extends StatelessWidget {
                 ),
               ),
               ListTile(
-                leading: const Icon(Icons.flag_outlined, color: Colors.red),
+                leading: Icon(Icons.flag, color: Colors.red),
                 title: const Text('Signaler ce contenu',
                     style: TextStyle(color: Colors.red)),
                 onTap: () {

@@ -35,8 +35,8 @@ class NotificationCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Icon(
           notification.read
-              ? Icons.mark_email_unread_rounded
-              : Icons.mark_email_read_rounded,
+              ? Icons.mail
+              : Icons.mail,
           color: cs.onPrimary,
         ),
       ),
@@ -48,7 +48,7 @@ class NotificationCard extends StatelessWidget {
         ),
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Icon(Icons.delete_rounded, color: cs.onError),
+        child: Icon(Icons.delete, color: cs.onError),
       ),
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.startToEnd) {
@@ -229,7 +229,7 @@ class NotificationCard extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            Icons.article_rounded,
+            Icons.article,
             size: 16,
             color: cs.onSurfaceVariant,
           ),
@@ -254,7 +254,7 @@ class NotificationCard extends StatelessWidget {
     return Row(
       children: [
         Icon(
-          Icons.access_time_rounded,
+          Icons.schedule,
           size: 14,
           color: cs.onSurfaceVariant.withOpacity(0.7),
         ),

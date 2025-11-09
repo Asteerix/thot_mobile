@@ -19,6 +19,7 @@ import 'package:thot/features/posts/presentation/mobile/screens/feed_screen.dart
 import 'package:thot/features/posts/presentation/shared/widgets/feed_app_header.dart';
 import 'package:thot/shared/widgets/common/filters_header_delegate.dart';
 import 'package:thot/shared/widgets/common/empty_content_view.dart';
+import 'package:thot/core/storage/search_history_service.dart';
 class SubscriptionsScreen extends StatefulWidget {
   const SubscriptionsScreen({super.key});
   @override
@@ -161,11 +162,11 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
         headerSliverBuilder: (context, inner) => [
           FeedAppHeader(
             title: 'Abonnements',
-            iconData: Icons.subscriptions_rounded,
+            iconData: Icons.subscriptions,
             showViewToggle: true,
             viewModeIcon: _viewMode == ViewMode.feed
-                ? Icons.view_agenda_rounded
-                : Icons.dashboard_rounded,
+                ? Icons.view_list
+                : Icons.grid_view,
             onViewToggle: () {
               setState(() {
                 _viewMode = _viewMode == ViewMode.feed
@@ -181,11 +182,15 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
                   viewMode: _viewMode,
                   selectedType: _selectedType,
                   selectedPoliticalView: _selectedPoliticalOrientation,
-                  recentSearches: [],
                   suggestions: [
-                    'Dans mes abonnements',
-                    'Vidéos récentes',
-                    'Articles populaires',
+                    'Vidéos de mes journalistes',
+                    'Articles récents abonnements',
+                    'Débats mes abonnés',
+                    'Analyses politiques',
+                    'Actualités France',
+                    'Économie et business',
+                    'Tech et innovation',
+                    'Société et culture',
                   ],
                 ),
               );
@@ -381,7 +386,7 @@ class _SubscriptionsFeedListState extends State<_SubscriptionsFeedList>
     }
     if (_posts.isEmpty && !_isLoading) {
       return EmptyContentView(
-        icon: Icons.subscriptions_outlined,
+        icon: Icons.subscriptions,
         title: 'Aucun contenu dans vos abonnements',
         subtitle: 'Abonnez-vous à des journalistes pour voir leurs posts ici',
         actionLabel: 'Actualiser',

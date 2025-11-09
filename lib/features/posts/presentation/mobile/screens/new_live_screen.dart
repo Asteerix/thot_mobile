@@ -252,7 +252,7 @@ class _NewLiveScreenState extends State<NewLiveScreen> {
                   side: BorderSide(color: Theme.of(context).colorScheme.surfaceContainerHighest),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                icon: const Icon(Icons.access_time),
+                icon: Icon(Icons.schedule),
                 label: Text(timeText),
               ),
             ),
@@ -292,7 +292,7 @@ class _NewLiveScreenState extends State<NewLiveScreen> {
                   style: const TextStyle(color: Colors.white),
                 ),
                 trailing: IconButton(
-                  icon: const Icon(Icons.close, color: Colors.grey),
+                  icon: Icon(Icons.close, color: Colors.grey),
                   onPressed: () {
                     setState(() {
                       _relatedPosts.removeAt(index);
@@ -408,7 +408,7 @@ class _NewLiveScreenState extends State<NewLiveScreen> {
                 side: BorderSide(color: Theme.of(context).colorScheme.surfaceContainerHighest),
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
-              icon: const Icon(Icons.search),
+              icon: Icon(Icons.search),
               label: const Text('Ajouter une publication en opposition'),
             ),
             const SizedBox(height: UIConstants.paddingM),
@@ -480,7 +480,7 @@ class PostSearchDelegate extends SearchDelegate<String> {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: const Icon(Icons.clear, color: Colors.white),
+        icon: Icon(Icons.close, color: Colors.white),
         onPressed: () {
           query = '';
         },
@@ -490,7 +490,7 @@ class PostSearchDelegate extends SearchDelegate<String> {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.arrow_back, color: Colors.white),
+      icon: Icon(Icons.arrow_back, color: Colors.white),
       onPressed: () {
         close(context, '');
       },

@@ -79,7 +79,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
         actions: [
           if (_targetDetails != null && widget.targetType == 'post')
             IconButton(
-              icon: const Icon(Icons.visibility),
+              icon: Icon(Icons.visibility),
               tooltip: 'Voir la publication',
               onPressed: () => _navigateToPost(),
             ),
@@ -165,13 +165,13 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
           StatCard(
             label: 'Uniques',
             value: _stats['uniqueReporters']?.toString() ?? '0',
-            icon: Icons.people,
+            icon: Icons.group,
             color: AppColors.orange,
           ),
           StatCard(
             label: 'En attente',
             value: _stats['pending']?.toString() ?? '0',
-            icon: Icons.pending,
+            icon: Icons.hourglass_empty,
             color: AppColors.warning,
           ),
           StatCard(
@@ -189,7 +189,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
           StatCard(
             label: 'Ignorés',
             value: _stats['dismissed']?.toString() ?? '0',
-            icon: Icons.cancel,
+            icon: Icons.close,
             color: Theme.of(context).colorScheme.outline,
           ),
         ],
@@ -290,7 +290,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               SizedBox(height: SpacingConstants.space8),
               Row(
                 children: [
-                  Icon(Icons.person_outline, size: 16, color: Theme.of(context).colorScheme.outline),
+                  Icon(Icons.person, size: 16, color: Theme.of(context).colorScheme.outline),
                   SizedBox(width: SpacingConstants.space4),
                   Text(
                     target['author']?['name'] ?? 'Utilisateur',
@@ -433,7 +433,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
         ),
         title: Row(
           children: [
-            Icon(Icons.person_outline, size: 16, color: Theme.of(context).colorScheme.outline),
+            Icon(Icons.person, size: 16, color: Theme.of(context).colorScheme.outline),
             SizedBox(width: SpacingConstants.space4),
             Expanded(
               child: Text(

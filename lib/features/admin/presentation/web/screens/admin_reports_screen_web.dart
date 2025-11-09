@@ -176,7 +176,7 @@ class _AdminReportsScreenWebState extends State<AdminReportsScreenWeb> {
         ),
         ElevatedButton.icon(
           onPressed: _loadReports,
-          icon: const Icon(Icons.refresh),
+          icon: Icon(Icons.refresh),
           label: const Text('Refresh'),
           style: ElevatedButton.styleFrom(
             backgroundColor: colorScheme.primary,
@@ -209,7 +209,7 @@ class _AdminReportsScreenWebState extends State<AdminReportsScreenWeb> {
           prefixIcon: Icon(Icons.search, color: colorScheme.primary),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
-                  icon: Icon(Icons.clear, color: colorScheme.onSurface),
+                  icon: Icon(Icons.close, color: colorScheme.onSurface),
                   onPressed: () {
                     _searchController.clear();
                     setState(() => _searchQuery = '');
@@ -286,7 +286,7 @@ class _AdminReportsScreenWebState extends State<AdminReportsScreenWeb> {
         value: value,
         isExpanded: true,
         underline: const SizedBox.shrink(),
-        icon: Icon(Icons.arrow_drop_down, color: colorScheme.onSurface),
+        icon: Icon(Icons.keyboard_arrow_down, color: colorScheme.onSurface),
         dropdownColor: colorScheme.surface,
         style: TextStyle(color: colorScheme.onSurface),
         items: items.map((item) {
@@ -325,7 +325,7 @@ class _AdminReportsScreenWebState extends State<AdminReportsScreenWeb> {
             const Spacer(),
             TextButton.icon(
               onPressed: () => _handleBulkAction('Approve'),
-              icon: const Icon(Icons.check),
+              icon: Icon(Icons.check),
               label: const Text('Approve'),
               style: TextButton.styleFrom(
                 foregroundColor: AppColors.success
@@ -334,7 +334,7 @@ class _AdminReportsScreenWebState extends State<AdminReportsScreenWeb> {
             const SizedBox(width: WebTheme.sm),
             TextButton.icon(
               onPressed: () => _handleBulkAction('Dismiss'),
-              icon: const Icon(Icons.close),
+              icon: Icon(Icons.close),
               label: const Text('Dismiss'),
               style: TextButton.styleFrom(
                 foregroundColor: AppColors.orange,
@@ -343,7 +343,7 @@ class _AdminReportsScreenWebState extends State<AdminReportsScreenWeb> {
             const SizedBox(width: WebTheme.sm),
             TextButton.icon(
               onPressed: () => _handleBulkAction('Delete'),
-              icon: const Icon(Icons.delete),
+              icon: Icon(Icons.delete),
               label: const Text('Delete'),
               style: TextButton.styleFrom(
                 foregroundColor: AppColors.red
@@ -512,7 +512,7 @@ class _AdminReportsScreenWebState extends State<AdminReportsScreenWeb> {
           ),
           if (isSorted)
             Icon(
-              _sortAscending ? Icons.arrow_upward : Icons.arrow_downward,
+              _sortAscending ? Icons.arrowUp : Icons.arrowDown,
               size: 16,
             ),
         ],
@@ -553,7 +553,7 @@ class _AdminReportsScreenWebState extends State<AdminReportsScreenWeb> {
         IconButton(
           onPressed:
               _currentPage > 1 ? () => setState(() => _currentPage--) : null,
-          icon: const Icon(Icons.chevron_left),
+          icon: const Icon(Icons.arrow_back_ios_new),
           color: colorScheme.onSurface,
         ),
         const SizedBox(width: WebTheme.md),
@@ -594,7 +594,7 @@ class _AdminReportsScreenWebState extends State<AdminReportsScreenWeb> {
           onPressed: _currentPage < totalPages
               ? () => setState(() => _currentPage++)
               : null,
-          icon: const Icon(Icons.chevron_right),
+          icon: Icon(Icons.chevron_right),
           color: colorScheme.onSurface,
         ),
       ],
@@ -609,7 +609,7 @@ class _AdminReportsScreenWebState extends State<AdminReportsScreenWeb> {
       case 'user':
         return Icons.person;
       case 'message':
-        return Icons.message;
+        return Icons.forum;
       default:
         return Icons.flag;
     }

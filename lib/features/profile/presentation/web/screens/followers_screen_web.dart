@@ -158,7 +158,7 @@ class _FollowersScreenWebState extends State<FollowersScreenWeb>
           prefixIcon: Icon(Icons.search, color: colorScheme.primary),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
-                  icon: Icon(Icons.clear, color: colorScheme.onSurface),
+                  icon: Icon(Icons.close, color: colorScheme.onSurface),
                   onPressed: () {
                     _searchController.clear();
                     _handleSearch('');
@@ -186,7 +186,7 @@ class _FollowersScreenWebState extends State<FollowersScreenWeb>
       child: DropdownButton<String>(
         value: _sortBy,
         underline: const SizedBox.shrink(),
-        icon: Icon(Icons.arrow_drop_down, color: colorScheme.onSurface),
+        icon: Icon(Icons.keyboard_arrow_down, color: colorScheme.onSurface),
         dropdownColor: colorScheme.surface,
         style: TextStyle(color: colorScheme.onSurface),
         items: [
@@ -262,7 +262,7 @@ class _FollowersScreenWebState extends State<FollowersScreenWeb>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.people_outline,
+              Icons.group,
               size: 64,
               color: colorScheme.onSurface.withOpacity(0.3),
             ),

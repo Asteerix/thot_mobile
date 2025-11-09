@@ -92,7 +92,7 @@ class UploadProgressIndicator extends StatelessWidget {
               if (onCancel != null)
                 IconButton(
                   onPressed: onCancel,
-                  icon: const Icon(Icons.close),
+                  icon: Icon(Icons.close),
                   iconSize: 20,
                 ),
             ],
