@@ -1,4 +1,4 @@
-package fr.thotnews.app
+package fr.thotmedia.app
 
 import io.flutter.embedding.android.FlutterActivity
 
