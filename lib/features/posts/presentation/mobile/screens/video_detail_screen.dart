@@ -2,6 +2,7 @@ import 'package:thot/core/themes/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:thot/core/extensions/context_extensions.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:thot/features/posts/data/repositories/post_repository_impl.dart';
