@@ -101,6 +101,9 @@ class AppRouter {
       RouteNames.registrationStepper,
       RouteNames.verificationPending,
       RouteNames.bannedAccount,
+      RouteNames.terms,
+      RouteNames.termsOfService,
+      RouteNames.privacyPolicy,
     };
     const adminPages = {
       RouteNames.admin,

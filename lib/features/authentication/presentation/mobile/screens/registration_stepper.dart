@@ -7,6 +7,8 @@ import 'package:thot/features/authentication/data/repositories/auth_repository_i
 import 'package:thot/core/infrastructure/dependency_injection.dart';
 import 'package:thot/features/profile/domain/entities/user_profile.dart';
 import 'package:thot/core/navigation/route_names.dart';
+import 'package:thot/features/settings/presentation/mobile/screens/terms_screen.dart';
+import 'package:thot/features/settings/presentation/mobile/screens/privacy_policy_screen.dart';
 class CapitalizeFirstLetterFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
@@ -799,9 +801,12 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                             builder: (innerContext) => InkWell(
                               onTap: () {
                                 Navigator.pop(innerContext);
-                                Future.delayed(const Duration(milliseconds: 100), () {
-                                  context.pushNamed('terms');
-                                });
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.black,
+                                  builder: (context) => const TermsScreen(),
+                                );
                               },
                               borderRadius: BorderRadius.circular(12),
                             child: Container(
@@ -847,9 +852,12 @@ class _RegistrationStepperState extends State<RegistrationStepper>
                             builder: (innerContext) => InkWell(
                               onTap: () {
                                 Navigator.pop(innerContext);
-                                Future.delayed(const Duration(milliseconds: 100), () {
-                                  context.pushNamed('privacy-policy');
-                                });
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.black,
+                                  builder: (context) => const PrivacyPolicyScreen(),
+                                );
                               },
                               borderRadius: BorderRadius.circular(12),
                             child: Container(
