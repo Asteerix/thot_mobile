@@ -10,7 +10,8 @@ import 'package:thot/core/infrastructure/dependency_injection.dart';
 import 'package:thot/core/realtime/event_bus.dart';
 import 'package:thot/features/posts/domain/entities/post.dart';
 import 'package:thot/core/navigation/route_names.dart';
-import 'package:thot/features/posts/presentation/shared/widgets/feed_filters.dart' as filters;
+import 'package:thot/features/posts/presentation/shared/widgets/feed_filters.dart'
+    as filters;
 import 'package:thot/shared/widgets/common/error_view.dart';
 import 'package:thot/features/authentication/presentation/mixins/auth_aware_mixin.dart';
 import 'package:thot/core/monitoring/logger_service.dart';
@@ -19,7 +20,9 @@ import 'package:thot/features/posts/presentation/shared/widgets/feed_app_header.
 import 'package:thot/shared/widgets/common/filters_header_delegate.dart';
 import 'package:thot/shared/widgets/common/empty_content_view.dart';
 import 'package:thot/core/storage/search_history_service.dart';
+
 enum ViewMode { feed, list }
+
 class YouTubeSearchDelegate extends SearchDelegate<String?> {
   final PostRepositoryImpl postService;
   List<String> recentSearches;
@@ -51,12 +54,14 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
   Future<void> _loadRecentSearches() async {
     recentSearches = await SearchHistoryService.getRecentSearches();
   }
+
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
       _loadMore();
     }
   }
+
   Future<void> _loadMore() async {
     if (_isLoadingMore || !_hasMore) return;
     _isLoadingMore = true;
@@ -86,6 +91,7 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
       _isLoadingMore = false;
     }
   }
+
   Future<List<Post>> _searchPosts() async {
     try {
       String? domainString;
@@ -106,6 +112,7 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
       return [];
     }
   }
+
   @override
   ThemeData appBarTheme(BuildContext context) {
     final base = Theme.of(context);
@@ -126,6 +133,7 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
       ),
     );
   }
+
   @override
   String? get searchFieldLabel => 'Rechercher';
   @override
@@ -141,6 +149,7 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
         ),
     ];
   }
+
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
@@ -150,6 +159,7 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
       },
     );
   }
+
   @override
   Widget buildResults(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -212,7 +222,9 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
                       child: Text(
                         'Erreur de recherche',
                         style: TextStyle(
-                            color: isDark ? Colors.white.withOpacity(0.6) : Colors.black54),
+                            color: isDark
+                                ? Colors.white.withOpacity(0.6)
+                                : Colors.black54),
                       ),
                     );
                   }
@@ -228,14 +240,18 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
                           Icon(
                             Icons.search_off,
                             size: 64,
-                            color: isDark ? Colors.white.withOpacity(0.3) : Colors.black26,
+                            color: isDark
+                                ? Colors.white.withOpacity(0.3)
+                                : Colors.black26,
                           ),
                           SizedBox(height: 16),
                           Text(
                             'Aucun résultat pour "$query"',
                             style: TextStyle(
                               fontSize: 16,
-                              color: isDark ? Colors.white.withOpacity(0.6) : Colors.black54,
+                              color: isDark
+                                  ? Colors.white.withOpacity(0.6)
+                                  : Colors.black54,
                             ),
                           ),
                         ],
@@ -295,6 +311,7 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
       },
     );
   }
+
   filters.PoliticalView _mapToFilterPoliticalView(
       PoliticalOrientation? orientation) {
     if (orientation == null) return filters.PoliticalView.all;
@@ -311,6 +328,7 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
         return filters.PoliticalView.extremelyProgressive;
     }
   }
+
   PoliticalOrientation? _mapFromFilterPoliticalView(
       filters.PoliticalView? view) {
     if (view == null || view == filters.PoliticalView.all) return null;
@@ -329,6 +347,7 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
         return null;
     }
   }
+
   @override
   Widget buildSuggestions(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -342,27 +361,33 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
         final combinedList = query.isEmpty
             ? [...suggestionList, ...suggestions]
             : suggestionList.isEmpty
-                ? suggestions.where((s) => s.toLowerCase().contains(query.toLowerCase())).toList()
+                ? suggestions
+                    .where((s) => s.toLowerCase().contains(query.toLowerCase()))
+                    .toList()
                 : suggestionList;
 
         if (combinedList.isEmpty && query.isNotEmpty) {
           return Center(
             child: Text(
               'Tapez pour rechercher',
-              style: TextStyle(color: isDark ? Colors.white.withOpacity(0.54) : Colors.black45),
+              style: TextStyle(
+                  color:
+                      isDark ? Colors.white.withOpacity(0.54) : Colors.black45),
             ),
           );
         }
 
         return ListView.builder(
           padding: const EdgeInsets.symmetric(vertical: 8),
-          itemCount: combinedList.length + (query.isEmpty && combinedList.isNotEmpty ? 1 : 0),
+          itemCount: combinedList.length +
+              (query.isEmpty && combinedList.isNotEmpty ? 1 : 0),
           itemBuilder: (context, index) {
             if (query.isEmpty && index == 0 && combinedList.isNotEmpty) {
               return ListTile(
                 leading: Icon(
                   Icons.history,
-                  color: isDark ? Colors.white.withOpacity(0.54) : Colors.black54,
+                  color:
+                      isDark ? Colors.white.withOpacity(0.54) : Colors.black54,
                   size: 20,
                 ),
                 title: Text(
@@ -370,7 +395,8 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white.withOpacity(0.7) : Colors.black54,
+                    color:
+                        isDark ? Colors.white.withOpacity(0.7) : Colors.black54,
                   ),
                 ),
                 trailing: TextButton(
@@ -382,7 +408,8 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
                     'Effacer',
                     style: TextStyle(
                       fontSize: 13,
-                      color: isDark ? Colors.white.withOpacity(0.7) : Colors.blue,
+                      color:
+                          isDark ? Colors.white.withOpacity(0.7) : Colors.blue,
                     ),
                   ),
                 ),
@@ -411,10 +438,13 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
                       icon: Icon(
                         Icons.close,
                         size: 18,
-                        color: isDark ? Colors.white.withOpacity(0.38) : Colors.black38,
+                        color: isDark
+                            ? Colors.white.withOpacity(0.38)
+                            : Colors.black38,
                       ),
                       onPressed: () async {
-                        await SearchHistoryService.removeRecentSearch(suggestion);
+                        await SearchHistoryService.removeRecentSearch(
+                            suggestion);
                         showSuggestions(context);
                       },
                     )
@@ -422,7 +452,9 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
                       icon: Icon(
                         Icons.north_west,
                         size: 18,
-                        color: isDark ? Colors.white.withOpacity(0.38) : Colors.black38,
+                        color: isDark
+                            ? Colors.white.withOpacity(0.38)
+                            : Colors.black38,
                       ),
                       onPressed: () {
                         query = suggestion;
@@ -440,6 +472,7 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
     );
   }
 }
+
 class FeedScreen extends StatefulWidget {
   final String? initialQuery;
   final bool shouldRefresh;
@@ -451,6 +484,7 @@ class FeedScreen extends StatefulWidget {
   @override
   State<FeedScreen> createState() => _FeedScreenState();
 }
+
 class _FeedScreenState extends State<FeedScreen> with AuthAwareMixin {
   PostType? _selectedType;
   String? _selectedSort = 'recent';
@@ -480,11 +514,13 @@ class _FeedScreenState extends State<FeedScreen> with AuthAwareMixin {
       }
     });
   }
+
   @override
   void dispose() {
     _postCreatedSubscription.cancel();
     super.dispose();
   }
+
   Future<void> _loadUserData() async {
     setState(() {
       _isLoading = false;
@@ -581,6 +617,7 @@ class _FeedScreenState extends State<FeedScreen> with AuthAwareMixin {
 
     return baseSuggestions;
   }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -594,7 +631,9 @@ class _FeedScreenState extends State<FeedScreen> with AuthAwareMixin {
         statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
       ),
       child: Scaffold(
-        backgroundColor: isDark ? Colors.black : Theme.of(context).colorScheme.surfaceContainerHighest,
+        backgroundColor: isDark
+            ? Colors.black
+            : Theme.of(context).colorScheme.surfaceContainerHighest,
         body: AnimatedSwitcher(
           duration: const Duration(milliseconds: 350),
           switchInCurve: Curves.easeOutCubic,
@@ -630,6 +669,7 @@ class _FeedScreenState extends State<FeedScreen> with AuthAwareMixin {
       ),
     );
   }
+
   filters.PoliticalView _mapToFilterPoliticalView(
       PoliticalOrientation? orientation) {
     if (orientation == null) return filters.PoliticalView.all;
@@ -646,6 +686,7 @@ class _FeedScreenState extends State<FeedScreen> with AuthAwareMixin {
         return filters.PoliticalView.extremelyProgressive;
     }
   }
+
   PoliticalOrientation? _mapFromFilterPoliticalView(
       filters.PoliticalView? view) {
     if (view == null || view == filters.PoliticalView.all) return null;
@@ -664,6 +705,7 @@ class _FeedScreenState extends State<FeedScreen> with AuthAwareMixin {
         return null;
     }
   }
+
   Widget _buildContent(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
@@ -678,14 +720,12 @@ class _FeedScreenState extends State<FeedScreen> with AuthAwareMixin {
           FeedAppHeader(
             title: 'Thot',
             showViewToggle: true,
-            viewModeIcon: _viewMode == ViewMode.feed
-                ? Icons.view_list
-                : Icons.grid_view,
+            viewModeIcon:
+                _viewMode == ViewMode.feed ? Icons.view_list : Icons.grid_view,
             onViewToggle: () {
               setState(() {
-                _viewMode = _viewMode == ViewMode.feed
-                    ? ViewMode.list
-                    : ViewMode.feed;
+                _viewMode =
+                    _viewMode == ViewMode.feed ? ViewMode.list : ViewMode.feed;
               });
             },
             onSearch: () async {
@@ -753,6 +793,7 @@ class _FeedScreenState extends State<FeedScreen> with AuthAwareMixin {
     );
   }
 }
+
 class _FeedList extends StatefulWidget {
   final PostType? selectedType;
   final String? selectedCategory;
@@ -770,6 +811,7 @@ class _FeedList extends StatefulWidget {
   @override
   State<_FeedList> createState() => _FeedListState();
 }
+
 class _FeedListState extends State<_FeedList>
     with AutomaticKeepAliveClientMixin {
   final _logger = LoggerService.instance;
@@ -787,6 +829,7 @@ class _FeedListState extends State<_FeedList>
     _loadPosts();
     _scrollController.addListener(_onScroll);
   }
+
   @override
   void didUpdateWidget(_FeedList oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -798,11 +841,13 @@ class _FeedListState extends State<_FeedList>
       _loadPosts(refresh: true);
     }
   }
+
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
   }
+
   Future<void> _loadPosts({bool refresh = false}) async {
     if (_isLoading || (!refresh && !_hasMorePosts)) return;
     setState(() {
@@ -855,12 +900,14 @@ class _FeedListState extends State<_FeedList>
       });
     }
   }
+
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 500) {
       _loadPosts();
     }
   }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -883,6 +930,7 @@ class _FeedListState extends State<_FeedList>
       child: _buildLayout(),
     );
   }
+
   Widget _buildLayout() {
     switch (widget.viewMode) {
       case ViewMode.feed:
@@ -923,6 +971,7 @@ class _FeedListState extends State<_FeedList>
         );
     }
   }
+
   void _navigateToPost(Post post) {
     if (post.id.isEmpty || post.id.startsWith('invalid_post_id_')) return;
     try {
@@ -953,6 +1002,7 @@ class _FeedListState extends State<_FeedList>
     }
   }
 }
+
 class ModernFeedCard extends StatelessWidget {
   final Post post;
   final VoidCallback onTap;
@@ -974,7 +1024,11 @@ class ModernFeedCard extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      color: isDark ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: isDark
+                          ? Theme.of(context).colorScheme.surface
+                          : Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest,
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
@@ -986,8 +1040,12 @@ class ModernFeedCard extends StatelessWidget {
                                 child: Icon(
                                   Icons.image,
                                   size: 48,
-                                  color:
-                                      isDark ? Theme.of(context).colorScheme.onSurface.withOpacity(0.24) : Colors.black26,
+                                  color: isDark
+                                      ? Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.24)
+                                      : Colors.black26,
                                 ),
                               ),
                             )
@@ -999,7 +1057,12 @@ class ModernFeedCard extends StatelessWidget {
                                         ? Icons.podcasts
                                         : Icons.article,
                                 size: 48,
-                                color: isDark ? Theme.of(context).colorScheme.onSurface.withOpacity(0.24) : Colors.black26,
+                                color: isDark
+                                    ? Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.24)
+                                    : Colors.black26,
                               ),
                             ),
                     ),
@@ -1047,7 +1110,10 @@ class ModernFeedCard extends StatelessWidget {
                               ? AppColors.purple.withOpacity(0.95)
                               : post.type == PostType.question
                                   ? AppColors.blue.withOpacity(0.95)
-                                  : Theme.of(context).colorScheme.outline.withOpacity(0.95),
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .outline
+                                      .withOpacity(0.95),
                       borderRadius: BorderRadius.circular(6),
                       boxShadow: [
                         BoxShadow(
@@ -1097,8 +1163,8 @@ class ModernFeedCard extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: _getPoliticalColor(
-                              context, post.politicalOrientation.displayOrientation)
+                      color: _getPoliticalColor(context,
+                              post.politicalOrientation.displayOrientation)
                           .withOpacity(0.95),
                       borderRadius: BorderRadius.circular(6),
                       boxShadow: [
@@ -1147,16 +1213,16 @@ class ModernFeedCard extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.compare_arrows,
                             size: 12,
-                            color: Theme.of(context).colorScheme.surface,
+                            color: Colors.white,
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Text(
                             '${post.opposingPosts!.length} oppositions',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.surface,
+                            style: const TextStyle(
+                              color: Colors.white,
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
                             ),
@@ -1179,7 +1245,13 @@ class ModernFeedCard extends StatelessWidget {
                       height: 40,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: isDark ? Theme.of(context).colorScheme.surfaceContainerHighest : Theme.of(context).colorScheme.surfaceContainerHighest,
+                        color: isDark
+                            ? Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest
+                            : Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest,
                       ),
                       child: ClipOval(
                         child: post.journalist?.avatarUrl != null
@@ -1264,7 +1336,12 @@ class ModernFeedCard extends StatelessWidget {
                               '12.5K abonnés',
                               style: TextStyle(
                                 fontSize: 11,
-                                color: isDark ? Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.54) : Colors.black45,
+                                color: isDark
+                                    ? Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainerHighest
+                                        .withOpacity(0.54)
+                                    : Colors.black45,
                               ),
                             ),
                           ],
@@ -1308,8 +1385,8 @@ class ModernFeedCard extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 5, vertical: 1),
                               decoration: BoxDecoration(
-                                color: _getDomainColor(
-                                        context, post.domain.toString().split('.').last)
+                                color: _getDomainColor(context,
+                                        post.domain.toString().split('.').last)
                                     .withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(6),
                               ),
@@ -1318,8 +1395,8 @@ class ModernFeedCard extends StatelessWidget {
                                     post.domain.toString().split('.').last),
                                 style: TextStyle(
                                   fontSize: 9,
-                                  color: _getDomainColor(
-                                      context, post.domain.toString().split('.').last),
+                                  color: _getDomainColor(context,
+                                      post.domain.toString().split('.').last),
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -1351,7 +1428,9 @@ class ModernFeedCard extends StatelessWidget {
       ),
     );
   }
-  Color _getPoliticalColor(BuildContext context, PoliticalOrientation orientation) {
+
+  Color _getPoliticalColor(
+      BuildContext context, PoliticalOrientation orientation) {
     switch (orientation) {
       case PoliticalOrientation.extremelyConservative:
         return Colors.blue[900]!;
@@ -1365,6 +1444,7 @@ class ModernFeedCard extends StatelessWidget {
         return Colors.red[900]!;
     }
   }
+
   IconData _getPoliticalIcon(PoliticalOrientation orientation) {
     switch (orientation) {
       case PoliticalOrientation.extremelyConservative:
@@ -1379,6 +1459,7 @@ class ModernFeedCard extends StatelessWidget {
         return Icons.keyboard_double_arrow_right;
     }
   }
+
   String _getPoliticalLabel(PoliticalOrientation orientation) {
     switch (orientation) {
       case PoliticalOrientation.extremelyConservative:
@@ -1393,6 +1474,7 @@ class ModernFeedCard extends StatelessWidget {
         return 'T.PROGRESS';
     }
   }
+
   Color _getDomainColor(BuildContext context, String domain) {
     switch (domain.toLowerCase()) {
       case 'politique':
@@ -1418,10 +1500,12 @@ class ModernFeedCard extends StatelessWidget {
         return Theme.of(context).colorScheme.outline;
     }
   }
+
   String _getDomainLabel(String domain) {
     return domain.substring(0, 1).toUpperCase() +
         domain.substring(1).toLowerCase();
   }
+
   String _formatNumber(int number) {
     if (number >= 1000000) {
       return '${(number / 1000000).toStringAsFixed(1)}M';
@@ -1430,6 +1514,7 @@ class ModernFeedCard extends StatelessWidget {
     }
     return number.toString();
   }
+
   String _formatTime(DateTime dateTime) {
     final now = DateTime.now();
     final diff = now.difference(dateTime);
@@ -1439,6 +1524,7 @@ class ModernFeedCard extends StatelessWidget {
     return 'à l\'instant';
   }
 }
+
 class YouTubeListItem extends StatelessWidget {
   final Post post;
   final VoidCallback onTap;
@@ -1460,7 +1546,9 @@ class YouTubeListItem extends StatelessWidget {
                   height: 90,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: isDark ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.surfaceContainerHighest,
+                    color: isDark
+                        ? Theme.of(context).colorScheme.surface
+                        : Theme.of(context).colorScheme.surfaceContainerHighest,
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
@@ -1516,7 +1604,10 @@ class YouTubeListItem extends StatelessWidget {
                               ? AppColors.purple.withOpacity(0.9)
                               : post.type == PostType.question
                                   ? AppColors.blue.withOpacity(0.9)
-                                  : Theme.of(context).colorScheme.outline.withOpacity(0.9),
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .outline
+                                      .withOpacity(0.9),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Row(
@@ -1559,8 +1650,8 @@ class YouTubeListItem extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                     decoration: BoxDecoration(
-                      color: _getPoliticalColor(
-                              context, post.politicalOrientation.displayOrientation)
+                      color: _getPoliticalColor(context,
+                              post.politicalOrientation.displayOrientation)
                           .withOpacity(0.95),
                       borderRadius: BorderRadius.circular(4),
                       boxShadow: [
@@ -1609,16 +1700,16 @@ class YouTubeListItem extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.compare_arrows,
                             size: 10,
-                            color: Theme.of(context).colorScheme.surface,
+                            color: Colors.white,
                           ),
-                          SizedBox(width: 2),
+                          const SizedBox(width: 2),
                           Text(
                             '${post.opposingPosts!.length}',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.surface,
+                            style: const TextStyle(
+                              color: Colors.white,
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
                             ),
@@ -1676,7 +1767,12 @@ class YouTubeListItem extends StatelessWidget {
                         ' • 12.5K abonnés',
                         style: TextStyle(
                           fontSize: 11,
-                          color: isDark ? Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.54) : Colors.black45,
+                          color: isDark
+                              ? Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest
+                                  .withOpacity(0.54)
+                              : Colors.black45,
                         ),
                       ),
                     ],
@@ -1751,6 +1847,7 @@ class YouTubeListItem extends StatelessWidget {
       ),
     );
   }
+
   Widget _buildPlaceholder(BuildContext context, Post post, bool isDark) {
     return Container(
       width: double.infinity,
@@ -1769,6 +1866,7 @@ class YouTubeListItem extends StatelessWidget {
       ),
     );
   }
+
   Color _getDomainColor(BuildContext context, String domain) {
     switch (domain.toLowerCase()) {
       case 'politique':
@@ -1794,10 +1892,12 @@ class YouTubeListItem extends StatelessWidget {
         return Theme.of(context).colorScheme.outline;
     }
   }
+
   String _getDomainLabel(String domain) {
     return domain.substring(0, 1).toUpperCase() +
         domain.substring(1).toLowerCase();
   }
+
   String _formatNumber(int number) {
     if (number >= 1000000) {
       return '${(number / 1000000).toStringAsFixed(1)}M';
@@ -1806,6 +1906,7 @@ class YouTubeListItem extends StatelessWidget {
     }
     return number.toString();
   }
+
   String _formatTime(DateTime dateTime) {
     final now = DateTime.now();
     final diff = now.difference(dateTime);
@@ -1814,7 +1915,9 @@ class YouTubeListItem extends StatelessWidget {
     if (diff.inMinutes > 0) return 'il y a ${diff.inMinutes}min';
     return 'à l\'instant';
   }
-  Color _getPoliticalColor(BuildContext context, PoliticalOrientation orientation) {
+
+  Color _getPoliticalColor(
+      BuildContext context, PoliticalOrientation orientation) {
     switch (orientation) {
       case PoliticalOrientation.extremelyConservative:
         return Colors.blue[900]!;
@@ -1828,6 +1931,7 @@ class YouTubeListItem extends StatelessWidget {
         return Colors.red[900]!;
     }
   }
+
   IconData _getPoliticalIcon(PoliticalOrientation orientation) {
     switch (orientation) {
       case PoliticalOrientation.extremelyConservative:
@@ -1842,6 +1946,7 @@ class YouTubeListItem extends StatelessWidget {
         return Icons.keyboard_double_arrow_right;
     }
   }
+
   String _getPoliticalLabel(PoliticalOrientation orientation) {
     switch (orientation) {
       case PoliticalOrientation.extremelyConservative:

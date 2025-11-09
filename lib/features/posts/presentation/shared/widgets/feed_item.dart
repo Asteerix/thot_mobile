@@ -15,6 +15,7 @@ import 'package:thot/features/profile/presentation/shared/widgets/follow_button.
 import 'package:thot/features/profile/presentation/shared/widgets/badges.dart';
 import 'package:thot/shared/widgets/safe_network_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
 class FeedItem extends StatefulWidget {
   final VoidCallback onTap;
   final Post post;
@@ -32,6 +33,7 @@ class FeedItem extends StatefulWidget {
   @override
   State<FeedItem> createState() => _FeedItemState();
 }
+
 class _FeedItemState extends State<FeedItem>
     with AutomaticKeepAliveClientMixin {
   @override
@@ -45,6 +47,7 @@ class _FeedItemState extends State<FeedItem>
     _currentPost = widget.post;
     _setupEventListeners();
   }
+
   void _setupEventListeners() {
     _subscriptions.add(
       _eventBus.on<PostLikedEvent>().listen((event) {
@@ -117,12 +120,12 @@ class _FeedItemState extends State<FeedItem>
               // Silently fail cache eviction
             }
           }
-          setState(() {
-          });
+          setState(() {});
         }
       }),
     );
   }
+
   @override
   void dispose() {
     for (final subscription in _subscriptions) {
@@ -130,6 +133,7 @@ class _FeedItemState extends State<FeedItem>
     }
     super.dispose();
   }
+
   @override
   void didUpdateWidget(FeedItem oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -137,6 +141,7 @@ class _FeedItemState extends State<FeedItem>
       _currentPost = widget.post;
     }
   }
+
   String _formatCount(int count) {
     if (count >= 1000000) {
       return '${(count / 1000000).toStringAsFixed(1)}M';
@@ -145,6 +150,7 @@ class _FeedItemState extends State<FeedItem>
     }
     return count.toString();
   }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -205,118 +211,117 @@ class _FeedItemState extends State<FeedItem>
                             fit: StackFit.expand,
                             children: [
                               ShaderMask(
-                                  shaderCallback: (rect) {
-                                    return LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: [
-                                        colorScheme.surface.withOpacity(0.1),
-                                        colorScheme.surface.withOpacity(0.7),
-                                      ],
-                                      stops: const [0.5, 1.0],
-                                    ).createShader(rect);
-                                  },
-                                  blendMode: BlendMode.darken,
-                                  child: Builder(builder: (context) {
-                                    String? imageUrl;
-                                    if (displayPost.type == PostType.video) {
-                                      imageUrl = displayPost.thumbnailUrl ??
-                                          displayPost.imageUrl;
-                                    } else {
-                                      imageUrl = displayPost.imageUrl ??
-                                          displayPost.thumbnailUrl;
-                                    }
-                                    if (imageUrl != null &&
-                                        imageUrl.isNotEmpty) {
-                                      final cleanUrl = imageUrl.trim();
-                                      if (cleanUrl.isEmpty ||
-                                          cleanUrl.toLowerCase() == 'null' ||
-                                          cleanUrl == 'undefined' ||
-                                          (cleanUrl.startsWith('file://') &&
-                                              cleanUrl.length <= 8)) {
-                                        imageUrl = null;
-                                      }
-                                    }
-                                    if (displayPost.type == PostType.video) {
-                                      developer.log(
-                                        'Video post image selection',
-                                        name: 'FeedItem',
-                                        error: {
-                                          'postId': displayPost.id,
-                                          'title': displayPost.title,
-                                          'type': displayPost.type.toString(),
-                                          'thumbnailUrl':
-                                              displayPost.thumbnailUrl,
-                                          'imageUrl': displayPost.imageUrl,
-                                          'selectedUrl': imageUrl,
-                                          'isValid': imageUrl != null,
-                                        },
-                                      );
-                                    }
-                                    return SafeNetworkImage(
-                                      url: imageUrl,
-                                      fit: BoxFit.cover,
-                                      memCacheWidth: 800,
-                                      memCacheHeight: 450,
-                                      filterQuality: FilterQuality.medium,
-                                    );
-                                  }),
-                                ),
-                                Positioned(
-                                  top: 12,
-                                  left: 12,
-                                  right: 12,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      _buildTypeOverlay(displayPost),
-                                      _buildPublicOpinionBadge(displayPost
-                                          .politicalOrientation.dominantView),
+                                shaderCallback: (rect) {
+                                  return LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      colorScheme.surface.withOpacity(0.1),
+                                      colorScheme.surface.withOpacity(0.7),
                                     ],
-                                  ),
+                                    stops: const [0.5, 1.0],
+                                  ).createShader(rect);
+                                },
+                                blendMode: BlendMode.darken,
+                                child: Builder(builder: (context) {
+                                  String? imageUrl;
+                                  if (displayPost.type == PostType.video) {
+                                    imageUrl = displayPost.thumbnailUrl ??
+                                        displayPost.imageUrl;
+                                  } else {
+                                    imageUrl = displayPost.imageUrl ??
+                                        displayPost.thumbnailUrl;
+                                  }
+                                  if (imageUrl != null && imageUrl.isNotEmpty) {
+                                    final cleanUrl = imageUrl.trim();
+                                    if (cleanUrl.isEmpty ||
+                                        cleanUrl.toLowerCase() == 'null' ||
+                                        cleanUrl == 'undefined' ||
+                                        (cleanUrl.startsWith('file://') &&
+                                            cleanUrl.length <= 8)) {
+                                      imageUrl = null;
+                                    }
+                                  }
+                                  if (displayPost.type == PostType.video) {
+                                    developer.log(
+                                      'Video post image selection',
+                                      name: 'FeedItem',
+                                      error: {
+                                        'postId': displayPost.id,
+                                        'title': displayPost.title,
+                                        'type': displayPost.type.toString(),
+                                        'thumbnailUrl':
+                                            displayPost.thumbnailUrl,
+                                        'imageUrl': displayPost.imageUrl,
+                                        'selectedUrl': imageUrl,
+                                        'isValid': imageUrl != null,
+                                      },
+                                    );
+                                  }
+                                  return SafeNetworkImage(
+                                    url: imageUrl,
+                                    fit: BoxFit.cover,
+                                    memCacheWidth: 800,
+                                    memCacheHeight: 450,
+                                    filterQuality: FilterQuality.medium,
+                                  );
+                                }),
+                              ),
+                              Positioned(
+                                top: 12,
+                                left: 12,
+                                right: 12,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    _buildTypeOverlay(displayPost),
+                                    _buildPublicOpinionBadge(displayPost
+                                        .politicalOrientation.dominantView),
+                                  ],
                                 ),
-                                if (displayPost.hasOppositions)
-                                  Positioned(
-                                    bottom: 12,
-                                    left: 12,
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 6,
+                              ),
+                              if (displayPost.hasOppositions)
+                                Positioned(
+                                  bottom: 12,
+                                  left: 12,
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(
+                                          color: Colors.white.withOpacity(0.3),
+                                          width: 1,
                                         ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.black,
-                                          borderRadius: BorderRadius.circular(16),
-                                          border: Border.all(
-                                            color: Colors.white.withOpacity(0.3),
-                                            width: 1,
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                            Icons.swap_horiz,
+                                            color: Colors.white,
+                                            size: 14,
                                           ),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const Icon(
-                                              Icons.swap_horiz,
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            '${displayPost.oppositions.length} opposition${displayPost.oppositions.length > 1 ? 's' : ''}',
+                                            style: const TextStyle(
                                               color: Colors.white,
-                                              size: 14,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600,
                                             ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              '${displayPost.oppositions.length} opposition${displayPost.oppositions.length > 1 ? 's' : ''}',
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
+                                ),
                             ],
                           ),
                         ),
@@ -542,6 +547,7 @@ class _FeedItemState extends State<FeedItem>
       },
     );
   }
+
   Widget _buildTypeOverlay(Post post) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -584,6 +590,7 @@ class _FeedItemState extends State<FeedItem>
       ),
     );
   }
+
   Widget _buildPublicOpinionBadge(PoliticalOrientation? orientation) {
     final color = _getPoliticalViewColor(orientation);
     return Container(
@@ -605,6 +612,7 @@ class _FeedItemState extends State<FeedItem>
       ),
     );
   }
+
   Widget _getPoliticalViewIcon(PoliticalOrientation? view) {
     return Icon(
       Icons.public,
@@ -612,6 +620,7 @@ class _FeedItemState extends State<FeedItem>
       color: Theme.of(context).colorScheme.onSurface,
     );
   }
+
   Widget _buildStatChip(IconData icon, String count,
       {required Color color, bool compact = false, VoidCallback? onTap}) {
     return GestureDetector(
@@ -657,6 +666,7 @@ class _FeedItemState extends State<FeedItem>
       ),
     );
   }
+
   String _getTimeAgo(DateTime createdAt) {
     final now = DateTime.now();
     final difference = now.difference(createdAt);
@@ -669,6 +679,7 @@ class _FeedItemState extends State<FeedItem>
     }
     return 'À l\'instant';
   }
+
   String _getTypeLabel(PostType type) {
     return switch (type) {
       PostType.article => 'ARTICLE',
@@ -683,6 +694,7 @@ class _FeedItemState extends State<FeedItem>
       PostType.opinion => 'OPINION',
     };
   }
+
   IconData _getTypeIcon(PostType type) {
     return switch (type) {
       PostType.article => Icons.article,
@@ -697,6 +709,7 @@ class _FeedItemState extends State<FeedItem>
       PostType.opinion => Icons.comment,
     };
   }
+
   Color _getTypeColor(PostType type) {
     return switch (type) {
       PostType.article => Theme.of(context).colorScheme.primary,
@@ -711,16 +724,20 @@ class _FeedItemState extends State<FeedItem>
       PostType.opinion => AppColors.warning,
     };
   }
+
   Color _getPoliticalViewColor(PoliticalOrientation? view) {
     return switch (view) {
-      PoliticalOrientation.extremelyProgressive => AppColors.extremelyProgressive,
+      PoliticalOrientation.extremelyProgressive =>
+        AppColors.extremelyProgressive,
       PoliticalOrientation.progressive => AppColors.progressive,
-      PoliticalOrientation.extremelyConservative => AppColors.extremelyConservative,
+      PoliticalOrientation.extremelyConservative =>
+        AppColors.extremelyConservative,
       PoliticalOrientation.conservative => AppColors.conservative,
       PoliticalOrientation.neutral => AppColors.neutral,
       null => AppColors.neutral,
     };
   }
+
   Future<void> _handleLike() async {
     HapticFeedback.lightImpact();
     final postsStateProvider = context.read<PostsStateProvider>();
@@ -750,6 +767,7 @@ class _FeedItemState extends State<FeedItem>
       }
     }
   }
+
   Future<void> _handleBookmark() async {
     HapticFeedback.lightImpact();
     final wasSaved = _currentPost.isSaved;
@@ -795,6 +813,7 @@ class _FeedItemState extends State<FeedItem>
       }
     }
   }
+
   PoliticalOrientation? _getPoliticalOrientationFromString(String? value) {
     if (value == null) return null;
     try {
