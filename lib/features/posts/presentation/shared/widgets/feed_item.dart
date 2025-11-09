@@ -280,37 +280,40 @@ class _FeedItemState extends State<FeedItem>
                                   Positioned(
                                     bottom: 12,
                                     left: 12,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 6,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.black.withOpacity(0.8),
-                                        borderRadius: BorderRadius.circular(16),
-                                        border: Border.all(
-                                          color: AppColors.warning.withOpacity(0.5),
-                                          width: 1,
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                          vertical: 6,
                                         ),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons.swap_horiz,
-                                            color: AppColors.warning,
-                                            size: 14,
+                                        decoration: BoxDecoration(
+                                          color: Colors.black,
+                                          borderRadius: BorderRadius.circular(16),
+                                          border: Border.all(
+                                            color: Colors.white.withOpacity(0.3),
+                                            width: 1,
                                           ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '${displayPost.oppositions.length} opposition${displayPost.oppositions.length > 1 ? 's' : ''}',
-                                            style: const TextStyle(
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(
+                                              Icons.swap_horiz,
                                               color: Colors.white,
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w600,
+                                              size: 14,
                                             ),
-                                          ),
-                                        ],
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              '${displayPost.oppositions.length} opposition${displayPost.oppositions.length > 1 ? 's' : ''}',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
