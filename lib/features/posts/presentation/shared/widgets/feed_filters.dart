@@ -846,6 +846,23 @@ class _CategoryCard extends StatelessWidget {
     );
   }
 }
+IconData _getPoliticalIcon(PoliticalView view) {
+  switch (view) {
+    case PoliticalView.extremelyConservative:
+      return Icons.keyboard_double_arrow_left;
+    case PoliticalView.conservative:
+      return Icons.arrow_back;
+    case PoliticalView.neutral:
+      return Icons.remove;
+    case PoliticalView.progressive:
+      return Icons.arrow_forward;
+    case PoliticalView.extremelyProgressive:
+      return Icons.keyboard_double_arrow_right;
+    case PoliticalView.all:
+      return Icons.public;
+  }
+}
+
 class _PoliticalCard extends StatelessWidget {
   final PoliticalView view;
   final bool isSelected;
@@ -888,7 +905,7 @@ class _PoliticalCard extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  Icons.account_balance,
+                  _getPoliticalIcon(view),
                   size: 18,
                   color: view.color,
                 ),
@@ -900,7 +917,9 @@ class _PoliticalCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                    color: isSelected ? view.color : null,
+                    color: isSelected
+                        ? view.color
+                        : (isDark ? Colors.white.withOpacity(0.9) : Colors.black87),
                   ),
                 ),
               ),
