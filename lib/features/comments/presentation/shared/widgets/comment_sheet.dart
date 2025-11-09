@@ -773,19 +773,27 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                         Consumer<AuthProvider>(
                           builder: (context, authProvider, _) {
                             final avatarUrl = authProvider.userProfile?.avatarUrl;
+                            final userName = authProvider.userProfile?.name ?? '';
+
+                            if (avatarUrl != null && avatarUrl.isNotEmpty) {
+                              return CircleAvatar(
+                                radius: 16,
+                                backgroundColor: Colors.grey[800],
+                                backgroundImage: CachedNetworkImageProvider(avatarUrl),
+                              );
+                            }
+
                             return CircleAvatar(
                               radius: 16,
-                              backgroundColor: Colors.grey[800],
-                              backgroundImage: avatarUrl != null
-                                  ? CachedNetworkImageProvider(avatarUrl)
-                                  : null,
-                              child: avatarUrl == null
-                                  ? Icon(
-                                      Icons.person,
-                                      size: 16,
-                                      color: Colors.grey[400],
-                                    )
-                                  : null,
+                              backgroundColor: Theme.of(context).colorScheme.primary,
+                              child: Text(
+                                userName.isNotEmpty ? userName[0].toUpperCase() : '?',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             );
                           },
                         ),
