@@ -502,20 +502,48 @@ class Formation {
   final String title;
   final String institution;
   final int year;
+  final DateTime startDate;
+  final DateTime? endDate;
+  final bool current;
   final String? description;
   const Formation({
     required this.id,
     required this.title,
     required this.institution,
     required this.year,
+    required this.startDate,
+    this.endDate,
+    this.current = false,
     this.description,
   });
   factory Formation.fromJson(Map<String, dynamic> json) {
+    DateTime parseStartDate(dynamic value) {
+      if (value != null && value is String) {
+        try {
+          return DateTime.parse(value);
+        } catch (_) {}
+      }
+      final yearValue = json['year'] as int? ?? DateTime.now().year;
+      return DateTime(yearValue, 1, 1);
+    }
+
+    DateTime? parseEndDate(dynamic value) {
+      if (value != null && value is String) {
+        try {
+          return DateTime.parse(value);
+        } catch (_) {}
+      }
+      return null;
+    }
+
     return Formation(
       id: json['_id']?.toString() ?? json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
       institution: json['institution']?.toString() ?? '',
       year: json['year'] as int? ?? DateTime.now().year,
+      startDate: parseStartDate(json['startDate']),
+      endDate: parseEndDate(json['endDate']),
+      current: json['current'] == true,
       description: json['description']?.toString(),
     );
   }
@@ -524,6 +552,9 @@ class Formation {
       'title': title,
       'institution': institution,
       'year': year,
+      'startDate': startDate.toIso8601String(),
+      if (endDate != null) 'endDate': endDate?.toIso8601String(),
+      'current': current,
       if (description != null) 'description': description,
     };
   }

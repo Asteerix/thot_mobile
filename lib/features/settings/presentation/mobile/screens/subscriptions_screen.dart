@@ -2,7 +2,6 @@ import 'package:thot/core/themes/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:developer' as developer;
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:thot/features/posts/data/repositories/post_repository_impl.dart';
@@ -44,10 +43,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
     _loadUserData();
     _postCreatedSubscription =
         EventBus().on<PostCreatedEvent>().listen((event) {
-      developer.log(
-        'Post created event received in SubscriptionsScreen',
-        name: 'SubscriptionsScreen',
-      );
+      debugPrint('Post created event received in SubscriptionsScreen');
       if (mounted) {
         setState(() {
           _refreshKey++;

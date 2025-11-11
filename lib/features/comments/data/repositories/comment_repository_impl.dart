@@ -14,56 +14,56 @@ class CommentRepositoryImpl implements CommentRepository {
   Future<Either<CommentFailure, List<Comment>>> getComments(String postId,
       {int? page}) async {
     try {
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('📡 [COMMENT_REPO] GET COMMENTS REQUEST');
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('📡 [COMMENT_REPO] Post ID: $postId');
-      debugPrint('📡 [COMMENT_REPO] Page: ${page ?? 1}');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('📡 [COMMENT_REPO] GET COMMENTS REQUEST');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('📡 [COMMENT_REPO] Post ID: $postId');
+      print('📡 [COMMENT_REPO] Page: ${page ?? 1}');
       final response = await _apiService.get(
         '${ApiRoutesHelper.getComments}/$postId?page=${page ?? 1}&sortBy=recent',
       );
       final responseData = response.data;
       if (responseData == null) {
-        debugPrint('⚠️ [COMMENT_REPO] Response data is null');
+        print('⚠️ [COMMENT_REPO] Response data is null');
         return const Right([]);
       }
       final dataObject = responseData['data'];
       if (dataObject == null) {
-        debugPrint('⚠️ [COMMENT_REPO] Data object is null');
+        print('⚠️ [COMMENT_REPO] Data object is null');
         return const Right([]);
       }
       final commentsData = dataObject['comments'] as List?;
       if (commentsData == null) {
-        debugPrint('⚠️ [COMMENT_REPO] Comments data is null');
+        print('⚠️ [COMMENT_REPO] Comments data is null');
         return const Right([]);
       }
       final comments = commentsData
           .map((json) => CommentDto.fromJson(json as Map<String, dynamic>))
           .map((dto) => _dtoToEntity(dto))
           .toList();
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('✅ [COMMENT_REPO] COMMENTS LOADED');
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('✅ [COMMENT_REPO] Post ID: $postId');
-      debugPrint('✅ [COMMENT_REPO] Comments count: ${comments.length}');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('✅ [COMMENT_REPO] COMMENTS LOADED');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('✅ [COMMENT_REPO] Post ID: $postId');
+      print('✅ [COMMENT_REPO] Comments count: ${comments.length}');
       for (int i = 0; i < comments.length; i++) {
         final comment = comments[i];
-        debugPrint('💬 [COMMENT_REPO] Comment #$i:');
-        debugPrint('   - ID: ${comment.id}');
-        debugPrint('   - Author: ${comment.author.name}');
-        debugPrint('   - Reply count: ${comment.replyCount}');
-        debugPrint('   - Parent comment: ${comment.parentComment ?? "null (top-level)"}');
+        print('💬 [COMMENT_REPO] Comment #$i:');
+        print('   - ID: ${comment.id}');
+        print('   - Author: ${comment.author.name}');
+        print('   - Reply count: ${comment.replyCount}');
+        print('   - Parent comment: ${comment.parentComment ?? "null (top-level)"}');
       }
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       return Right(comments);
     } catch (e, stackTrace) {
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('❌ [COMMENT_REPO] GET COMMENTS ERROR');
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('❌ [COMMENT_REPO] Post ID: $postId');
-      debugPrint('❌ [COMMENT_REPO] Error: ${e.toString()}');
-      debugPrint('❌ [COMMENT_REPO] Stack trace: ${stackTrace.toString()}');
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('❌ [COMMENT_REPO] GET COMMENTS ERROR');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('❌ [COMMENT_REPO] Post ID: $postId');
+      print('❌ [COMMENT_REPO] Error: ${e.toString()}');
+      print('❌ [COMMENT_REPO] Stack trace: ${stackTrace.toString()}');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       return Left(CommentFailure.serverError(e.toString()));
     }
   }
@@ -88,13 +88,13 @@ class CommentRepositoryImpl implements CommentRepository {
       final comment = _dtoToEntity(dto);
       if (isReply) {
         final isLinked = comment.parentComment == parentCommentId;
-        debugPrint('🔗 [COMMENT_REPO] Reply created | id: ${comment.id}, parentComment: ${comment.parentComment}, isLinked: $isLinked');
+        print('🔗 [COMMENT_REPO] Reply created | id: ${comment.id}, parentComment: ${comment.parentComment}, isLinked: $isLinked');
       } else {
-        debugPrint('✅ [COMMENT_REPO] Comment created | id: ${comment.id}, author: ${comment.author.name}');
+        print('✅ [COMMENT_REPO] Comment created | id: ${comment.id}, author: ${comment.author.name}');
       }
       return Right(comment);
     } catch (e) {
-      debugPrint('❌ [COMMENT_REPO] Add comment error | postId: $postId, error: ${e.toString()}');
+      print('❌ [COMMENT_REPO] Add comment error | postId: $postId, error: ${e.toString()}');
       return Left(CommentFailure.serverError(e.toString()));
     }
   }
@@ -106,7 +106,7 @@ class CommentRepositoryImpl implements CommentRepository {
       );
       return const Right(null);
     } catch (e) {
-      debugPrint('❌ [COMMENT_REPO] Delete comment error | commentId: $commentId, error: ${e.toString()}');
+      print('❌ [COMMENT_REPO] Delete comment error | commentId: $commentId, error: ${e.toString()}');
       return Left(CommentFailure.serverError(e.toString()));
     }
   }
@@ -119,7 +119,7 @@ class CommentRepositoryImpl implements CommentRepository {
       );
       return const Right(null);
     } catch (e) {
-      debugPrint('❌ [COMMENT_REPO] Like comment error | commentId: $commentId, error: ${e.toString()}');
+      print('❌ [COMMENT_REPO] Like comment error | commentId: $commentId, error: ${e.toString()}');
       return Left(CommentFailure.serverError(e.toString()));
     }
   }
@@ -132,7 +132,7 @@ class CommentRepositoryImpl implements CommentRepository {
       );
       return const Right(null);
     } catch (e) {
-      debugPrint('❌ [COMMENT_REPO] Unlike comment error | commentId: $commentId, error: ${e.toString()}');
+      print('❌ [COMMENT_REPO] Unlike comment error | commentId: $commentId, error: ${e.toString()}');
       return Left(CommentFailure.serverError(e.toString()));
     }
   }
@@ -147,7 +147,7 @@ class CommentRepositoryImpl implements CommentRepository {
       final dto = CommentDto.fromJson(response.data as Map<String, dynamic>);
       return Right(_dtoToEntity(dto));
     } catch (e) {
-      debugPrint('❌ [COMMENT_REPO] Update comment error | commentId: $commentId, error: ${e.toString()}');
+      print('❌ [COMMENT_REPO] Update comment error | commentId: $commentId, error: ${e.toString()}');
       return Left(CommentFailure.serverError(e.toString()));
     }
   }
@@ -155,52 +155,52 @@ class CommentRepositoryImpl implements CommentRepository {
   Future<Either<CommentFailure, List<Comment>>> getReplies(String commentId,
       {int? page}) async {
     try {
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('📡 [COMMENT_REPO] GET REPLIES REQUEST');
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('📡 [COMMENT_REPO] Comment ID: $commentId');
-      debugPrint('📡 [COMMENT_REPO] Page: ${page ?? 1}');
-      debugPrint('📡 [COMMENT_REPO] URL: ${ApiRoutesHelper.getCommentReplies}/$commentId?page=${page ?? 1}');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('📡 [COMMENT_REPO] GET REPLIES REQUEST');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('📡 [COMMENT_REPO] Comment ID: $commentId');
+      print('📡 [COMMENT_REPO] Page: ${page ?? 1}');
+      print('📡 [COMMENT_REPO] URL: ${ApiRoutesHelper.getCommentReplies}/$commentId?page=${page ?? 1}');
       final response = await _apiService.get(
         '${ApiRoutesHelper.getCommentReplies}/$commentId?page=${page ?? 1}',
       );
-      debugPrint('📡 [COMMENT_REPO] Response received');
-      debugPrint('📡 [COMMENT_REPO] Response data type: ${response.data.runtimeType}');
+      print('📡 [COMMENT_REPO] Response received');
+      print('📡 [COMMENT_REPO] Response data type: ${response.data.runtimeType}');
       final responseData = response.data;
-      debugPrint('📡 [COMMENT_REPO] Response data: ${responseData.toString().substring(0, responseData.toString().length > 200 ? 200 : responseData.toString().length)}...');
+      print('📡 [COMMENT_REPO] Response data: ${responseData.toString().substring(0, responseData.toString().length > 200 ? 200 : responseData.toString().length)}...');
       final dataObject = responseData['data'];
-      debugPrint('📡 [COMMENT_REPO] Data object: ${dataObject.runtimeType}');
+      print('📡 [COMMENT_REPO] Data object: ${dataObject.runtimeType}');
       final repliesData = (dataObject['replies'] ?? []) as List;
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('✅ [COMMENT_REPO] REPLIES FETCHED');
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('✅ [COMMENT_REPO] Comment ID: $commentId');
-      debugPrint('✅ [COMMENT_REPO] Replies count: ${repliesData.length}');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('✅ [COMMENT_REPO] REPLIES FETCHED');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('✅ [COMMENT_REPO] Comment ID: $commentId');
+      print('✅ [COMMENT_REPO] Replies count: ${repliesData.length}');
       final replies = repliesData
           .map((json) => CommentDto.fromJson(json as Map<String, dynamic>))
           .map((dto) => _dtoToEntity(dto))
           .toList();
-      debugPrint('✅ [COMMENT_REPO] Replies converted to entities: ${replies.length}');
+      print('✅ [COMMENT_REPO] Replies converted to entities: ${replies.length}');
       for (int i = 0; i < replies.length; i++) {
         final reply = replies[i];
         final hasParent = reply.parentComment != null;
-        debugPrint('🔗 [COMMENT_REPO] Reply #$i:');
-        debugPrint('   - ID: ${reply.id}');
-        debugPrint('   - Author: ${reply.author.name}');
-        debugPrint('   - Content: ${reply.content.substring(0, reply.content.length > 30 ? 30 : reply.content.length)}...');
-        debugPrint('   - Parent: ${reply.parentComment}');
-        debugPrint('   - Has parent: $hasParent');
+        print('🔗 [COMMENT_REPO] Reply #$i:');
+        print('   - ID: ${reply.id}');
+        print('   - Author: ${reply.author.name}');
+        print('   - Content: ${reply.content.substring(0, reply.content.length > 30 ? 30 : reply.content.length)}...');
+        print('   - Parent: ${reply.parentComment}');
+        print('   - Has parent: $hasParent');
       }
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       return Right(replies);
     } catch (e, stackTrace) {
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('❌ [COMMENT_REPO] GET REPLIES ERROR');
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('❌ [COMMENT_REPO] Comment ID: $commentId');
-      debugPrint('❌ [COMMENT_REPO] Error: ${e.toString()}');
-      debugPrint('❌ [COMMENT_REPO] Stack trace: ${stackTrace.toString()}');
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('❌ [COMMENT_REPO] GET REPLIES ERROR');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('❌ [COMMENT_REPO] Comment ID: $commentId');
+      print('❌ [COMMENT_REPO] Error: ${e.toString()}');
+      print('❌ [COMMENT_REPO] Stack trace: ${stackTrace.toString()}');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       return Left(CommentFailure.serverError(e.toString()));
     }
   }
@@ -215,7 +215,7 @@ class CommentRepositoryImpl implements CommentRepository {
           List<Map<String, dynamic>>.from(response.data['data'] ?? []);
       return Right(users);
     } catch (e) {
-      debugPrint('❌ [COMMENT_REPO] Get comment likes error | commentId: $commentId, error: ${e.toString()}');
+      print('❌ [COMMENT_REPO] Get comment likes error | commentId: $commentId, error: ${e.toString()}');
       return Left(CommentFailure.serverError(e.toString()));
     }
   }

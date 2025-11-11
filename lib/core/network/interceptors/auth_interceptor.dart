@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:developer' as developer;
 import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:thot/core/storage/token_service.dart';
+
 class AuthInterceptor extends Interceptor {
   AuthInterceptor({
     List<Pattern>? skipAuthFor,
@@ -53,6 +53,7 @@ class AuthInterceptor extends Interceptor {
     }
     handler.next(options);
   }
+
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     final statusCode = err.response?.statusCode;
@@ -66,6 +67,7 @@ class AuthInterceptor extends Interceptor {
     }
     handler.next(err);
   }
+
   void _handleUnauthorized(DioException err) {
     _log(
       '401 Unauthorized: ${err.requestOptions.method} ${err.requestOptions.uri.path}',
@@ -73,6 +75,7 @@ class AuthInterceptor extends Interceptor {
     );
     onUnauthorized?.call(err);
   }
+
   void _handleForbidden(DioException err) {
     final responseData = err.response?.data;
     final message = _extractMessage(responseData);
@@ -88,6 +91,7 @@ class AuthInterceptor extends Interceptor {
       responseData is Map<String, dynamic> ? responseData : null,
     );
   }
+
   bool _shouldSkipAuth(RequestOptions options) {
     if (options.extra['skipAuth'] == true) return true;
     final path = options.path;
@@ -97,12 +101,14 @@ class AuthInterceptor extends Interceptor {
     }
     return false;
   }
+
   String _generateRequestId() {
     final timestamp = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
     final randomPart =
         _random.nextInt(1 << 32).toRadixString(36).padLeft(7, '0');
     return '$timestamp-$randomPart';
   }
+
   String _maskToken(String token) {
     if (token.isEmpty) return 'empty';
     if (token.length <= 6) return '${token.substring(0, 2)}…(${token.length})';
@@ -110,6 +116,7 @@ class AuthInterceptor extends Interceptor {
     final suffix = token.substring(token.length - 4);
     return '$prefix…$suffix(${token.length})';
   }
+
   String _extractMessage(dynamic data) {
     try {
       if (data is Map) {
@@ -120,6 +127,7 @@ class AuthInterceptor extends Interceptor {
     } catch (_) {}
     return '';
   }
+
   void _log(
     String message, {
     int level = 800,
@@ -127,12 +135,6 @@ class AuthInterceptor extends Interceptor {
     StackTrace? stackTrace,
   }) {
     if (_productMode && level < 900) return;
-    developer.log(
-      message,
-      name: _logName,
-      level: level,
-      error: error,
-      stackTrace: stackTrace,
-    );
+    print(message);
   }
 }

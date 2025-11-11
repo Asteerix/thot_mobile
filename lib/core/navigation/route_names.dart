@@ -36,6 +36,7 @@ class RouteNames {
   static const String profile = '/profile';
   static const String userProfile = '/user-profile';
   static const String editProfile = '/edit-profile';
+  static const String editJournalistCard = '/edit-journalist-card';
   static const String followers = '/followers';
   static const String following = '/following';
   static const String savedContent = '/saved-content';

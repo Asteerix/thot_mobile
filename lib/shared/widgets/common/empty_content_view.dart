@@ -38,8 +38,8 @@ import 'package:flutter/material.dart';
 //
 // FICHIERS À MIGRER (4 usages):
 // 1. mobile/lib/features/profile/presentation/mobile/screens/profile_screen.dart
-// 2. mobile/lib/features/posts/presentation/mobile/screens/feed_screen.dart
-// 3. mobile/lib/features/posts/presentation/mobile/screens/shorts_screen.dart
+// 2. mobile/lib/features/posts/presentation/mobile/screens/feed/feed_screen.dart
+// 3. mobile/lib/features/posts/presentation/mobile/screens/other/shorts_screen.dart
 // 4. mobile/lib/features/settings/presentation/mobile/screens/subscriptions_screen.dart
 //
 // AVANTAGES DE EmptyState:

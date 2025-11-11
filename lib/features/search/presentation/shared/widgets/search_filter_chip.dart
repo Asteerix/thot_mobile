@@ -4,32 +4,42 @@ class SearchFilterChip extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
   final IconData? icon;
+  final Color? color;
   const SearchFilterChip({
     super.key,
     required this.label,
     required this.isSelected,
     required this.onTap,
     this.icon,
+    this.color,
   });
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final colorScheme = Theme.of(context).colorScheme;
+    final chipColor = color ?? (isDark ? Colors.white : Colors.black);
+    final backgroundColor = isSelected
+        ? chipColor.withOpacity(0.12)
+        : (isDark
+            ? Colors.white.withOpacity(0.05)
+            : Colors.black.withOpacity(0.03));
+    final borderColor = isSelected
+        ? chipColor.withOpacity(0.5)
+        : (isDark
+            ? Colors.white.withOpacity(0.1)
+            : Colors.black.withOpacity(0.08));
+    final textColor = isSelected
+        ? chipColor
+        : (isDark ? Colors.white70 : Colors.black87);
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected
-              ? colorScheme.primary
-              : (isDark ? Colors.black : Colors.white),
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected
-                ? colorScheme.primary
-                : (isDark
-                    ? Colors.white.withOpacity(0.3)
-                    : Colors.black.withOpacity(0.3)),
+            color: borderColor,
             width: 1,
           ),
         ),
@@ -40,22 +50,14 @@ class SearchFilterChip extends StatelessWidget {
               Icon(
                 icon,
                 size: 18,
-                color: isSelected
-                    ? Colors.white
-                    : (isDark
-                        ? Colors.white.withOpacity(0.7)
-                        : Colors.black.withOpacity(0.7)),
+                color: textColor,
               ),
               const SizedBox(width: 6),
             ],
             Text(
               label,
               style: TextStyle(
-                color: isSelected
-                    ? Colors.white
-                    : (isDark
-                        ? Colors.white.withOpacity(0.7)
-                        : Colors.black.withOpacity(0.7)),
+                color: textColor,
                 fontSize: 14,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
@@ -90,6 +92,7 @@ class SearchFilterBar extends StatelessWidget {
                   child: SearchFilterChip(
                     label: filter.label,
                     icon: filter.icon,
+                    color: filter.color,
                     isSelected: selectedFilter == filter.value,
                     onTap: () => onFilterSelected(filter.value),
                   ),
@@ -103,9 +106,11 @@ class SearchFilterChipData {
   final String label;
   final String value;
   final IconData? icon;
+  final Color? color;
   const SearchFilterChipData({
     required this.label,
     required this.value,
     this.icon,
+    this.color,
   });
 }

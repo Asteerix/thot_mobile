@@ -6,7 +6,7 @@ import 'package:thot/features/posts/domain/entities/post.dart';
 import 'package:thot/features/posts/data/repositories/post_repository_impl.dart';
 import 'package:thot/core/infrastructure/dependency_injection.dart';
 import 'package:thot/core/realtime/event_bus.dart';
-import 'dart:developer' as developer;
+
 class PostsStateProvider extends ChangeNotifier {
   PostRepositoryImpl get _postRepository =>
       ServiceLocator.instance.postRepository;
@@ -19,9 +19,10 @@ class PostsStateProvider extends ChangeNotifier {
     _initializeSocketListeners();
   }
   void _initializeSocketListeners() {
-    debugPrint('🔌 [POSTS_STATE_PROVIDER] Initializing Socket.IO listeners');
+    print('🔌 [POSTS_STATE_PROVIDER] Initializing Socket.IO listeners');
     _socketEventSubscription = _eventBus.on<SocketPostEvent>().listen((event) {
-      debugPrint('📡 [POSTS_STATE_PROVIDER] Received socket event | type: ${event.type}, data: ${event.data}');
+      print(
+          '📡 [POSTS_STATE_PROVIDER] Received socket event | type: ${event.type}, data: ${event.data}');
       if (event.type == 'liked') {
         _handleSocketLikeEvent(event.data);
       } else if (event.type == 'updated') {
@@ -29,20 +30,23 @@ class PostsStateProvider extends ChangeNotifier {
       }
     });
   }
+
   void _handleSocketLikeEvent(Map<String, dynamic> data) {
     try {
       final postId = data['postId'] as String?;
       final userId = data['userId'] as String?;
       final isLiked = data['isLiked'] as bool?;
       final likeCount = data['likeCount'] as int?;
-      debugPrint('❤️ [POSTS_STATE_PROVIDER] Processing socket like event | postId: $postId, userId: $userId, isLiked: $isLiked, likeCount: $likeCount');
+      print(
+          '❤️ [POSTS_STATE_PROVIDER] Processing socket like event | postId: $postId, userId: $userId, isLiked: $isLiked, likeCount: $likeCount');
       if (postId == null || likeCount == null) {
-        debugPrint('⚠️ [POSTS_STATE_PROVIDER] Invalid like event data');
+        print('⚠️ [POSTS_STATE_PROVIDER] Invalid like event data');
         return;
       }
       final post = _postsCache[postId];
       if (post == null) {
-        debugPrint('⚠️ [POSTS_STATE_PROVIDER] Post not found in cache | postId: $postId');
+        print(
+            '⚠️ [POSTS_STATE_PROVIDER] Post not found in cache | postId: $postId');
         return;
       }
       final updatedPost = post.copyWith(
@@ -52,24 +56,31 @@ class PostsStateProvider extends ChangeNotifier {
       );
       _postsCache[postId] = updatedPost;
       notifyListeners();
-      debugPrint('✅ [POSTS_STATE_PROVIDER] Post like count updated from socket | postId: $postId, likeCount: $likeCount');
+      print(
+          '✅ [POSTS_STATE_PROVIDER] Post like count updated from socket | postId: $postId, likeCount: $likeCount');
     } catch (e, stackTrace) {
-      debugPrint('❌ [POSTS_STATE_PROVIDER] Error handling socket like event | error: $e, stackTrace: $stackTrace');
+      print(
+          '❌ [POSTS_STATE_PROVIDER] Error handling socket like event | error: $e, stackTrace: $stackTrace');
     }
   }
+
   void _handleSocketPostUpdatedEvent(Map<String, dynamic> data) {
     try {
       final postId = data['postId'] as String?;
-      debugPrint('🔄 [POSTS_STATE_PROVIDER] Processing socket post updated event | postId: $postId');
+      print(
+          '🔄 [POSTS_STATE_PROVIDER] Processing socket post updated event | postId: $postId');
       if (postId == null) {
-        debugPrint('⚠️ [POSTS_STATE_PROVIDER] Invalid post updated event data');
+        print('⚠️ [POSTS_STATE_PROVIDER] Invalid post updated event data');
         return;
       }
-      debugPrint('ℹ️ [POSTS_STATE_PROVIDER] Post updated event received, ignoring for now');
+      print(
+          'ℹ️ [POSTS_STATE_PROVIDER] Post updated event received, ignoring for now');
     } catch (e, stackTrace) {
-      debugPrint('❌ [POSTS_STATE_PROVIDER] Error handling socket post updated event | error: $e, stackTrace: $stackTrace');
+      print(
+          '❌ [POSTS_STATE_PROVIDER] Error handling socket post updated event | error: $e, stackTrace: $stackTrace');
     }
   }
+
   Post? getPost(String postId) => _postsCache[postId];
   bool isLoading(String postId) => _loadingStates[postId] ?? false;
   String? getError(String postId) => _errors[postId];
@@ -80,9 +91,11 @@ class PostsStateProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
   void updatePostSilently(Post post) {
     updatePost(post, notify: false);
   }
+
   void updatePosts(List<Post> posts) {
     for (final post in posts) {
       _postsCache[post.id] = post;
@@ -90,6 +103,7 @@ class PostsStateProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
   Future<Post?> loadPost(String postId) async {
     if (_postsCache.containsKey(postId) && !_errors.containsKey(postId)) {
       return _postsCache[postId];
@@ -109,27 +123,26 @@ class PostsStateProvider extends ChangeNotifier {
       notifyListeners();
       return post;
     } catch (e) {
-      developer.log(
-        'Error loading post',
-        name: 'PostsStateProvider',
-        error: e,
-      );
+      print('Error loading post');
       _errors[postId] = e.toString();
       _loadingStates[postId] = false;
       notifyListeners();
       return null;
     }
   }
+
   Future<void> toggleLike(String postId) async {
     final post = _postsCache[postId];
     if (post == null) {
-      debugPrint('⚠️ [POSTS_STATE_PROVIDER] toggleLike called but post not in cache | postId: $postId');
+      print(
+          '⚠️ [POSTS_STATE_PROVIDER] toggleLike called but post not in cache | postId: $postId');
       return;
     }
     final originalPost = post;
     final wasLiked = post.interactions.isLiked;
     final originalLikesCount = post.interactions.likes;
-    debugPrint('🎯 [POSTS_STATE_PROVIDER] toggleLike START | postId: $postId, currentIsLiked: $wasLiked, currentLikes: $originalLikesCount');
+    print(
+        '🎯 [POSTS_STATE_PROVIDER] toggleLike START | postId: $postId, currentIsLiked: $wasLiked, currentLikes: $originalLikesCount');
     final optimisticPost = post.copyWith(
       interactions: post.interactions.copyWith(
         isLiked: !wasLiked,
@@ -139,32 +152,40 @@ class PostsStateProvider extends ChangeNotifier {
     _postsCache[postId] = optimisticPost;
     _errors.remove(postId);
     notifyListeners();
-    debugPrint('✅ [POSTS_STATE_PROVIDER] Optimistic update applied | postId: $postId, newIsLiked: ${!wasLiked}, newLikes: ${wasLiked ? originalLikesCount - 1 : originalLikesCount + 1}');
+    print(
+        '✅ [POSTS_STATE_PROVIDER] Optimistic update applied | postId: $postId, newIsLiked: ${!wasLiked}, newLikes: ${wasLiked ? originalLikesCount - 1 : originalLikesCount + 1}');
     try {
-      debugPrint('📡 [POSTS_STATE_PROVIDER] Calling API likePost | postId: $postId');
+      print(
+          '📡 [POSTS_STATE_PROVIDER] Calling API likePost | postId: $postId');
       final responseData = await _postRepository.likePost(postId);
       final updatedPost = Post.fromJson(responseData);
-      debugPrint('📥 [POSTS_STATE_PROVIDER] API response received | postId: $postId, responseIsLiked: ${updatedPost.interactions.isLiked}, responseLikes: ${updatedPost.interactions.likes}');
+      print(
+          '📥 [POSTS_STATE_PROVIDER] API response received | postId: $postId, responseIsLiked: ${updatedPost.interactions.isLiked}, responseLikes: ${updatedPost.interactions.likes}');
       _postsCache[postId] = updatedPost;
       _errors.remove(postId);
       notifyListeners();
-      debugPrint('✅ [POSTS_STATE_PROVIDER] Like toggled successfully | postId: $postId, finalIsLiked: ${updatedPost.interactions.isLiked}, finalLikes: ${updatedPost.interactions.likes}');
+      print(
+          '✅ [POSTS_STATE_PROVIDER] Like toggled successfully | postId: $postId, finalIsLiked: ${updatedPost.interactions.isLiked}, finalLikes: ${updatedPost.interactions.likes}');
     } catch (e) {
-      debugPrint('❌ [POSTS_STATE_PROVIDER] Error toggling like, rolling back | postId: $postId, error: $e');
+      print(
+          '❌ [POSTS_STATE_PROVIDER] Error toggling like, rolling back | postId: $postId, error: $e');
       _postsCache[postId] = originalPost;
       _errors[postId] = e.toString();
       notifyListeners();
-      debugPrint('🔄 [POSTS_STATE_PROVIDER] Rollback complete | postId: $postId, isLiked: $wasLiked, likes: $originalLikesCount');
+      print(
+          '🔄 [POSTS_STATE_PROVIDER] Rollback complete | postId: $postId, isLiked: $wasLiked, likes: $originalLikesCount');
       rethrow;
     }
   }
+
   Future<void> toggleBookmark(String postId) async {
     final post = _postsCache[postId];
     if (post == null) return;
     final originalPost = post;
     final wasSaved = post.interactions.isSaved;
     final originalBookmarksCount = post.interactions.bookmarks;
-    debugPrint('🔖 [POSTS_STATE_PROVIDER] toggleBookmark START | postId: $postId, currentIsSaved: $wasSaved, currentBookmarks: $originalBookmarksCount');
+    print(
+        '🔖 [POSTS_STATE_PROVIDER] toggleBookmark START | postId: $postId, currentIsSaved: $wasSaved, currentBookmarks: $originalBookmarksCount');
     final optimisticPost = post.copyWith(
       interactions: post.interactions.copyWith(
         isSaved: !wasSaved,
@@ -175,25 +196,32 @@ class PostsStateProvider extends ChangeNotifier {
     _postsCache[postId] = optimisticPost;
     _errors.remove(postId);
     notifyListeners();
-    debugPrint('✅ [POSTS_STATE_PROVIDER] Optimistic update applied | postId: $postId, newIsSaved: ${!wasSaved}, newBookmarks: ${wasSaved ? originalBookmarksCount - 1 : originalBookmarksCount + 1}');
+    print(
+        '✅ [POSTS_STATE_PROVIDER] Optimistic update applied | postId: $postId, newIsSaved: ${!wasSaved}, newBookmarks: ${wasSaved ? originalBookmarksCount - 1 : originalBookmarksCount + 1}');
     try {
-      debugPrint('📡 [POSTS_STATE_PROVIDER] Calling API savePost | postId: $postId');
+      print(
+          '📡 [POSTS_STATE_PROVIDER] Calling API savePost | postId: $postId');
       final responseData = await _postRepository.savePost(postId);
       final updatedPost = Post.fromJson(responseData);
-      debugPrint('📥 [POSTS_STATE_PROVIDER] API response received | postId: $postId, responseIsSaved: ${updatedPost.interactions.isSaved}, responseBookmarks: ${updatedPost.interactions.bookmarks}');
+      print(
+          '📥 [POSTS_STATE_PROVIDER] API response received | postId: $postId, responseIsSaved: ${updatedPost.interactions.isSaved}, responseBookmarks: ${updatedPost.interactions.bookmarks}');
       _postsCache[postId] = updatedPost;
       _errors.remove(postId);
       notifyListeners();
-      debugPrint('✅ [POSTS_STATE_PROVIDER] Bookmark toggled successfully | postId: $postId, finalIsSaved: ${updatedPost.interactions.isSaved}, finalBookmarks: ${updatedPost.interactions.bookmarks}');
+      print(
+          '✅ [POSTS_STATE_PROVIDER] Bookmark toggled successfully | postId: $postId, finalIsSaved: ${updatedPost.interactions.isSaved}, finalBookmarks: ${updatedPost.interactions.bookmarks}');
     } catch (e) {
-      debugPrint('❌ [POSTS_STATE_PROVIDER] Error toggling bookmark, rolling back | postId: $postId, error: $e');
+      print(
+          '❌ [POSTS_STATE_PROVIDER] Error toggling bookmark, rolling back | postId: $postId, error: $e');
       _postsCache[postId] = originalPost;
       _errors.remove(postId);
       notifyListeners();
-      debugPrint('🔄 [POSTS_STATE_PROVIDER] Rollback complete | postId: $postId, isSaved: $wasSaved, bookmarks: $originalBookmarksCount');
+      print(
+          '🔄 [POSTS_STATE_PROVIDER] Rollback complete | postId: $postId, isSaved: $wasSaved, bookmarks: $originalBookmarksCount');
       rethrow;
     }
   }
+
   Future<void> votePoliticalOrientation(
       String postId, String orientation) async {
     final post = _postsCache[postId];
@@ -218,26 +246,14 @@ class PostsStateProvider extends ChangeNotifier {
       );
       final updatedPost = Post.fromJson(responseData);
       updatePost(updatedPost);
-      developer.log(
-        'Political vote successful',
-        name: 'PostsStateProvider',
-        error: {
-          'postId': postId,
-          'orientation': orientation,
-          'newVotes': updatedPost.politicalOrientation.userVotes,
-          'oppositionsRemoved': originalPost.hasOppositions,
-        },
-      );
+      print('Political vote successful');
     } catch (e) {
       updatePost(originalPost);
-      developer.log(
-        'Error voting political orientation',
-        name: 'PostsStateProvider',
-        error: e,
-      );
+      print('Error voting political orientation');
       rethrow;
     }
   }
+
   void updateCommentCount(String postId, int newCount) {
     final post = _postsCache[postId];
     if (post == null) return;
@@ -247,46 +263,45 @@ class PostsStateProvider extends ChangeNotifier {
       ),
     );
     updatePost(updatedPost);
-    developer.log(
-      'Comment count updated',
-      name: 'PostsStateProvider',
-      error: {
-        'postId': postId,
-        'newCount': newCount,
-      },
-    );
+    print('Comment count updated');
   }
+
   void incrementCommentCount(String postId) {
     final post = _postsCache[postId];
     if (post != null) {
       updateCommentCount(postId, post.interactions.comments + 1);
     }
   }
+
   void decrementCommentCount(String postId) {
     final post = _postsCache[postId];
     if (post != null) {
       updateCommentCount(postId, math.max(0, post.interactions.comments - 1));
     }
   }
+
   Future<void> refreshPost(String postId) async {
     _errors.remove(postId);
     await loadPost(postId);
   }
+
   void clearCache() {
     _postsCache.clear();
     _loadingStates.clear();
     _errors.clear();
     notifyListeners();
   }
+
   void removePost(String postId) {
     _postsCache.remove(postId);
     _loadingStates.remove(postId);
     _errors.remove(postId);
     notifyListeners();
   }
+
   @override
   void dispose() {
-    debugPrint('🔌 [POSTS_STATE_PROVIDER] Disposing Socket.IO listeners');
+    print('🔌 [POSTS_STATE_PROVIDER] Disposing Socket.IO listeners');
     _socketEventSubscription?.cancel();
     super.dispose();
   }

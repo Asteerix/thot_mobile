@@ -1,7 +1,7 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart';
 import 'package:crop_your_image/crop_your_image.dart';
 import 'package:thot/core/themes/app_colors.dart';
 import 'package:thot/core/constants/app_constants.dart';
@@ -13,119 +13,142 @@ import 'package:thot/shared/widgets/media/crop_grid_painter.dart';
 import 'package:thot/shared/widgets/media/aspect_preset_chip.dart';
 import 'package:thot/shared/widgets/media/image_tool_button.dart';
 import 'package:thot/shared/widgets/media/crop_error_screen.dart';
-import 'package:thot/shared/widgets/media/image_transform_utils.dart';
+
 enum AspectPreset { free, square, post45, landscape169, portrait916 }
+
 class ImageCropScreen extends StatefulWidget {
-  final Uint8List imageBytes;
-  final MediaType type;
   const ImageCropScreen({
     super.key,
     required this.imageBytes,
     required this.type,
   });
+
+  final Uint8List imageBytes;
+  final MediaType type;
+
   @override
   State<ImageCropScreen> createState() => _ImageCropScreenState();
 }
+
 class _ImageCropScreenState extends State<ImageCropScreen> {
   final _cropController = CropController();
   final _logger = LoggerService.instance;
-  Uint8List? _imageBytes;
+
   bool _isCropping = false;
   bool _hasError = false;
   String _errorMessage = 'Impossible de traiter cette image';
   AspectPreset _preset = AspectPreset.free;
   double? _currentAspect;
-  Key _cropKey = UniqueKey();
+  int _rotationCount = 0;
+  bool _isFlippedH = false;
+  bool _isFlippedV = false;
+
   @override
   void initState() {
     super.initState();
     _preset = _presetFromMediaType(widget.type);
     _currentAspect = _aspectFromPreset(_preset);
-    _decodeAndNormalize();
+    _validateImage();
   }
-  Future<void> _decodeAndNormalize() async {
-    try {
-      if (widget.imageBytes.isEmpty) {
-        _setError('Image vide');
-        return;
-      }
-      final normalized = await compute(decodeNormalizeIsolate, widget.imageBytes);
-      if (!mounted) return;
-      setState(() => _imageBytes = normalized);
-    } catch (e, st) {
-      _logger.error('Error preparing image for crop', e, st);
-      _setError('Erreur de décodage');
+
+  void _validateImage() {
+    if (widget.imageBytes.isEmpty) {
+      _setError('Image vide');
     }
   }
+
   void _setError(String msg) {
+    if (!mounted) return;
     setState(() {
       _hasError = true;
       _errorMessage = msg;
     });
   }
-  Future<void> _rotateRight() => _applyTransform(rotateRightSync);
-  Future<void> _rotateLeft() => _applyTransform(rotateLeftSync);
-  Future<void> _flipH() => _applyTransform(flipHorizontalSync);
-  Future<void> _flipV() => _applyTransform(flipVerticalSync);
-  Future<void> _applyTransform(Uint8List Function(Uint8List) transformer) async {
-    final src = _imageBytes;
-    if (src == null) return;
+
+  Future<void> _rotateRight() async {
+    if (_isCropping) return;
     HapticFeedback.selectionClick();
-    setState(() => _imageBytes = null);
-    try {
-      final result = await compute(transformer, src);
-      if (!mounted) return;
-      setState(() {
-        _imageBytes = result;
-        _cropKey = UniqueKey();
-      });
-    } catch (e, st) {
-      _logger.error('Transform error', e, st);
-      _setError('Échec de transformation');
-    }
+    setState(() {
+      _rotationCount = (_rotationCount + 1) % 4;
+    });
   }
+
+  Future<void> _rotateLeft() async {
+    if (_isCropping) return;
+    HapticFeedback.selectionClick();
+    setState(() {
+      _rotationCount = (_rotationCount - 1) % 4;
+    });
+  }
+
+  Future<void> _flipH() async {
+    if (_isCropping) return;
+    HapticFeedback.selectionClick();
+    setState(() {
+      _isFlippedH = !_isFlippedH;
+    });
+  }
+
+  Future<void> _flipV() async {
+    if (_isCropping) return;
+    HapticFeedback.selectionClick();
+    setState(() {
+      _isFlippedV = !_isFlippedV;
+    });
+  }
+
   void _onCrop() {
     if (_isCropping) return;
     HapticFeedback.mediumImpact();
     setState(() => _isCropping = true);
     _cropController.crop();
   }
+
   void _onCancel() {
     if (_isCropping) return;
     SafeNavigation.pop(context);
   }
+
   void _onSkip() {
     if (_isCropping) return;
     SafeNavigation.pop(context, widget.imageBytes);
   }
+
   void _onCropped(CropResult result) {
     HapticFeedback.lightImpact();
     switch (result) {
       case CropSuccess(croppedImage: final data):
         SafeNavigation.pop(context, data);
       case CropFailure(cause: final error):
-        LoggerService.instance.error('Crop failed', error);
+        _logger.error('Crop failed', error);
         SafeNavigation.pop(context, widget.imageBytes);
     }
   }
+
   void _onCropReady() {
     if (!mounted) return;
     setState(() => _isCropping = false);
   }
+
   void _onPreset(AspectPreset p) {
     if (_preset == p || _isCropping) return;
     HapticFeedback.selectionClick();
     setState(() {
       _preset = p;
       _currentAspect = _aspectFromPreset(p);
-      _cropKey = UniqueKey();
     });
   }
+
   Future<void> _onResetFrame() async {
     if (_isCropping) return;
     HapticFeedback.selectionClick();
-    setState(() => _cropKey = UniqueKey());
+    setState(() {
+      _rotationCount = 0;
+      _isFlippedH = false;
+      _isFlippedV = false;
+    });
   }
+
   AspectPreset _presetFromMediaType(MediaType t) {
     return switch (t) {
       MediaType.question => AspectPreset.landscape169,
@@ -148,9 +171,14 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
       case MediaType.podcast:
         return [AspectPreset.square, AspectPreset.landscape169];
       default:
-        return [AspectPreset.square, AspectPreset.post45, AspectPreset.landscape169];
+        return [
+          AspectPreset.square,
+          AspectPreset.post45,
+          AspectPreset.landscape169,
+        ];
     }
   }
+
   double? _aspectFromPreset(AspectPreset p) {
     return switch (p) {
       AspectPreset.free => null,
@@ -160,6 +188,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
       AspectPreset.portrait916 => 9 / 16,
     };
   }
+
   String _presetLabel(AspectPreset p) {
     return switch (p) {
       AspectPreset.free => 'Libre',
@@ -185,9 +214,13 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
         return '';
     }
   }
+
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     if (_hasError) {
       return CropErrorScreen(
         message: _errorMessage,
@@ -195,19 +228,24 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
         onUseOriginal: _onSkip,
       );
     }
-    final bytes = _imageBytes;
+
+    final backgroundColor = isDark ? AppColors.darkBackground : Colors.black;
+    final surfaceColor = isDark ? AppColors.darkSurface : Colors.black87;
+    final borderColor =
+        isDark ? AppColors.darkBorder : Colors.white.withOpacity(0.1);
+
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBackground : Colors.black,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: isDark ? AppColors.darkSurface : Colors.black87,
+        backgroundColor: surfaceColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.close, color: Colors.white),
+          icon: const Icon(Icons.close, color: Colors.white),
           onPressed: _isCropping ? null : _onCancel,
         ),
         title: Text(
           'Recadrer ${_getMediaTypeLabel(widget.type)}',
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -219,7 +257,9 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
             child: Text(
               'Ignorer',
               style: TextStyle(
-                color: _isCropping ? Colors.white.withOpacity(0.3) : AppColors.primary,
+                color: _isCropping
+                    ? Colors.white.withOpacity(0.3)
+                    : AppColors.primary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -229,21 +269,19 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
       body: PopScope(
         canPop: !_isCropping,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  if (bytes == null)
-                    Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                      ),
-                    )
-                  else
-                    Crop(
-                      key: _cropKey,
-                      image: bytes,
+                  Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.identity()
+                      ..rotateZ(_rotationCount * 1.5708)
+                      ..scale(_isFlippedH ? -1.0 : 1.0, _isFlippedV ? -1.0 : 1.0),
+                    child: Crop(
+                      image: widget.imageBytes,
                       controller: _cropController,
                       aspectRatio: _currentAspect,
                       onCropped: _onCropped,
@@ -256,47 +294,53 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                       interactive: !_isCropping,
                       cornerDotBuilder: (_, __) => const CropHandle(),
                     ),
+                  ),
                   const IgnorePointer(
                     child: CustomPaint(
                       painter: CropGridPainter(),
                       size: Size.infinite,
                     ),
                   ),
-                  if (_isCropping)
-                    Container(
-                      color: Colors.black.withOpacity(0.6),
-                      child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  _isCropping
+                      ? Container(
+                          color: Colors.black.withOpacity(0.6),
+                          child: const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CircularProgressIndicator(
+                                  valueColor:
+                                      AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                                SizedBox(height: 16),
+                                Text(
+                                  'Traitement...',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: 16),
-                            Text(
-                              'Traitement...',
-                              style: TextStyle(color: Colors.white, fontSize: 14),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
                 ],
               ),
             ),
             SafeArea(
               top: false,
               child: Container(
-                padding: EdgeInsets.all(UIConstants.paddingM),
+                padding: const EdgeInsets.all(UIConstants.paddingM),
                 decoration: BoxDecoration(
-                  color: isDark ? AppColors.darkSurface : Colors.black87,
+                  color: surfaceColor,
                   border: Border(
-                    top: BorderSide(
-                      color: isDark ? AppColors.darkBorder : Colors.white.withOpacity(0.1),
-                    ),
+                    top: BorderSide(color: borderColor),
                   ),
                 ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(
@@ -304,9 +348,10 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         itemCount: _getAllowedPresets(widget.type).length,
-                        separatorBuilder: (_, __) => SizedBox(width: 8),
+                        separatorBuilder: (_, __) => const SizedBox(width: 8),
                         itemBuilder: (context, index) {
-                          final allowedPresets = _getAllowedPresets(widget.type);
+                          final allowedPresets =
+                              _getAllowedPresets(widget.type);
                           final p = allowedPresets[index];
                           final selected = p == _preset;
                           return AspectPresetChip(
@@ -318,61 +363,66 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                         },
                       ),
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         ImageToolButton(
                           icon: Icons.rotate_left,
                           tooltip: 'Rotation -90°',
-                          enabled: !_isCropping && bytes != null,
+                          enabled: !_isCropping,
                           onPressed: _rotateLeft,
                         ),
                         ImageToolButton(
                           icon: Icons.rotate_right,
                           tooltip: 'Rotation +90°',
-                          enabled: !_isCropping && bytes != null,
+                          enabled: !_isCropping,
                           onPressed: _rotateRight,
                         ),
                         ImageToolButton(
                           icon: Icons.flip,
                           tooltip: 'Miroir H',
-                          enabled: !_isCropping && bytes != null,
+                          enabled: !_isCropping,
                           onPressed: _flipH,
                         ),
                         ImageToolButton(
                           icon: Icons.flip,
                           tooltip: 'Miroir V',
-                          enabled: !_isCropping && bytes != null,
+                          enabled: !_isCropping,
                           onPressed: _flipV,
                         ),
                         ImageToolButton(
                           icon: Icons.refresh,
                           tooltip: 'Réinitialiser',
-                          enabled: !_isCropping && bytes != null,
+                          enabled: !_isCropping,
                           onPressed: _onResetFrame,
                         ),
                         const Spacer(),
                       ],
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     Container(
                       height: 50,
-                      width: double.infinity,
                       decoration: BoxDecoration(
-                        gradient: !_isCropping && bytes != null
-                            ? LinearGradient(
-                                colors: [AppColors.primary, AppColors.primaryDark],
+                        gradient: !_isCropping
+                            ? const LinearGradient(
+                                colors: [
+                                  AppColors.primary,
+                                  AppColors.primaryDark,
+                                ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               )
                             : null,
-                        color: _isCropping || bytes == null ? (isDark ? AppColors.darkCard : Colors.grey[800]) : null,
+                        color: _isCropping
+                            ? (isDark ? AppColors.darkCard : Colors.grey[800])
+                            : null,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Material(
                         color: Colors.transparent,
                         child: InkWell(
-                          onTap: !_isCropping && bytes != null ? _onCrop : null,
+                          onTap: !_isCropping ? _onCrop : null,
                           borderRadius: BorderRadius.circular(12),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -380,13 +430,17 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                               Icon(
                                 Icons.check,
                                 size: 20,
-                                color: !_isCropping && bytes != null ? Colors.white : Colors.white.withOpacity(0.3),
+                                color: !_isCropping
+                                    ? Colors.white
+                                    : Colors.white.withOpacity(0.3),
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               Text(
                                 'Valider',
                                 style: TextStyle(
-                                  color: !_isCropping && bytes != null ? Colors.white : Colors.white.withOpacity(0.3),
+                                  color: !_isCropping
+                                      ? Colors.white
+                                      : Colors.white.withOpacity(0.3),
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
                                 ),

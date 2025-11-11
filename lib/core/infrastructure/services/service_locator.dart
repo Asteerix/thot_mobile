@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart'
-    show kDebugMode, kProfileMode, kReleaseMode, ValueListenable, ValueNotifier, debugPrint;
+    show kDebugMode, kProfileMode, kReleaseMode, ValueListenable, ValueNotifier;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
@@ -25,6 +24,7 @@ import 'package:thot/features/comments/data/repositories/comment_repository_impl
 import 'package:thot/features/admin/data/repositories/admin_repository_impl.dart';
 import 'package:thot/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:thot/features/notifications/data/repositories/notification_repository_impl.dart';
+
 enum InitPhase {
   idle,
   coreServices,
@@ -36,6 +36,7 @@ enum InitPhase {
   done,
   failed,
 }
+
 class ServiceLocator {
   static final ServiceLocator instance = ServiceLocator._internal();
   factory ServiceLocator() => instance;
@@ -72,13 +73,16 @@ class ServiceLocator {
     }
     await initialize();
   }
+
   void dispose() {
     _initPhase.dispose();
     _initProgress.dispose();
   }
+
   void attachNavigatorKey(GlobalKey<NavigatorState> key) {
     _navigatorKey = key;
   }
+
   Future<void> initialize() async {
     if (_isInitialized) {
       LoggerService.instance.info('ServiceLocator already initialized');
@@ -145,10 +149,12 @@ class ServiceLocator {
       rethrow;
     }
   }
+
   void _setPhase(InitPhase phase, double progress) {
     _initPhase.value = phase;
     _initProgress.value = progress.clamp(0.0, 1.0);
   }
+
   static void resetForTest() {
     final instance = ServiceLocator.instance;
     instance._isInitialized = false;
@@ -171,12 +177,14 @@ class ServiceLocator {
     instance._postsStateProvider = null;
     instance._setPhase(InitPhase.idle, 0.0);
   }
+
   Future<SharedPreferences> _initializeCoreServices() async {
     final sw = Stopwatch()..start();
     final prefs = await SharedPreferences.getInstance();
     sw.stop();
     return prefs;
   }
+
   Future<ConnectivityService> _initializeConnectivity() async {
     final sw = Stopwatch()..start();
     final connectivityService = createConnectivityService();
@@ -185,6 +193,7 @@ class ServiceLocator {
     sw.stop();
     return connectivityService;
   }
+
   Future<void> _initializeApiServices() async {
     final sw = Stopwatch()..start();
     String baseUrl;
@@ -215,16 +224,20 @@ class ServiceLocator {
               LoggerService.instance.debug(
                   'Auth header attached for ${options.method} ${options.uri}');
             }
-            if (_isSavedPath(options.uri.path) || _isLikeOrCommentPath(options.uri.path)) {
-              debugPrint('🔑 [API_CLIENT] Authenticated request | method: ${options.method}, url: ${options.uri.toString()}, hasToken: true, tokenLength: ${token.length}, tokenPreview: ${_mask(token)}');
+            if (_isSavedPath(options.uri.path) ||
+                _isLikeOrCommentPath(options.uri.path)) {
+              print(
+                  '🔑 [API_CLIENT] Authenticated request | method: ${options.method}, url: ${options.uri.toString()}, hasToken: true, tokenLength: ${token.length}, tokenPreview: ${_mask(token)}');
             }
           } else {
             if (kDebugMode || kProfileMode) {
               LoggerService.instance.debug(
                   'No token available for ${options.method} ${options.uri}');
             }
-            if (_isSavedPath(options.uri.path) || _isLikeOrCommentPath(options.uri.path)) {
-              debugPrint('⚠️ [API_CLIENT] Unauthenticated request | method: ${options.method}, url: ${options.uri.toString()}, hasToken: false');
+            if (_isSavedPath(options.uri.path) ||
+                _isLikeOrCommentPath(options.uri.path)) {
+              print(
+                  '⚠️ [API_CLIENT] Unauthenticated request | method: ${options.method}, url: ${options.uri.toString()}, hasToken: false');
             }
           }
         } catch (e) {
@@ -239,16 +252,8 @@ class ServiceLocator {
       },
       onResponse: (response, handler) {
         if (_isSavedPath(response.requestOptions.uri.path)) {
-          developer.log(
-            'API Response',
-            name: 'ServiceLocator',
-            error: {
-              'url': response.requestOptions.uri.toString(),
-              'statusCode': response.statusCode?.toString() ?? 'unknown',
-              'dataType': response.data?.runtimeType.toString() ?? 'null',
-              'timestamp': DateTime.now().toIso8601String(),
-            },
-          );
+          print(
+              'API Response - url: ${response.requestOptions.uri.toString()}, statusCode: ${response.statusCode?.toString() ?? 'unknown'}, dataType: ${response.data?.runtimeType.toString() ?? 'null'}, timestamp: ${DateTime.now().toIso8601String()}');
         }
         if (response.data is String) {
           final trimmed = (response.data as String).trim();
@@ -260,25 +265,15 @@ class ServiceLocator {
               if (kDebugMode) {
                 LoggerService.instance.info('Parsed JSON string response');
               }
-            } catch (_) {
-            }
+            } catch (_) {}
           }
         }
         handler.next(response);
       },
       onError: (error, handler) {
         if (_isSavedPath(error.requestOptions.uri.path)) {
-          developer.log(
-            'API Error',
-            name: 'ServiceLocator',
-            error: {
-              'url': error.requestOptions.uri.toString(),
-              'type': error.type.toString(),
-              'statusCode': error.response?.statusCode?.toString() ?? 'none',
-              'message': error.message ?? 'no message',
-              'timestamp': DateTime.now().toIso8601String(),
-            },
-          );
+          print(
+              'API Error - url: ${error.requestOptions.uri.toString()}, type: ${error.type.toString()}, statusCode: ${error.response?.statusCode?.toString() ?? 'none'}, message: ${error.message ?? 'no message'}, timestamp: ${DateTime.now().toIso8601String()}');
         }
         LoggerService.instance
             .error('API Error: ${error.message}', error.error);
@@ -330,6 +325,7 @@ class ServiceLocator {
     }
     sw.stop();
   }
+
   Future<void> _initializeDataServices() async {
     final sw = Stopwatch()..start();
     try {
@@ -348,10 +344,12 @@ class ServiceLocator {
     } finally {
       sw.stop();
       if (kDebugMode) {
-        LoggerService.instance.debug('Data services ready in ${sw.elapsedMilliseconds}ms');
+        LoggerService.instance
+            .debug('Data services ready in ${sw.elapsedMilliseconds}ms');
       }
     }
   }
+
   Future<void> _initializeUIServices() async {
     final sw = Stopwatch()..start();
     try {
@@ -366,10 +364,12 @@ class ServiceLocator {
     } finally {
       sw.stop();
       if (kDebugMode) {
-        LoggerService.instance.debug('UI services ready in ${sw.elapsedMilliseconds}ms');
+        LoggerService.instance
+            .debug('UI services ready in ${sw.elapsedMilliseconds}ms');
       }
     }
   }
+
   ApiService get apiService =>
       _apiService ?? (throw StateError('ApiService not initialized'));
   SharedPreferences get prefs =>
@@ -417,6 +417,7 @@ class ServiceLocator {
       ),
     ];
   }
+
   static Widget wrapWithProviders(Widget child) {
     return MultiProvider(
       providers: instance.isInitialized
@@ -428,11 +429,14 @@ class ServiceLocator {
       child: child,
     );
   }
+
   static bool _isSavedPath(String path) =>
       path.contains('saved-posts') || path.contains('saved-shorts');
   static bool _isLikeOrCommentPath(String path) =>
-      path.contains('/like') || path.contains('/unlike') ||
-      path.contains('/comments') || path.contains('/comment');
+      path.contains('/like') ||
+      path.contains('/unlike') ||
+      path.contains('/comments') ||
+      path.contains('/comment');
   static String _mask(String value,
       {int visiblePrefix = 4, int visibleSuffix = 4}) {
     if (value.isEmpty) return '';

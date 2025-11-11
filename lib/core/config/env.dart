@@ -6,11 +6,11 @@ class EnvConfig {
     try {
       await dotenv.load(fileName: '.env');
       if (kDebugMode) {
-        debugPrint('[EnvConfig] ✓ Loaded .env file');
+        print('[EnvConfig] ✓ Loaded .env file');
       }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('[EnvConfig] ⚠ No .env file found (using defaults)');
+        print('[EnvConfig] ⚠ No .env file found (using defaults)');
       }
     }
   }

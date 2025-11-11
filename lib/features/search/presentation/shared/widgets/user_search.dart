@@ -389,7 +389,7 @@ class _UserSearchState extends State<UserSearch> {
                           as ImageProvider,
                   onBackgroundImageError: (_, __) {},
                 ),
-                if (user.isJournalist && user.isVerified)
+                if (user.isJournalist && user.pressCard != null && user.pressCard!.isNotEmpty)
                   Positioned(
                     right: 0,
                     bottom: 0,

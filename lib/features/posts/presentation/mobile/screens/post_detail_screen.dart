@@ -55,6 +55,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
   @override
   void initState() {
     super.initState();
+    debugPrint('🎬 POST_DETAIL_SCREEN - initState | postId: ${widget.initialPostId} | isFromFeed: ${widget.isFromFeed}');
     developer.log(
       '🎬 POST DETAIL SCREEN - Init State',
       name: 'PostDetailScreen_INIT',
@@ -78,6 +79,7 @@ class _PostDetailScreenState extends State<PostDetailScreen>
   }
   Future<void> _loadInitialPost() async {
     if (!mounted) return;
+    debugPrint('🚀 POST_DETAIL_SCREEN - _loadInitialPost | postId: ${widget.initialPostId}');
     developer.log(
       '🚀 LOAD INITIAL POST - Starting',
       name: 'PostDetailScreen_LOAD',

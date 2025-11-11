@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer' as developer;
 import 'package:shared_preferences/shared_preferences.dart';
+
 class TokenException implements Exception {
   final String message;
   TokenException(this.message);
   @override
   String toString() => message;
 }
+
 class TokenService {
   static const String _tokenKey = 'auth_token';
   static const String _userTypeKey = 'user_type';
@@ -34,8 +35,9 @@ class TokenService {
   static final bool _isProduct = const bool.fromEnvironment('dart.vm.product');
   static void _log(String message, {Object? error}) {
     if (_isProduct) return;
-    developer.log(message, name: 'TokenService', error: error);
+    print(message);
   }
+
   static Future<void> saveToken(String token,
       [dynamic userTypeOrBool = 'user']) async {
     try {
@@ -77,6 +79,7 @@ class TokenService {
       throw TokenException('Save failed: $e');
     }
   }
+
   static Future<String?> getToken() async {
     try {
       await _ensureLoaded();
@@ -93,14 +96,17 @@ class TokenService {
       return null;
     }
   }
+
   static Future<String?> getUserType() async {
     await _ensureLoaded();
     return _cachedUserType;
   }
+
   @Deprecated('Use getUserType() == "journalist" instead')
   static Future<bool> isJournalist() async {
     return (await getUserType()) == 'journalist';
   }
+
   static Future<void> clearToken() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -120,20 +126,24 @@ class TokenService {
       throw TokenException('Clear failed: $e');
     }
   }
+
   static Future<bool> isLoggedIn() async {
     return await getToken() != null;
   }
+
   static Future<DateTime?> getTokenExpiration() async {
     await _ensureLoaded();
     return _cachedExpEpochSec == null
         ? null
         : DateTime.fromMillisecondsSinceEpoch(_cachedExpEpochSec! * 1000);
   }
+
   static Future<bool> needsRefresh() async {
     final expiry = await getTokenExpiration();
     if (expiry == null) return false;
     return expiry.difference(DateTime.now()) <= _refreshWindow;
   }
+
   static Future<void> _ensureLoaded() async {
     if (_hasLoaded) return;
     final prefs = await SharedPreferences.getInstance();
@@ -144,9 +154,11 @@ class TokenService {
     _scheduleAlarms();
     _emit();
   }
+
   static void _emit() {
     if (_authCtrl.hasListener) _authCtrl.add(snapshot);
   }
+
   static void _scheduleAlarms() {
     _cancelAlarms();
     if (_cachedExpEpochSec == null) return;
@@ -161,12 +173,14 @@ class TokenService {
         expiry.isAfter(now) ? expiry.difference(now) : Duration.zero;
     _expiryAlarm = Timer(expireDelay, clearToken);
   }
+
   static void _cancelAlarms() {
     _refreshAlarm?.cancel();
     _expiryAlarm?.cancel();
     _refreshAlarm = null;
     _expiryAlarm = null;
   }
+
   static Map<String, dynamic> _decodeJwtPayload(String token) {
     final parts = token.split('.');
     if (parts.length != 3) throw TokenException('Invalid JWT format');
@@ -182,6 +196,7 @@ class TokenService {
       throw TokenException('JWT decode error: $e');
     }
   }
+
   static int _parseExp(dynamic exp) {
     if (exp is int) return exp;
     if (exp is double) return exp.toInt();
@@ -189,6 +204,7 @@ class TokenService {
     throw TokenException('Invalid exp claim');
   }
 }
+
 class AuthState {
   final String? token;
   final String? userType;
@@ -206,6 +222,7 @@ class AuthState {
     if (expiresAt == null) return false;
     return expiresAt!.difference(DateTime.now()) <= refreshWindow;
   }
+
   bool get isJournalist => userType == 'journalist';
   Duration? get timeLeft => expiresAt == null
       ? null

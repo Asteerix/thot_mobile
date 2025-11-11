@@ -20,7 +20,8 @@ void main() async {
   }
 
   // Find files that are never imported
-  final allFiles = files.map((f) => f.replaceAll('lib/', 'package:thot/')).toSet();
+  final allFiles =
+      files.map((f) => f.replaceAll('lib/', 'package:thot/')).toSet();
   final importedFiles = <String>{};
 
   for (final imports in importMap.values) {
@@ -75,7 +76,12 @@ Set<String> _extractImports(String content, String currentFile) {
 
         // Convert relative imports to package imports
         if (importPath.startsWith('package:')) {
-          imports.add(importPath.split(' ').first.replaceAll("'", '').replaceAll('"', '').replaceAll(';', ''));
+          imports.add(importPath
+              .split(' ')
+              .first
+              .replaceAll("'", '')
+              .replaceAll('"', '')
+              .replaceAll(';', ''));
         }
       }
     }

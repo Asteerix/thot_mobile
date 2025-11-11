@@ -763,156 +763,155 @@ class _RegistrationStepperState extends State<RegistrationStepper>
             onPressed: () {
               showModalBottomSheet(
                 context: context,
-                backgroundColor: Colors.black,
                 isScrollControlled: true,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                ),
+                backgroundColor: Colors.transparent,
                 builder: (context) => DraggableScrollableSheet(
-                  initialChildSize: 0.5,
-                  minChildSize: 0.3,
-                  maxChildSize: 0.9,
-                  expand: false,
+                  initialChildSize: 0.3,
+                  minChildSize: 0.2,
+                  maxChildSize: 0.5,
                   builder: (context, scrollController) => Container(
-                    padding: const EdgeInsets.all(24),
+                    decoration: const BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    ),
                     child: Column(
                       children: [
                         Container(
                           width: 40,
                           height: 4,
-                          margin: const EdgeInsets.only(bottom: 20),
+                          margin: const EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.3),
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
-                        Text(
-                          'Documents légaux',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Text(
+                            'Documents légaux',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                        SizedBox(height: 24),
-                        Material(
-                          color: Colors.transparent,
-                          child: Builder(
-                            builder: (innerContext) => InkWell(
-                              onTap: () {
-                                Navigator.pop(innerContext);
-                                showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  backgroundColor: Colors.black,
-                                  builder: (context) => const TermsScreen(),
-                                );
-                              },
-                              borderRadius: BorderRadius.circular(12),
-                            child: Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.05),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.1),
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.article,
-                                    color: Colors.white.withOpacity(0.7),
-                                  ),
-                                  SizedBox(width: 16),
-                                  Expanded(
-                                    child: Text(
-                                      'Conditions d\'utilisation',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
+                        SizedBox(height: 16),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            controller: scrollController,
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: Column(
+                              children: [
+                                Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (context) => DraggableScrollableSheet(
+                                          initialChildSize: 0.8,
+                                          minChildSize: 0.5,
+                                          maxChildSize: 0.95,
+                                          builder: (context, scrollController) => const TermsScreen(),
+                                        ),
+                                      );
+                                    },
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.05),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: Colors.white.withOpacity(0.1),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.article,
+                                            color: Colors.white.withOpacity(0.7),
+                                          ),
+                                          SizedBox(width: 16),
+                                          Expanded(
+                                            child: Text(
+                                              'Conditions d\'utilisation',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.chevron_right,
+                                            color: Colors.white.withOpacity(0.7),
+                                            size: 16,
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
-                                  Icon(
-                                    Icons.chevron_right,
-                                    color: Colors.white.withOpacity(0.7),
-                                    size: 16,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 12),
-                        Material(
-                          color: Colors.transparent,
-                          child: Builder(
-                            builder: (innerContext) => InkWell(
-                              onTap: () {
-                                Navigator.pop(innerContext);
-                                showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  backgroundColor: Colors.black,
-                                  builder: (context) => const PrivacyPolicyScreen(),
-                                );
-                              },
-                              borderRadius: BorderRadius.circular(12),
-                            child: Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.05),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.1),
                                 ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.verified_user,
-                                    color: Colors.white.withOpacity(0.7),
-                                  ),
-                                  SizedBox(width: 16),
-                                  Expanded(
-                                    child: Text(
-                                      'Politique de confidentialité',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
+                                SizedBox(height: 12),
+                                Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (context) => DraggableScrollableSheet(
+                                          initialChildSize: 0.8,
+                                          minChildSize: 0.5,
+                                          maxChildSize: 0.95,
+                                          builder: (context, scrollController) => const PrivacyPolicyScreen(),
+                                        ),
+                                      );
+                                    },
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.05),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: Colors.white.withOpacity(0.1),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.verified_user,
+                                            color: Colors.white.withOpacity(0.7),
+                                          ),
+                                          SizedBox(width: 16),
+                                          Expanded(
+                                            child: Text(
+                                              'Politique de confidentialité',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.chevron_right,
+                                            color: Colors.white.withOpacity(0.7),
+                                            size: 16,
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
-                                  Icon(
-                                    Icons.chevron_right,
-                                    color: Colors.white.withOpacity(0.7),
-                                    size: 16,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                        SizedBox(
-                          width: double.infinity,
-                          child: TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: Text(
-                              'Fermer',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.7),
-                                fontSize: 16,
-                              ),
+                                ),
+                                const SizedBox(height: 24),
+                              ],
                             ),
                           ),
                         ),

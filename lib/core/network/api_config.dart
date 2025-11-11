@@ -166,7 +166,7 @@ class ApiConfigService {
   }
   void _log(String message) {
     if (kDebugMode) {
-      debugPrint('[ApiConfig] $message');
+      print('[ApiConfig] $message');
     }
   }
   static void clearCache() => _instance._clearCache();

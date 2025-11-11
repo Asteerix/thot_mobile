@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:thot/features/posts/domain/entities/post.dart';
-import 'package:thot/features/posts/presentation/shared/widgets/feed_item.dart';
+
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
   @override
   State<SearchScreen> createState() => _SearchScreenState();
 }
+
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<Post> _searchResults = [];
@@ -17,11 +18,13 @@ class _SearchScreenState extends State<SearchScreen> {
     super.initState();
     _loadRecentSearches();
   }
+
   Future<void> _loadRecentSearches() async {
     setState(() {
       _recentSearches = ['Flutter', 'Dart', 'Testing'];
     });
   }
+
   Future<void> _performSearch(String query) async {
     if (query.trim().isEmpty) return;
     setState(() {
@@ -40,6 +43,7 @@ class _SearchScreenState extends State<SearchScreen> {
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,6 +60,7 @@ class _SearchScreenState extends State<SearchScreen> {
       body: _showResults ? _buildSearchResults() : _buildRecentSearches(),
     );
   }
+
   Widget _buildSearchResults() {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -69,14 +74,14 @@ class _SearchScreenState extends State<SearchScreen> {
       itemCount: _searchResults.length,
       itemBuilder: (context, index) {
         final post = _searchResults[index];
-        return FeedItem(
-          post: post,
-          onTap: () {
-          },
+        return ListTile(
+          title: Text(post.title),
+          onTap: () {},
         );
       },
     );
   }
+
   Widget _buildRecentSearches() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,6 +115,7 @@ class _SearchScreenState extends State<SearchScreen> {
       ],
     );
   }
+
   @override
   void dispose() {
     _searchController.dispose();

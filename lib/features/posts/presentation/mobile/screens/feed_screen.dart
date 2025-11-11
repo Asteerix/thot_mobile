@@ -973,9 +973,11 @@ class _FeedListState extends State<_FeedList>
   }
 
   void _navigateToPost(Post post) {
+    debugPrint('🚀 FEED_SCREEN - Navigate to post | ID: ${post.id} | Type: ${post.type}');
     if (post.id.isEmpty || post.id.startsWith('invalid_post_id_')) return;
     try {
       if (post.type == PostType.question) {
+        debugPrint('📱 FEED_SCREEN - Pushing to Question screen | Route: ${RouteNames.question}');
         GoRouter.of(context).push(
           RouteNames.question,
           extra: {
@@ -984,6 +986,7 @@ class _FeedListState extends State<_FeedList>
           },
         );
       } else if (post.type == PostType.video) {
+        debugPrint('📱 FEED_SCREEN - Pushing to Video Detail screen | Route: ${RouteNames.videoDetail}');
         GoRouter.of(context).push(
           RouteNames.videoDetail,
           extra: {
@@ -992,12 +995,14 @@ class _FeedListState extends State<_FeedList>
           },
         );
       } else {
+        debugPrint('📱 FEED_SCREEN - Pushing to Post Detail screen | Route: /post/${post.id}');
         GoRouter.of(context).push(
           '/post/${post.id}',
           extra: {'postId': post.id},
         );
       }
     } catch (e) {
+      debugPrint('❌ FEED_SCREEN - Navigation error: $e');
       _logger.error('Navigation error: $e');
     }
   }

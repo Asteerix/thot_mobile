@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer' as developer;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SearchHistoryService {
@@ -17,16 +16,9 @@ class SearchHistoryService {
       final stored = prefs.getStringList(_recentSearchesKey) ?? [];
       _cachedRecentSearches = stored;
       _hasLoaded = true;
-      developer.log(
-        'Loaded ${_cachedRecentSearches.length} recent searches',
-        name: 'SearchHistoryService',
-      );
+      print('Loaded ${_cachedRecentSearches.length} recent searches');
     } catch (e) {
-      developer.log(
-        'Error loading recent searches',
-        name: 'SearchHistoryService',
-        error: e,
-      );
+      print('Error loading recent searches');
       _cachedRecentSearches = [];
       _hasLoaded = true;
     }
@@ -43,22 +35,16 @@ class SearchHistoryService {
       _cachedRecentSearches.insert(0, trimmed);
 
       if (_cachedRecentSearches.length > _maxRecentSearches) {
-        _cachedRecentSearches = _cachedRecentSearches.take(_maxRecentSearches).toList();
+        _cachedRecentSearches =
+            _cachedRecentSearches.take(_maxRecentSearches).toList();
       }
 
       final prefs = await SharedPreferences.getInstance();
       await prefs.setStringList(_recentSearchesKey, _cachedRecentSearches);
 
-      developer.log(
-        'Added recent search: $trimmed',
-        name: 'SearchHistoryService',
-      );
+      print('Added recent search: $trimmed');
     } catch (e) {
-      developer.log(
-        'Error saving recent search',
-        name: 'SearchHistoryService',
-        error: e,
-      );
+      print('Error saving recent search');
     }
   }
 
@@ -76,16 +62,9 @@ class SearchHistoryService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setStringList(_recentSearchesKey, _cachedRecentSearches);
 
-      developer.log(
-        'Removed recent search: $query',
-        name: 'SearchHistoryService',
-      );
+      print('Removed recent search: $query');
     } catch (e) {
-      developer.log(
-        'Error removing recent search',
-        name: 'SearchHistoryService',
-        error: e,
-      );
+      print('Error removing recent search');
     }
   }
 
@@ -96,16 +75,9 @@ class SearchHistoryService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_recentSearchesKey);
 
-      developer.log(
-        'Cleared all recent searches',
-        name: 'SearchHistoryService',
-      );
+      print('Cleared all recent searches');
     } catch (e) {
-      developer.log(
-        'Error clearing recent searches',
-        name: 'SearchHistoryService',
-        error: e,
-      );
+      print('Error clearing recent searches');
     }
   }
 

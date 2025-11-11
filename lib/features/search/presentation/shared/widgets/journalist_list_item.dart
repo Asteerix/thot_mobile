@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:thot/features/profile/domain/entities/user_profile.dart';
 import 'package:thot/shared/widgets/safe_network_image.dart';
 import 'package:thot/features/profile/presentation/shared/widgets/badges.dart';
+import 'package:thot/features/profile/presentation/shared/widgets/follow_button.dart';
 class JournalistListItem extends StatelessWidget {
   final UserProfile journalist;
   final VoidCallback onFollow;
@@ -19,6 +20,7 @@ class JournalistListItem extends StatelessWidget {
         context.push('/profile', extra: {
           'userId': journalist.id,
           'isCurrentUser': false,
+          'forceReload': true,
         });
       },
       child: Container(
@@ -60,7 +62,7 @@ class JournalistListItem extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (journalist.isVerified) ...[
+                      if (journalist.pressCard != null && journalist.pressCard!.isNotEmpty) ...[
                         const SizedBox(width: 4),
                         const VerificationBadge(size: 16),
                       ],
@@ -110,25 +112,12 @@ class JournalistListItem extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            ElevatedButton(
-              onPressed: onFollow,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: journalist.isFollowing
-                    ? (isDark ? Colors.black : Colors.white)
-                    : Theme.of(context).primaryColor,
-                foregroundColor: journalist.isFollowing
-                    ? (isDark ? Colors.white : Colors.black)
-                    : Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              child: Text(
-                journalist.isFollowing ? 'Abonné' : 'S\'abonner',
-                style: const TextStyle(fontSize: 14),
-              ),
+            FollowButton(
+              userId: journalist.id,
+              isFollowing: journalist.isFollowing,
+              onFollowChanged: (isFollowing) {
+                onFollow();
+              },
             ),
           ],
         ),

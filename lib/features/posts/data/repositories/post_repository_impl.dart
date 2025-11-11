@@ -1,4 +1,3 @@
-import 'dart:developer' as developer;
 import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
 import 'dart:async';
@@ -13,6 +12,7 @@ import 'package:thot/core/monitoring/logger_service.dart';
 import 'package:thot/features/posts/domain/entities/post.dart';
 import 'package:thot/features/posts/domain/repositories/post_repository.dart';
 import 'package:thot/core/utils/api_response_helper.dart';
+
 class PostRepositoryImpl with ConnectivityAware {
   final ApiService _apiService;
   final _logger = LoggerService.instance;
@@ -31,6 +31,7 @@ class PostRepositoryImpl with ConnectivityAware {
   static bool isValidType(String? type) {
     return type == null || _validTypes.contains(type);
   }
+
   @override
   Future<List<Post>> getSubscriptionsPosts(
       {int page = 1, int limit = 20}) async {
@@ -42,11 +43,7 @@ class PostRepositoryImpl with ConnectivityAware {
         };
         final endpoint =
             '/api/subscriptions/posts?${Uri(queryParameters: queryParams).query}';
-        developer.log(
-          '📡 Fetching subscriptions posts',
-          name: 'PostRepository_SUBSCRIPTIONS',
-          error: {'endpoint': endpoint, 'page': page, 'limit': limit},
-        );
+        print('📡 Fetching subscriptions posts');
         final response = await _apiService.get(endpoint);
         dynamic responseData = response.data;
         if (responseData is Map && responseData['data'] != null) {
@@ -57,13 +54,8 @@ class PostRepositoryImpl with ConnectivityAware {
                 final transformedPost =
                     _transformPost(post as Map<String, dynamic>);
                 return Post.fromJson(transformedPost);
-              } catch (e, stackTrace) {
-                developer.log(
-                  'Error transforming subscription post',
-                  name: 'PostRepository_SUBSCRIPTIONS',
-                  error: e,
-                  stackTrace: stackTrace,
-                );
+              } catch (e, _) {
+                print('Error transforming subscription post');
                 final fallbackPost =
                     _createFallbackPost(post as Map<String, dynamic>);
                 return Post.fromJson(fallbackPost);
@@ -71,17 +63,13 @@ class PostRepositoryImpl with ConnectivityAware {
             }).toList() ??
             [];
         return posts;
-      } catch (e, stackTrace) {
-        developer.log(
-          'Error fetching subscriptions posts',
-          name: 'PostRepository_SUBSCRIPTIONS',
-          error: e,
-          stackTrace: stackTrace,
-        );
+      } catch (e, _) {
+        print('Error fetching subscriptions posts');
         return [];
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> getSavedPosts({int page = 1}) async {
     return withConnectivity(() async {
@@ -92,11 +80,7 @@ class PostRepositoryImpl with ConnectivityAware {
         };
         final endpoint =
             '/api/users/saved-posts?${Uri(queryParameters: queryParams).query}';
-        developer.log(
-          '📡 Fetching saved posts',
-          name: 'PostRepository_SAVED',
-          error: {'endpoint': endpoint, 'page': page},
-        );
+        print('📡 Fetching saved posts');
         final response = await _apiService.get(endpoint);
         dynamic responseData = response.data;
         if (responseData is Map && responseData['data'] != null) {
@@ -105,13 +89,8 @@ class PostRepositoryImpl with ConnectivityAware {
         final posts = (responseData['posts'] as List?)?.map((post) {
               try {
                 return _transformPost(post as Map<String, dynamic>);
-              } catch (e, stackTrace) {
-                developer.log(
-                  'Error transforming saved post',
-                  name: 'PostRepository_SAVED',
-                  error: e,
-                  stackTrace: stackTrace,
-                );
+              } catch (e, _) {
+                print('Error transforming saved post');
                 return _createFallbackPost(post as Map<String, dynamic>);
               }
             }).toList() ??
@@ -121,17 +100,13 @@ class PostRepositoryImpl with ConnectivityAware {
           'total': responseData['total'] ?? posts.length,
           'page': responseData['page'] ?? page,
         };
-      } catch (e, stackTrace) {
-        developer.log(
-          'Error fetching saved posts',
-          name: 'PostRepository_SAVED',
-          error: e,
-          stackTrace: stackTrace,
-        );
+      } catch (e, _) {
+        print('Error fetching saved posts');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> getPosts({
     int page = 1,
@@ -147,11 +122,7 @@ class PostRepositoryImpl with ConnectivityAware {
       throw ArgumentError('Invalid post type: $type');
     }
     if (type == 'saved') {
-      developer.log(
-        '🔍 getPosts redirecting to getSavedPosts',
-        name: 'PostRepository_SAVED',
-        error: {'page': page, 'stackTrace': StackTrace.current.toString()},
-      );
+      print('🔍 getPosts redirecting to getSavedPosts');
       return getSavedPosts(page: page);
     }
     return withConnectivity(() async {
@@ -175,16 +146,7 @@ class PostRepositoryImpl with ConnectivityAware {
         };
         final endpoint =
             '/api/posts?${Uri(queryParameters: queryParams).query}';
-        developer.log(
-          '📡 Fetching posts',
-          name: 'PostRepository',
-          error: {
-            'endpoint': endpoint,
-            'type': type,
-            'page': page,
-            'queryParams': queryParams
-          },
-        );
+        print('📡 Fetching posts');
         final response = await _apiService.get(endpoint);
         dynamic responseData = response.data;
         if (responseData is Map && responseData['data'] != null) {
@@ -193,13 +155,8 @@ class PostRepositoryImpl with ConnectivityAware {
         final posts = (responseData['posts'] as List?)?.map((post) {
               try {
                 return _transformPost(post as Map<String, dynamic>);
-              } catch (e, stackTrace) {
-                developer.log(
-                  'Error transforming post data',
-                  name: 'PostRepository',
-                  error: e,
-                  stackTrace: stackTrace,
-                );
+              } catch (e, _) {
+                print('Error transforming post data');
                 return _createFallbackPost(post as Map<String, dynamic>);
               }
             }).toList() ??
@@ -209,43 +166,27 @@ class PostRepositoryImpl with ConnectivityAware {
           'total': responseData['total'] ?? 0,
           'page': responseData['page'] ?? page,
         };
-      } catch (e, stackTrace) {
-        developer.log(
-          'Get posts error',
-          name: 'PostRepository',
-          error: e,
-          stackTrace: stackTrace,
-        );
+      } catch (e, _) {
+        print('Get posts error');
         rethrow;
       }
     });
   }
+
   Map<String, dynamic> transformPost(Map<String, dynamic> post) {
     return _transformPost(post);
   }
+
   Map<String, dynamic> _transformPost(Map<String, dynamic> post) {
     var transformed = Map<String, dynamic>.from(post);
     if (transformed['journalist'] != null) {
       final journalist = transformed['journalist'] as Map<String, dynamic>;
-      developer.log(
-        '👤 Journalist data in _transformPost',
-        name: 'PostRepository',
-        error: {
-          'postId': transformed['_id'] ?? transformed['id'],
-          'journalistId': journalist['id'],
-          'journalistName': journalist['name'],
-          'avatarUrl': journalist['avatarUrl'],
-        },
-      );
+      print('👤 Journalist data in _transformPost');
     }
     if (transformed['_id'] == null && transformed['id'] != null) {
       transformed['_id'] = transformed['id'];
     } else if (transformed['_id'] == null && transformed['id'] == null) {
-      developer.log(
-        'WARNING: Post without ID detected',
-        name: 'PostRepository',
-        error: {'post': post, 'stackTrace': StackTrace.current.toString()},
-      );
+      print('WARNING: Post without ID detected');
     }
     var existingPoliticalOrientation =
         transformed['politicalOrientation'] as Map<String, dynamic>? ?? {};
@@ -345,6 +286,7 @@ class PostRepositoryImpl with ConnectivityAware {
     transformed['sources'] ??= [];
     return transformed;
   }
+
   Map<String, dynamic> _createFallbackPost(Map<String, dynamic> post) {
     var existingPoliticalOrientation =
         post['politicalOrientation'] as Map<String, dynamic>? ?? {};
@@ -383,6 +325,7 @@ class PostRepositoryImpl with ConnectivityAware {
       'sources': [],
     };
   }
+
   Map<String, dynamic> _transformMetadata(
       String? type, Map<String, dynamic>? metadata) {
     if (metadata == null) return {};
@@ -428,6 +371,7 @@ class PostRepositoryImpl with ConnectivityAware {
         return metadata;
     }
   }
+
   String _processImageUrl(String? imageUrl) {
     if (imageUrl == null || imageUrl.isEmpty) return '';
     if (imageUrl.startsWith('http') || imageUrl.startsWith('assets/')) {
@@ -435,6 +379,7 @@ class PostRepositoryImpl with ConnectivityAware {
     }
     return 'https://via.placeholder.com/400x300';
   }
+
   @override
   Future<Map<String, dynamic>> createPost(Map<String, dynamic> postData) async {
     if (!isValidType(postData['type'] as String?)) {
@@ -445,32 +390,18 @@ class PostRepositoryImpl with ConnectivityAware {
     }
     return withConnectivity(() async {
       try {
-        developer.log(
-          '📤 Creating post',
-          name: 'PostRepository',
-          error: {'title': postData['title']},
-        );
+        print('📤 Creating post');
         final response = await _apiService.post('/api/posts', data: postData);
         final result = response.data ?? response;
-        developer.log(
-          '✅ Post created successfully',
-          name: 'PostRepository',
-          error: {'result': result},
-        );
+        print('✅ Post created successfully');
         return result;
       } catch (e) {
-        developer.log(
-          'Create post error',
-          name: 'PostRepository',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Create post error');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> updatePost(
       String id, Map<String, dynamic> postData) async {
@@ -486,18 +417,12 @@ class PostRepositoryImpl with ConnectivityAware {
             await _apiService.patch('/api/posts/$id', data: postData);
         return response.data ?? response;
       } catch (e) {
-        developer.log(
-          'Update post error',
-          name: 'PostRepository',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Update post error');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> getPost(String id) async {
     return withConnectivity(() async {
@@ -517,36 +442,24 @@ class PostRepositoryImpl with ConnectivityAware {
         final transformedData = _transformPost(postData);
         return transformedData;
       } catch (e) {
-        developer.log(
-          'Get post error',
-          name: 'PostRepository',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Get post error');
         rethrow;
       }
     });
   }
+
   @override
   Future<void> deletePost(String id) async {
     return withConnectivity(() async {
       try {
         await _apiService.delete('/api/posts/$id');
       } catch (e) {
-        developer.log(
-          'Delete post error',
-          name: 'PostRepository',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Delete post error');
         rethrow;
       }
     });
   }
+
   @override
   Future<bool> checkDuplicate(String hash) async {
     return withConnectivity(() async {
@@ -555,28 +468,18 @@ class PostRepositoryImpl with ConnectivityAware {
             await _apiService.get('/api/posts/check-duplicate?hash=$hash');
         return response.data['isDuplicate'] ?? false;
       } catch (e) {
-        developer.log(
-          'Check duplicate error',
-          name: 'PostRepository',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Check duplicate error');
         return false;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> interactWithPost(
       String id, String type, String action) async {
     return withConnectivity(() async {
       try {
-        developer.log(
-          '🎯 Interact with post',
-          name: 'PostRepository',
-          error: {'postId': id, 'type': type, 'action': action},
-        );
+        print('🎯 Interact with post');
         final response = await _apiService.post(
           '/api/posts/$id/interact',
           data: {'type': type, 'action': action},
@@ -593,39 +496,20 @@ class PostRepositoryImpl with ConnectivityAware {
           postData = response.data ?? {};
         }
         final transformedPost = _transformPost(postData);
-        developer.log(
-          '✅ Interaction success',
-          name: 'PostRepository',
-          error: {
-            'postId': id,
-            'type': type,
-            'action': action,
-            'isLiked': transformedPost['interactions']['isLiked'],
-          },
-        );
+        print('✅ Interaction success');
         return transformedPost;
       } catch (e) {
-        developer.log(
-          'Post interaction error',
-          name: 'PostRepository',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Post interaction error');
         rethrow;
       }
     });
   }
+
   Future<Map<String, dynamic>> votePoliticalOrientation(
       String postId, String orientation) async {
     return withConnectivity(() async {
       try {
-        developer.log(
-          '🗳️ Vote political orientation',
-          name: 'PostRepository',
-          error: {'postId': postId, 'orientation': orientation},
-        );
+        print('🗳️ Vote political orientation');
         final response = await _apiService.post(
           '/api/posts/$postId/political-view',
           data: {'view': orientation},
@@ -642,36 +526,20 @@ class PostRepositoryImpl with ConnectivityAware {
           postData = response.data ?? {};
         }
         final transformedPost = _transformPost(postData);
-        developer.log(
-          '✅ Political vote success',
-          name: 'PostRepository',
-          error: {
-            'postId': postId,
-            'orientation': orientation,
-          },
-        );
+        print('✅ Political vote success');
         return transformedPost;
       } catch (e) {
-        developer.log(
-          'Political vote error',
-          name: 'PostRepository',
-          error: {
-            'postId': postId,
-            'orientation': orientation,
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Political vote error');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> likePost(String id) async {
     return withConnectivity(() async {
       try {
-        developer.log('👍 Like post request',
-            name: 'PostRepository', error: {'postId': id});
+        print('👍 Like post request');
         final response =
             await _apiService.post('/api/posts/$id/like', data: {});
         Map<String, dynamic> postData;
@@ -686,35 +554,20 @@ class PostRepositoryImpl with ConnectivityAware {
           postData = response.data ?? {};
         }
         final transformedPost = _transformPost(postData);
-        developer.log(
-          '✅ Like post success',
-          name: 'PostRepository',
-          error: {
-            'postId': id,
-            'isLiked': transformedPost['interactions']['isLiked'],
-            'likesCount': transformedPost['interactions']['likes'],
-          },
-        );
+        print('✅ Like post success');
         return transformedPost;
       } catch (e) {
-        developer.log(
-          'Like post error',
-          name: 'PostRepository',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Like post error');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> unlikePost(String id) async {
     return withConnectivity(() async {
       try {
-        developer.log('👎 Unlike post request',
-            name: 'PostRepository', error: {'postId': id});
+        print('👎 Unlike post request');
         final response = await _apiService.delete('/api/posts/$id/like');
         Map<String, dynamic> postData;
         if (response.data != null && response.data is Map<String, dynamic>) {
@@ -728,35 +581,20 @@ class PostRepositoryImpl with ConnectivityAware {
           postData = response.data ?? {};
         }
         final transformedPost = _transformPost(postData);
-        developer.log(
-          '✅ Unlike post success',
-          name: 'PostRepository',
-          error: {
-            'postId': id,
-            'isLiked': transformedPost['interactions']['isLiked'],
-            'likesCount': transformedPost['interactions']['likes'],
-          },
-        );
+        print('✅ Unlike post success');
         return transformedPost;
       } catch (e) {
-        developer.log(
-          'Unlike post error',
-          name: 'PostRepository',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Unlike post error');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> savePost(String id) async {
     return withConnectivity(() async {
       try {
-        developer.log('💾 Save post request',
-            name: 'PostRepository', error: {'postId': id});
+        print('💾 Save post request');
         final response =
             await _apiService.post('/api/posts/$id/save', data: {});
         Map<String, dynamic> postData;
@@ -771,35 +609,20 @@ class PostRepositoryImpl with ConnectivityAware {
           postData = response.data ?? {};
         }
         final transformedPost = _transformPost(postData);
-        developer.log(
-          '✅ Save post success',
-          name: 'PostRepository',
-          error: {
-            'postId': id,
-            'isSaved': transformedPost['interactions']['isSaved'],
-            'bookmarksCount': transformedPost['interactions']['bookmarks'],
-          },
-        );
+        print('✅ Save post success');
         return transformedPost;
       } catch (e) {
-        developer.log(
-          'Save post error',
-          name: 'PostRepository',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Save post error');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> unsavePost(String id) async {
     return withConnectivity(() async {
       try {
-        developer.log('💾 Unsave post request',
-            name: 'PostRepository', error: {'postId': id});
+        print('💾 Unsave post request');
         final response = await _apiService.post('/api/posts/$id/unsave');
         Map<String, dynamic> postData;
         if (response.data != null && response.data is Map<String, dynamic>) {
@@ -813,29 +636,15 @@ class PostRepositoryImpl with ConnectivityAware {
           postData = response.data ?? {};
         }
         final transformedPost = _transformPost(postData);
-        developer.log(
-          '✅ Unsave post success',
-          name: 'PostRepository',
-          error: {
-            'postId': id,
-            'isSaved': transformedPost['interactions']['isSaved'],
-            'bookmarksCount': transformedPost['interactions']['bookmarks'],
-          },
-        );
+        print('✅ Unsave post success');
         return transformedPost;
       } catch (e) {
-        developer.log(
-          'Unsave post error',
-          name: 'PostRepository',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Unsave post error');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> toggleLike(String id) async {
     return withConnectivity(() async {
@@ -850,18 +659,12 @@ class PostRepositoryImpl with ConnectivityAware {
           return await likePost(id);
         }
       } catch (e) {
-        developer.log(
-          'Toggle like error',
-          name: 'PostRepository',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Toggle like error');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> toggleBookmark(String id) async {
     return withConnectivity(() async {
@@ -876,28 +679,18 @@ class PostRepositoryImpl with ConnectivityAware {
           return await savePost(id);
         }
       } catch (e) {
-        developer.log(
-          'Toggle bookmark error',
-          name: 'PostRepository',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Toggle bookmark error');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> voteOnQuestion(
       String postId, String optionId) async {
     return withConnectivity(() async {
       try {
-        developer.log(
-          '🗳️ Vote on question',
-          name: 'PostRepository',
-          error: {'postId': postId, 'optionId': optionId},
-        );
+        print('🗳️ Vote on question');
         final response = await _apiService.post(
           '/api/posts/$postId/vote',
           data: {'optionId': optionId},
@@ -914,40 +707,21 @@ class PostRepositoryImpl with ConnectivityAware {
           postData = response.data ?? {};
         }
         final transformedPost = _transformPost(postData);
-        developer.log(
-          '✅ Vote success',
-          name: 'PostRepository',
-          error: {
-            'postId': postId,
-            'optionId': optionId,
-            'totalVotes': transformedPost['metadata']?['question']
-                ?['totalVotes'],
-          },
-        );
+        print('✅ Vote success');
         return transformedPost;
       } catch (e) {
-        developer.log(
-          'Vote on question error',
-          name: 'PostRepository',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Vote on question error');
         rethrow;
       }
     });
   }
+
   @override
   Future<List<Map<String, dynamic>>> getPostInteractions(
       String id, String type) async {
     return withConnectivity(() async {
       try {
-        developer.log(
-          '📊 Get post interactions',
-          name: 'PostRepository',
-          error: {'postId': id, 'type': type},
-        );
+        print('📊 Get post interactions');
         final response =
             await _apiService.get('/api/posts/$id/interactions?type=$type');
         List<Map<String, dynamic>> users;
@@ -965,35 +739,21 @@ class PostRepositoryImpl with ConnectivityAware {
         } else {
           users = [];
         }
-        developer.log(
-          '✅ Got interactions',
-          name: 'PostRepository',
-          error: {'postId': id, 'type': type, 'count': users.length},
-        );
+        print('✅ Got interactions');
         return users;
       } catch (e) {
-        developer.log(
-          'Get post interactions error',
-          name: 'PostRepository',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Get post interactions error');
         return [];
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> getPoliticalVoters(
       String id, String view) async {
     return withConnectivity(() async {
       try {
-        developer.log(
-          '🗳️ Get political voters',
-          name: 'PostRepository',
-          error: {'postId': id, 'view': view},
-        );
+        print('🗳️ Get political voters');
         final response =
             await _apiService.get('/api/posts/$id/political-voters?view=$view');
         Map<String, dynamic> result;
@@ -1007,29 +767,15 @@ class PostRepositoryImpl with ConnectivityAware {
         } else {
           result = response.data ?? {};
         }
-        developer.log(
-          '✅ Got political voters',
-          name: 'PostRepository',
-          error: {
-            'postId': id,
-            'view': view,
-            'votersCount': result['voters']?.length ?? 0
-          },
-        );
+        print('✅ Got political voters');
         return result;
       } catch (e) {
-        developer.log(
-          'Get political voters error',
-          name: 'PostRepository',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Get political voters error');
         return {'voters': [], 'total': 0};
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> searchPostsWithRelevance(
     String query, {
@@ -1040,11 +786,7 @@ class PostRepositoryImpl with ConnectivityAware {
   }) async {
     return withConnectivity(() async {
       try {
-        developer.log(
-          '🔍 Search posts with relevance',
-          name: 'PostRepository',
-          error: {'query': query, 'page': page, 'type': type, 'domain': domain},
-        );
+        print('🔍 Search posts with relevance');
         final queryParams = {
           'search': query,
           'page': page.toString(),
@@ -1063,39 +805,21 @@ class PostRepositoryImpl with ConnectivityAware {
         final posts = (responseData['posts'] as List?)?.map((post) {
               try {
                 return _transformPost(post as Map<String, dynamic>);
-              } catch (e, stackTrace) {
-                developer.log(
-                  'Error transforming search result',
-                  name: 'PostRepository',
-                  error: e,
-                  stackTrace: stackTrace,
-                );
+              } catch (e, _) {
+                print('Error transforming search result');
                 return _createFallbackPost(post as Map<String, dynamic>);
               }
             }).toList() ??
             [];
-        developer.log(
-          '✅ Search completed',
-          name: 'PostRepository',
-          error: {
-            'query': query,
-            'resultsCount': posts.length,
-            'total': responseData['total'] ?? posts.length,
-          },
-        );
+        print('✅ Search completed');
         return {
           'posts': posts,
           'total': responseData['total'] ?? posts.length,
           'page': responseData['page'] ?? page,
           'relevanceScores': responseData['relevanceScores'] ?? {},
         };
-      } catch (e, stackTrace) {
-        developer.log(
-          'Search posts error',
-          name: 'PostRepository',
-          error: e,
-          stackTrace: stackTrace,
-        );
+      } catch (e, _) {
+        print('Search posts error');
         return {
           'posts': [],
           'total': 0,
@@ -1105,6 +829,7 @@ class PostRepositoryImpl with ConnectivityAware {
       }
     });
   }
+
   static final _validJournalistPostTypes = {
     PostTypes.article,
     PostTypes.video,
@@ -1116,18 +841,11 @@ class PostRepositoryImpl with ConnectivityAware {
   static bool isValidJournalistPostType(String? type) {
     return type == null || _validJournalistPostTypes.contains(type);
   }
+
   @override
   Future<Map<String, dynamic>> getJournalistProfile(String id,
       {bool isCurrentUser = false}) async {
-    developer.log(
-      'Get journalist profile request',
-      name: 'PostRepository_JOURNALIST',
-      error: {
-        'journalistId': id,
-        'isCurrentUser': isCurrentUser,
-        'timestamp': DateTime.now().toIso8601String()
-      },
-    );
+    print('Get journalist profile request');
     return withConnectivity(() async {
       try {
         final response = await _apiService.get(
@@ -1135,42 +853,19 @@ class PostRepositoryImpl with ConnectivityAware {
               ? ApiRoutesHelper.journalistMe
               : ApiRoutesHelper.journalistProfile(id),
         );
-        developer.log(
-          'Get journalist profile response received',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'success': response.data['success'],
-            'response': response,
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Get journalist profile response received');
         final data = response.data['data'] ?? response;
         final profileData = data as Map<String, dynamic>;
         profileData['type'] = 'journalist';
-        developer.log(
-          'Get journalist profile successful',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'journalistId': id,
-            'profile': profileData,
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Get journalist profile successful');
         return profileData;
       } catch (e) {
-        developer.log(
-          'Get journalist profile error',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'journalistId': id,
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Get journalist profile error');
         rethrow;
       }
     });
   }
+
   @override
   Future<List<Map<String, dynamic>>> getJournalistPosts(
     String id, {
@@ -1181,17 +876,7 @@ class PostRepositoryImpl with ConnectivityAware {
     if (!isValidJournalistPostType(type)) {
       throw ArgumentError('Invalid post type: $type');
     }
-    developer.log(
-      '📰 getJournalistPosts called',
-      name: 'PostRepository_JOURNALIST',
-      error: {
-        'journalistId': id,
-        'page': page,
-        'type': type,
-        'isCurrentUser': isCurrentUser,
-        'timestamp': DateTime.now().toIso8601String(),
-      },
-    );
+    print('📰 getJournalistPosts called');
     return withConnectivity(() async {
       try {
         final queryParams = {
@@ -1226,17 +911,7 @@ class PostRepositoryImpl with ConnectivityAware {
           }
           return transformedPost;
         }).toList();
-        developer.log(
-          'Get journalist posts successful',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'journalistId': id,
-            'postsCount': transformedPosts.length,
-            'page': page,
-            'type': type,
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Get journalist posts successful');
         return List<Map<String, dynamic>>.from(transformedPosts);
       } catch (e) {
         final errorDetails = {
@@ -1255,11 +930,7 @@ class PostRepositoryImpl with ConnectivityAware {
             'response_data': e.response?.data?.toString() ?? 'No data'
           });
         }
-        developer.log(
-          'Get journalist posts error',
-          name: 'PostRepository_JOURNALIST',
-          error: errorDetails,
-        );
+        print('Get journalist posts error');
         if (e is DioException && e.type == DioExceptionType.connectionError) {
           throw Exception(
               'Connection failed. Please check your internet connection and try again.');
@@ -1268,80 +939,39 @@ class PostRepositoryImpl with ConnectivityAware {
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> followJournalist(String id) async {
-    developer.log(
-      'Follow journalist attempt',
-      name: 'PostRepository_JOURNALIST',
-      error: {
-        'journalistId': id,
-        'timestamp': DateTime.now().toIso8601String()
-      },
-    );
+    print('Follow journalist attempt');
     return withConnectivity(() async {
       try {
         final response = await _apiService
             .post(ApiRoutesHelper.journalistFollow(id), data: {});
-        developer.log(
-          'Follow journalist successful',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'journalistId': id,
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Follow journalist successful');
         return response.data['data'] ?? response;
       } catch (e) {
-        developer.log(
-          'Follow journalist error',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'journalistId': id,
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Follow journalist error');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> unfollowJournalist(String id) async {
-    developer.log(
-      'Unfollow journalist attempt',
-      name: 'PostRepository_JOURNALIST',
-      error: {
-        'journalistId': id,
-        'timestamp': DateTime.now().toIso8601String()
-      },
-    );
+    print('Unfollow journalist attempt');
     return withConnectivity(() async {
       try {
         final response = await _apiService
             .post(ApiRoutesHelper.journalistUnfollow(id), data: {});
-        developer.log(
-          'Unfollow journalist successful',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'journalistId': id,
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Unfollow journalist successful');
         return response.data['data'] ?? response;
       } catch (e) {
-        developer.log(
-          'Unfollow journalist error',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'journalistId': id,
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Unfollow journalist error');
         rethrow;
       }
     });
   }
+
   @override
   Future<List<Map<String, dynamic>>> getJournalists({
     int page = 1,
@@ -1350,18 +980,7 @@ class PostRepositoryImpl with ConnectivityAware {
     bool suggested = false,
     String? politicalOrientation,
   }) async {
-    developer.log(
-      'Get journalists request',
-      name: 'PostRepository_JOURNALIST',
-      error: {
-        'page': page,
-        'specialty': specialty,
-        'suggested': suggested,
-        'search': search,
-        'politicalOrientation': politicalOrientation,
-        'timestamp': DateTime.now().toIso8601String()
-      },
-    );
+    print('Get journalists request');
     return withConnectivity(() async {
       try {
         final queryParams = {
@@ -1378,17 +997,7 @@ class PostRepositoryImpl with ConnectivityAware {
         final response = await _apiService.get(endpoint);
         final data = response.data['data'] ?? response;
         final journalists = (data['journalists'] ?? []) as List<dynamic>;
-        developer.log(
-          'Get journalists successful',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'journalistsCount': journalists.length,
-            'page': page,
-            'specialty': specialty,
-            'suggested': suggested,
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Get journalists successful');
         final transformedJournalists = journalists.map((journalist) {
           final Map<String, dynamic> transformedJournalist =
               Map<String, dynamic>.from(journalist);
@@ -1400,30 +1009,16 @@ class PostRepositoryImpl with ConnectivityAware {
         }).toList();
         return transformedJournalists;
       } catch (e) {
-        developer.log(
-          'Get journalists error',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Get journalists error');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> getJournalistStats(String id,
       {String? period}) async {
-    developer.log(
-      'Get journalist stats request',
-      name: 'PostRepository_JOURNALIST',
-      error: {
-        'journalistId': id,
-        'period': period,
-        'timestamp': DateTime.now().toIso8601String()
-      },
-    );
+    print('Get journalist stats request');
     return withConnectivity(() async {
       try {
         String endpoint = ApiRoutesHelper.journalistStats(id);
@@ -1432,76 +1027,37 @@ class PostRepositoryImpl with ConnectivityAware {
         }
         final response = await _apiService.get(endpoint);
         final data = response.data['data'] ?? response.data;
-        developer.log(
-          'Get journalist stats successful',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'journalistId': id,
-            'stats': data,
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Get journalist stats successful');
         return data;
       } catch (e) {
-        developer.log(
-          'Get journalist stats error',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'journalistId': id,
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Get journalist stats error');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> answerJournalistQuestion(
     String id,
     String questionId,
     String answer,
   ) async {
-    developer.log(
-      'Answer journalist question request',
-      name: 'PostRepository_JOURNALIST',
-      error: {
-        'journalistId': id,
-        'questionId': questionId,
-        'timestamp': DateTime.now().toIso8601String()
-      },
-    );
+    print('Answer journalist question request');
     return withConnectivity(() async {
       try {
         final response = await _apiService.post(
           ApiRoutesHelper.answerQuestion(id, questionId),
           data: {'answer': answer},
         );
-        developer.log(
-          'Answer journalist question successful',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'journalistId': id,
-            'questionId': questionId,
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Answer journalist question successful');
         return response.data['data'] ?? response;
       } catch (e) {
-        developer.log(
-          'Answer journalist question error',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'journalistId': id,
-            'questionId': questionId,
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Answer journalist question error');
         rethrow;
       }
     });
   }
+
   Future<void> respondToQuestion(
     String journalistId,
     String questionId,
@@ -1509,6 +1065,7 @@ class PostRepositoryImpl with ConnectivityAware {
   ) async {
     await answerJournalistQuestion(journalistId, questionId, answer);
   }
+
   Future<void> answerQuestion(
     String journalistId,
     String questionId,
@@ -1516,86 +1073,43 @@ class PostRepositoryImpl with ConnectivityAware {
   ) async {
     await answerJournalistQuestion(journalistId, questionId, answer);
   }
+
   @override
   Future<List<Map<String, dynamic>>> getJournalistFollowers(String id) async {
-    developer.log(
-      'Get journalist followers request',
-      name: 'PostRepository_JOURNALIST',
-      error: {
-        'journalistId': id,
-        'timestamp': DateTime.now().toIso8601String()
-      },
-    );
+    print('Get journalist followers request');
     return withConnectivity(() async {
       try {
         final response = await _apiService
             .get(ApiRoutes.buildPath(ApiRoutes.journalistFollowers(id)));
         final data = response.data['data'] ?? response;
         final followers = (data['followers'] ?? []) as List<dynamic>;
-        developer.log(
-          'Get journalist followers successful',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'journalistId': id,
-            'followersCount': followers.length,
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Get journalist followers successful');
         return List<Map<String, dynamic>>.from(followers);
       } catch (e) {
-        developer.log(
-          'Get journalist followers error',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'journalistId': id,
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Get journalist followers error');
         rethrow;
       }
     });
   }
+
   @override
   Future<bool> isFollowingJournalist(String id) async {
-    developer.log(
-      'Check following status request',
-      name: 'PostRepository_JOURNALIST',
-      error: {
-        'journalistId': id,
-        'timestamp': DateTime.now().toIso8601String()
-      },
-    );
+    print('Check following status request');
     return withConnectivity(() async {
       try {
         final response = await _apiService
             .get(ApiRoutes.buildPath(ApiRoutes.followStatus(id)));
         final data = response.data['data'] ?? response;
         final isFollowing = data['isFollowing'] ?? false;
-        developer.log(
-          'Check following status successful',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'journalistId': id,
-            'isFollowing': isFollowing,
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Check following status successful');
         return isFollowing;
       } catch (e) {
-        developer.log(
-          'Check following status error',
-          name: 'PostRepository_JOURNALIST',
-          error: {
-            'journalistId': id,
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Check following status error');
         return false;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> getQuestions({
     int page = 1,
@@ -1614,14 +1128,7 @@ class PostRepositoryImpl with ConnectivityAware {
         final uri = Uri.parse(ApiRoutes.buildPath(ApiRoutes.questions))
             .replace(queryParameters: queryParams);
         final response = await _apiService.get(uri.toString());
-        developer.log(
-          'Get questions response',
-          name: 'PostRepository_QUESTIONS',
-          error: {
-            'hasData': response.data != null,
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Get questions response');
         if (response.data['questions'] != null) {
           return {
             'questions': response.data['questions'] as List,
@@ -1633,18 +1140,12 @@ class PostRepositoryImpl with ConnectivityAware {
           throw Exception('Failed to load questions');
         }
       } catch (e) {
-        developer.log(
-          'Error fetching questions',
-          name: 'PostRepository_QUESTIONS',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Error fetching questions');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> getQuestion(String questionId) async {
     return withConnectivity(() async {
@@ -1659,19 +1160,12 @@ class PostRepositoryImpl with ConnectivityAware {
           throw Exception('Failed to load question');
         }
       } catch (e) {
-        developer.log(
-          'Error fetching question',
-          name: 'PostRepository_QUESTIONS',
-          error: {
-            'questionId': questionId,
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Error fetching question');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> createQuestion({
     required String title,
@@ -1699,18 +1193,12 @@ class PostRepositoryImpl with ConnectivityAware {
           throw Exception('Failed to create question');
         }
       } catch (e) {
-        developer.log(
-          'Error creating question',
-          name: 'PostRepository_QUESTIONS',
-          error: {
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Error creating question');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> updateQuestion({
     required String questionId,
@@ -1744,19 +1232,12 @@ class PostRepositoryImpl with ConnectivityAware {
           throw Exception('Failed to update question');
         }
       } catch (e) {
-        developer.log(
-          'Error updating question',
-          name: 'PostRepository_QUESTIONS',
-          error: {
-            'questionId': questionId,
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Error updating question');
         rethrow;
       }
     });
   }
+
   @override
   Future<void> deleteQuestion(String questionId) async {
     return withConnectivity(() async {
@@ -1764,19 +1245,12 @@ class PostRepositoryImpl with ConnectivityAware {
         await _apiService
             .delete(ApiRoutes.buildPath(ApiRoutes.deleteQuestion(questionId)));
       } catch (e) {
-        developer.log(
-          'Error deleting question',
-          name: 'PostRepository_QUESTIONS',
-          error: {
-            'questionId': questionId,
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Error deleting question');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> voteOnQuestionOption({
     required String questionId,
@@ -1794,20 +1268,12 @@ class PostRepositoryImpl with ConnectivityAware {
           throw Exception(response.data['message'] ?? 'Failed to vote');
         }
       } catch (e) {
-        developer.log(
-          'Error voting on question',
-          name: 'PostRepository_QUESTIONS',
-          error: {
-            'questionId': questionId,
-            'optionId': optionId,
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Error voting on question');
         rethrow;
       }
     });
   }
+
   @override
   Future<void> likeQuestion(String questionId) async {
     return withConnectivity(() async {
@@ -1816,19 +1282,12 @@ class PostRepositoryImpl with ConnectivityAware {
             ApiRoutes.buildPath(ApiRoutes.likeQuestion(questionId)),
             data: {});
       } catch (e) {
-        developer.log(
-          'Error liking question',
-          name: 'PostRepository_QUESTIONS',
-          error: {
-            'questionId': questionId,
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Error liking question');
         rethrow;
       }
     });
   }
+
   @override
   Future<void> saveQuestion(String questionId) async {
     return withConnectivity(() async {
@@ -1837,19 +1296,12 @@ class PostRepositoryImpl with ConnectivityAware {
             ApiRoutes.buildPath(ApiRoutes.saveQuestion(questionId)),
             data: {});
       } catch (e) {
-        developer.log(
-          'Error saving question',
-          name: 'PostRepository_QUESTIONS',
-          error: {
-            'questionId': questionId,
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Error saving question');
         rethrow;
       }
     });
   }
+
   @override
   Future<Map<String, dynamic>> getQuestionVoteStatus(String questionId) async {
     return withConnectivity(() async {
@@ -1861,15 +1313,7 @@ class PostRepositoryImpl with ConnectivityAware {
           'votedOption': response.data['votedOption'],
         };
       } catch (e) {
-        developer.log(
-          'Error getting vote status',
-          name: 'PostRepository_QUESTIONS',
-          error: {
-            'questionId': questionId,
-            'error': e.toString(),
-            'timestamp': DateTime.now().toIso8601String()
-          },
-        );
+        print('Error getting vote status');
         return {
           'hasVoted': false,
           'votedOption': null,
@@ -1877,6 +1321,7 @@ class PostRepositoryImpl with ConnectivityAware {
       }
     });
   }
+
   Map<String, dynamic> _transformShortToPost(Map<String, dynamic> shortData) {
     final Map<String, dynamic> postData = Map<String, dynamic>.from(shortData);
     postData['type'] = 'short';
@@ -1939,6 +1384,7 @@ class PostRepositoryImpl with ConnectivityAware {
     }
     return postData;
   }
+
   @override
   Future<List<Post>> getShorts({
     int page = 1,
@@ -1963,12 +1409,10 @@ class PostRepositoryImpl with ConnectivityAware {
         if (response.data['success'] == true && response.data['data'] != null) {
           if (response.data['data']['shorts'] != null) {
             shortsList = response.data['data']['shorts'] as List;
-          }
-          else if (response.data['data']['posts'] != null) {
+          } else if (response.data['data']['posts'] != null) {
             shortsList = response.data['data']['posts'] as List;
           }
-        }
-        else if (response.data['posts'] != null) {
+        } else if (response.data['posts'] != null) {
           shortsList = response.data['posts'] as List;
         }
         if (shortsList.isEmpty) {
@@ -1985,6 +1429,7 @@ class PostRepositoryImpl with ConnectivityAware {
       rethrow;
     }
   }
+
   @override
   Future<Post> getShort(String shortId) async {
     try {
@@ -1999,6 +1444,7 @@ class PostRepositoryImpl with ConnectivityAware {
       rethrow;
     }
   }
+
   @override
   Future<Post> createShort({
     required String title,
@@ -2033,6 +1479,7 @@ class PostRepositoryImpl with ConnectivityAware {
       rethrow;
     }
   }
+
   @override
   Future<Post> updateShort({
     required String shortId,
@@ -2067,6 +1514,7 @@ class PostRepositoryImpl with ConnectivityAware {
       rethrow;
     }
   }
+
   @override
   Future<void> deleteShort(String shortId) async {
     try {
@@ -2076,6 +1524,7 @@ class PostRepositoryImpl with ConnectivityAware {
       rethrow;
     }
   }
+
   @override
   Future<void> likeShort(String shortId) async {
     try {
@@ -2085,6 +1534,7 @@ class PostRepositoryImpl with ConnectivityAware {
       rethrow;
     }
   }
+
   @override
   Future<void> dislikeShort(String shortId) async {
     try {
@@ -2094,6 +1544,7 @@ class PostRepositoryImpl with ConnectivityAware {
       rethrow;
     }
   }
+
   @override
   Future<List<Post>> getTrendingShorts({
     int page = 1,
@@ -2125,6 +1576,7 @@ class PostRepositoryImpl with ConnectivityAware {
       rethrow;
     }
   }
+
   @override
   Future<Post> saveShort(String shortId) async {
     try {
@@ -2140,6 +1592,7 @@ class PostRepositoryImpl with ConnectivityAware {
       rethrow;
     }
   }
+
   @override
   Future<List<Post>> getSavedShorts({
     int page = 1,
@@ -2166,6 +1619,7 @@ class PostRepositoryImpl with ConnectivityAware {
       rethrow;
     }
   }
+
   @override
   Future<List<TrendingHashtag>> getTrendingHashtags({
     int limit = 10,
@@ -2215,18 +1669,18 @@ class PostRepositoryImpl with ConnectivityAware {
               });
           return hashtags;
         });
-      } catch (e, st) {
+      } catch (e, _) {
         _log('[$reqId] getTrendingHashtags error', level: 1000, ctx: {
           'limit': sanitizedLimit,
           'timeframe': timeframe ?? 'default',
           'error': e.toString()
         });
-        developer.log('stack',
-            name: 'PostRepository_TRENDING', level: 900, error: st);
+        print('stack');
         rethrow;
       }
     });
   }
+
   @override
   Future<List<TrendingTopic>> getTrendingTopics({
     int limit = 10,
@@ -2280,19 +1734,19 @@ class PostRepositoryImpl with ConnectivityAware {
               });
           return topics;
         });
-      } catch (e, st) {
+      } catch (e, _) {
         _log('[$reqId] getTrendingTopics error', level: 1000, ctx: {
           'limit': sanitizedLimit,
           'category': category ?? 'all',
           'timeframe': timeframe ?? 'default',
           'error': e.toString()
         });
-        developer.log('stack',
-            name: 'PostRepository_TRENDING', level: 900, error: st);
+        print('stack');
         rethrow;
       }
     });
   }
+
   @override
   Future<PersonalizedTrending> getPersonalizedTrending({
     int postsLimit = 10,
@@ -2350,19 +1804,19 @@ class PostRepositoryImpl with ConnectivityAware {
               });
           return result;
         });
-      } catch (e, st) {
+      } catch (e, _) {
         _log('[$reqId] getPersonalizedTrending error', level: 1000, ctx: {
           'postsLimit': qPosts,
           'journalistsLimit': qJourno,
           'hashtagsLimit': qTags,
           'error': e.toString()
         });
-        developer.log('stack',
-            name: 'PostRepository_TRENDING', level: 900, error: st);
+        print('stack');
         rethrow;
       }
     });
   }
+
   @override
   Future<TrendingSearchResults> searchTrending({
     required String query,
@@ -2423,25 +1877,26 @@ class PostRepositoryImpl with ConnectivityAware {
               });
           return result;
         });
-      } catch (e, st) {
+      } catch (e, _) {
         _log('[$reqId] searchTrending error', level: 1000, ctx: {
           'q': trimmedQuery,
           'type': type ?? 'all',
           'error': e.toString()
         });
-        developer.log('stack',
-            name: 'PostRepository_TRENDING', level: 900, error: st);
+        print('stack');
         rethrow;
       }
     });
   }
 }
+
 class _CacheEntry<T> {
   final T value;
   final DateTime expiry;
   const _CacheEntry(this.value, this.expiry);
   bool get isExpired => DateTime.now().isAfter(expiry);
 }
+
 class _LruCache<K, V> {
   final int capacity;
   final _map = <K, _CacheEntry<V>>{};
@@ -2453,15 +1908,18 @@ class _LruCache<K, V> {
     _map[key] = entry;
     return entry.value;
   }
+
   void put(K key, V value, Duration ttl) {
     if (_map.length >= capacity) {
       _map.remove(_map.keys.first);
     }
     _map[key] = _CacheEntry(value, DateTime.now().add(ttl));
   }
+
   void invalidate(K key) => _map.remove(key);
   void clear() => _map.clear();
 }
+
 class _InFlight {
   final _map = <String, Future<Object>>{};
   Future<T> run<T>(String key, Future<T> Function() action) {
@@ -2475,6 +1933,7 @@ class _InFlight {
     return future;
   }
 }
+
 String _newReqId() =>
     '${DateTime.now().microsecondsSinceEpoch}-${math.Random().nextInt(1 << 32)}';
 int _sanitizeLimit(int limit) => limit.clamp(1, 100);
@@ -2482,13 +1941,15 @@ Uri _buildUri(String route, Map<String, String> queryParams) {
   return Uri.parse(ApiRoutes.buildPath(route))
       .replace(queryParameters: queryParams);
 }
+
 void _log(String message,
     {int level = 800,
     String name = 'PostRepository',
     Map<String, Object?>? ctx}) {
   final suffix = (ctx == null || ctx.isEmpty) ? '' : ' | ctx=$ctx';
-  developer.log('$message$suffix', name: name, level: level);
+  print('$message$suffix');
 }
+
 Future<T> _withRetry<T>(
   Future<T> Function() run, {
   int maxAttempts = 3,
@@ -2516,6 +1977,7 @@ Future<T> _withRetry<T>(
   }
   throw lastError ?? StateError('Unknown error in _withRetry');
 }
+
 @immutable
 class TrendingHashtag {
   final String tag;
@@ -2541,12 +2003,14 @@ class TrendingHashtag {
     }
     return 0.0;
   }
+
   static DateTime? _parseDate(Object? v) {
     if (v == null) return null;
     if (v is DateTime) return v;
     if (v is String) return DateTime.tryParse(v);
     return null;
   }
+
   factory TrendingHashtag.fromJson(Map<String, dynamic> json) {
     return TrendingHashtag(
       tag: (json['tag'] as String?) ?? '',
@@ -2571,6 +2035,7 @@ class TrendingHashtag {
       'metadata': metadata,
     };
   }
+
   TrendingHashtag copyWith({
     String? tag,
     int? count,
@@ -2588,6 +2053,7 @@ class TrendingHashtag {
       metadata: metadata ?? this.metadata,
     );
   }
+
   @override
   String toString() =>
       'TrendingHashtag(tag: $tag, count: $count, trendScore: $trendScore)';
@@ -2605,6 +2071,7 @@ class TrendingHashtag {
   int get hashCode =>
       Object.hash(tag, count, trendScore, description, lastUsed);
 }
+
 @immutable
 class TrendingTopic {
   final String id;
@@ -2636,12 +2103,14 @@ class TrendingTopic {
     }
     return 0.0;
   }
+
   static DateTime? _parseDate(Object? v) {
     if (v == null) return null;
     if (v is DateTime) return v;
     if (v is String) return DateTime.tryParse(v);
     return null;
   }
+
   factory TrendingTopic.fromJson(Map<String, dynamic> json) {
     final rawId = json['_id'] ?? json['id'];
     return TrendingTopic(
@@ -2673,6 +2142,7 @@ class TrendingTopic {
       'metadata': metadata,
     };
   }
+
   TrendingTopic copyWith({
     String? id,
     String? name,
@@ -2696,6 +2166,7 @@ class TrendingTopic {
       metadata: metadata ?? this.metadata,
     );
   }
+
   @override
   String toString() =>
       'TrendingTopic(id: $id, name: $name, category: $category, postsCount: $postsCount, trendScore: $trendScore)';
@@ -2724,6 +2195,7 @@ class TrendingTopic {
         createdAt,
       );
 }
+
 @immutable
 class PersonalizedTrending {
   final List<Map<String, dynamic>> posts;
@@ -2746,6 +2218,7 @@ class PersonalizedTrending {
     }
     return DateTime.now();
   }
+
   factory PersonalizedTrending.fromJson(Map<String, dynamic> json) {
     return PersonalizedTrending(
       posts: (json['posts'] as List?)
@@ -2778,6 +2251,7 @@ class PersonalizedTrending {
       'generatedAt': generatedAt.toIso8601String(),
     };
   }
+
   PersonalizedTrending copyWith({
     List<Map<String, dynamic>>? posts,
     List<Map<String, dynamic>>? journalists,
@@ -2793,6 +2267,7 @@ class PersonalizedTrending {
       generatedAt: generatedAt ?? this.generatedAt,
     );
   }
+
   @override
   String toString() =>
       'PersonalizedTrending(posts: ${posts.length}, journalists: ${journalists.length}, hashtags: ${hashtags.length}, topics: ${topics.length})';
@@ -2810,6 +2285,7 @@ class PersonalizedTrending {
   int get hashCode =>
       Object.hash(posts, journalists, hashtags, topics, generatedAt);
 }
+
 @immutable
 class TrendingSearchResults {
   final List<TrendingHashtag> hashtags;
@@ -2858,6 +2334,7 @@ class TrendingSearchResults {
       'totalResults': totalResults,
     };
   }
+
   TrendingSearchResults copyWith({
     List<TrendingHashtag>? hashtags,
     List<TrendingTopic>? topics,
@@ -2873,6 +2350,7 @@ class TrendingSearchResults {
       totalResults: totalResults ?? this.totalResults,
     );
   }
+
   @override
   String toString() =>
       'TrendingSearchResults(total: $totalResults, hashtags: ${hashtags.length}, topics: ${topics.length}, posts: ${posts.length}, journalists: ${journalists.length})';

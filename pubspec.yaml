@@ -103,6 +103,7 @@ flutter:
     - assets/images/defaults/default_user_avatar.png
     - assets/images/default_avatar.svg
     - assets/images/default_cover.png
+    - assets/thot_only.png
     - assets/app_logo.png
     - assets/images/defaults/default-post-image.jpg
     - assets/logo.jpeg

@@ -31,30 +31,30 @@ void main() async {
     LoggerService.instance.info('Starting application...');
 
     // Initialize environment configuration
-    debugPrint('[Bootstrap] Starting initialization...');
+    print('[Bootstrap] Starting initialization...');
     try {
       // 1. Charger les variables d'environnement
       await EnvConfig.load();
 
       // 2. Initialiser et obtenir l'URL de l'API
       await ApiConfig.getApiBaseUrl();
-      debugPrint('[Bootstrap] API configured');
+      print('[Bootstrap] API configured');
 
       // 3. Initialiser UrlHelper avec l'URL de l'API
       await UrlHelper.initialize();
-      debugPrint('[Bootstrap] UrlHelper initialized');
+      print('[Bootstrap] UrlHelper initialized');
 
-      debugPrint('[Bootstrap] Initialization complete');
+      print('[Bootstrap] Initialization complete');
 
       // Afficher la configuration en mode debug
       if (kDebugMode) {
-        debugPrint('=== API Configuration ===');
-        debugPrint(
+        print('=== API Configuration ===');
+        print(
             'Base URL: ${ApiConfig.getCurrentUrl() ?? 'Not configured'}');
-        debugPrint('========================');
+        print('========================');
       }
     } catch (e) {
-      debugPrint('[Bootstrap] Failed: $e');
+      print('[Bootstrap] Failed: $e');
       // En cas d'échec, continuer avec les valeurs par défaut
     }
 

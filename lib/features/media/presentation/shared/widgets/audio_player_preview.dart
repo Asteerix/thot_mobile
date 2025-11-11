@@ -43,7 +43,7 @@ class _AudioPlayerPreviewState extends State<AudioPlayerPreview> {
         }
       });
     } catch (e) {
-      debugPrint('Error initializing audio player: $e');
+      print('Error initializing audio player: $e');
     }
   }
   String _formatDuration(Duration duration) {

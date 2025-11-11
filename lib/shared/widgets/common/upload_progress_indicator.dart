@@ -17,8 +17,8 @@
 //   - Remplacé par UploadProgressDialog qui centralise la logique
 //   - Aucune référence trouvée dans la codebase (vérifié le 2025-10-03)
 //
-// TODO: Supprimer ce fichier et sa référence dans widgets.dart après
-//       validation qu'aucun code externe ne l'utilise
+// Note: Ce fichier peut être supprimé ainsi que sa référence dans widgets.dart
+//       après validation qu'aucun code externe ne l'utilise
 //
 // ============================================================================
 

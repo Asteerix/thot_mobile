@@ -1,9 +1,9 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:thot/features/posts/domain/entities/post_metadata.dart';
 import 'package:flutter/foundation.dart';
-import 'dart:developer' as developer;
 import 'package:thot/features/media/utils/url_helper.dart';
 part 'post.g.dart';
+
 enum PostType {
   article,
   video,
@@ -16,7 +16,9 @@ enum PostType {
   documentation,
   opinion
 }
+
 enum ContentStatus { draft, published, archived, hidden, deleted }
+
 @JsonEnum(fieldRename: FieldRename.snake)
 enum PoliticalOrientation {
   extremelyConservative,
@@ -25,6 +27,7 @@ enum PoliticalOrientation {
   progressive,
   extremelyProgressive
 }
+
 enum PostDomain {
   politique,
   economie,
@@ -37,6 +40,7 @@ enum PostDomain {
   sport,
   technologie
 }
+
 extension PostDomainExtension on PostDomain {
   String get name {
     switch (this) {
@@ -63,6 +67,7 @@ extension PostDomainExtension on PostDomain {
     }
   }
 }
+
 class PoliticalVoter {
   final String userId;
   final PoliticalOrientation view;
@@ -82,11 +87,12 @@ class PoliticalVoter {
     );
   }
   Map<String, dynamic> toJson() => {
-    'userId': userId,
-    'view': view.toString().split('.').last,
-    'votedAt': votedAt.toIso8601String(),
-  };
+        'userId': userId,
+        'view': view.toString().split('.').last,
+        'votedAt': votedAt.toIso8601String(),
+      };
 }
+
 @JsonSerializable()
 class PoliticalOrientationData {
   @JsonKey(fromJson: _orientationFromJson)
@@ -128,13 +134,16 @@ class PoliticalOrientationData {
     }
     return PoliticalOrientation.neutral;
   }
+
   static PoliticalOrientation? _orientationFromJsonNullable(dynamic json) {
     if (json == null) return null;
     return _orientationFromJson(json);
   }
+
   PoliticalOrientation get displayOrientation {
     return dominantView ?? journalistChoice;
   }
+
   factory PoliticalOrientationData.fromJson(Map<String, dynamic> json) =>
       _$PoliticalOrientationDataFromJson(json);
   Map<String, dynamic> toJson() => _$PoliticalOrientationDataToJson(this);
@@ -156,6 +165,7 @@ class PoliticalOrientationData {
     );
   }
 }
+
 @JsonSerializable()
 class PostStats {
   final int views;
@@ -178,6 +188,7 @@ class PostStats {
       _$PostStatsFromJson(json);
   Map<String, dynamic> toJson() => _$PostStatsToJson(this);
 }
+
 @JsonSerializable()
 class UserInteractions {
   @JsonKey(fromJson: _interactionCountFromJson)
@@ -209,17 +220,11 @@ class UserInteractions {
       if (users is List) return users.length;
     }
     if (kDebugMode) {
-      developer.log(
-        'WARNING: Unexpected interaction format',
-        name: 'UserInteractions',
-        error: {
-          'value': value,
-          'type': value.runtimeType.toString(),
-        },
-      );
+      print('WARNING: Unexpected interaction format');
     }
     return 0;
   }
+
   const UserInteractions({
     required this.likes,
     required this.dislikes,
@@ -256,6 +261,7 @@ class UserInteractions {
     );
   }
 }
+
 @JsonSerializable()
 class JournalistProfile {
   @JsonKey(name: 'id', defaultValue: null)
@@ -264,22 +270,25 @@ class JournalistProfile {
   final String? username;
   @JsonKey(fromJson: _urlFromJson)
   final String? avatarUrl;
+  @JsonKey(defaultValue: [])
   final List<String> specialties;
   final String? history;
   final bool isVerified;
   final bool isFollowing;
   @JsonKey(defaultValue: 0)
   final int followersCount;
+  final String? pressCard;
   const JournalistProfile({
     this.id,
     required this.name,
     this.username,
     this.avatarUrl,
-    required this.specialties,
+    this.specialties = const [],
     this.history,
     this.isVerified = false,
     this.isFollowing = false,
     this.followersCount = 0,
+    this.pressCard,
   });
   static String? _urlFromJson(dynamic value) {
     if (value == null) return null;
@@ -287,10 +296,12 @@ class JournalistProfile {
     if (url == null || url.isEmpty || url.trim().isEmpty) return null;
     return url;
   }
+
   factory JournalistProfile.fromJson(Map<String, dynamic> json) =>
       _$JournalistProfileFromJson(json);
   Map<String, dynamic> toJson() => _$JournalistProfileToJson(this);
 }
+
 class OppositionPost {
   final String postId;
   final String title;
@@ -332,6 +343,7 @@ class OppositionPost {
         'description': description,
       };
 }
+
 @JsonSerializable(explicitToJson: true)
 class Post {
   @JsonKey(name: '_id', readValue: _readIdValue, fromJson: _idFromJson)
@@ -360,12 +372,14 @@ class Post {
     }
     return PostStats.fromJson(json);
   }
+
   final UserInteractions interactions;
   @JsonKey(fromJson: _dateTimeFromJson)
   final DateTime createdAt;
   static dynamic _readIdValue(Map json, String key) {
     return json['_id'] ?? json['id'];
   }
+
   static dynamic _readJournalistValue(Map json, String key) {
     if (json['journalist'] != null) {
       return json['journalist'];
@@ -390,6 +404,7 @@ class Post {
     }
     return null;
   }
+
   static String _idFromJson(dynamic idValue) {
     String? id;
     if (idValue != null) {
@@ -402,15 +417,11 @@ class Post {
       }
     }
     if (kDebugMode) {
-      developer.log(
-        'ERROR: Post without valid ID',
-        name: 'Post',
-        error: {'idValue': idValue},
-        stackTrace: StackTrace.current,
-      );
+      print('ERROR: Post without valid ID');
     }
     return 'invalid_post_id_${DateTime.now().millisecondsSinceEpoch}';
   }
+
   static DateTime _dateTimeFromJson(dynamic json) {
     try {
       if (json is String) {
@@ -421,6 +432,7 @@ class Post {
       return DateTime.now();
     }
   }
+
   static DateTime? _dateTimeFromJsonNullable(dynamic json) {
     if (json == null) return null;
     try {
@@ -432,6 +444,7 @@ class Post {
       return null;
     }
   }
+
   final String content;
   @JsonKey(fromJson: _metadataFromJson)
   final PostMetadata? metadata;
@@ -498,6 +511,7 @@ class Post {
         return 'progressiste';
     }
   }
+
   Post copyWith({
     String? id,
     String? title,
@@ -551,16 +565,19 @@ class Post {
       deletedAt: deletedAt ?? this.deletedAt,
     );
   }
+
   factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);
   Map<String, dynamic> toJson() => _$PostToJson(this);
   static JournalistProfile? _journalistFromJson(Map<String, dynamic>? json) {
     if (json == null) return null;
     return JournalistProfile.fromJson(json);
   }
+
   static PostMetadata? _metadataFromJson(Map<String, dynamic>? json) {
     if (json == null) return null;
     return PostMetadata.fromJson(json);
   }
+
   static String? _urlFromJson(dynamic value) {
     if (value == null) return null;
     final String? url = value?.toString();

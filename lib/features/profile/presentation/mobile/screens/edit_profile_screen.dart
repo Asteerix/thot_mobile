@@ -1162,6 +1162,7 @@ class _FormationBottomSheetState extends State<_FormationBottomSheet> {
                         title: _titleController.text.trim(),
                         institution: _institutionController.text.trim(),
                         year: year,
+                        startDate: DateTime(year, 1, 1),
                         description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
                       );
                       Navigator.pop(context, formation);

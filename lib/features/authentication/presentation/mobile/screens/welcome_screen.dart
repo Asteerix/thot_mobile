@@ -4,6 +4,7 @@ import '../../shared/mixins/welcome_screen_mixin.dart';
 import '../../shared/widgets/welcome_logo.dart';
 import '../../shared/widgets/welcome_content.dart';
 import '../../shared/widgets/welcome_footer.dart';
+import 'package:thot/shared/widgets/common/connection_status_indicator.dart';
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
   @override
@@ -40,6 +41,18 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           backgroundColor: Colors.black,
           body: Stack(
             children: [
+              const Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: SafeArea(
+                  bottom: false,
+                  child: ConnectionStatusIndicator(
+                    showPersistentBanner: true,
+                    showRetryButton: true,
+                  ),
+                ),
+              ),
               SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32),

@@ -5,6 +5,7 @@ import 'package:thot/features/profile/domain/failures/profile_failure.dart';
 import 'package:thot/features/profile/domain/repositories/profile_repository.dart';
 import 'package:thot/core/network/api_client.dart';
 import 'package:thot/core/constants/api_routes.dart';
+
 class ProfileRepositoryImpl implements ProfileRepository {
   final ApiService _apiService;
   final List<String> _recentSearches = [];
@@ -22,6 +23,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(ProfileFailure.serverError(e.toString()));
     }
   }
+
   @override
   Future<Either<ProfileFailure, UserProfile>> updateProfile(
       UserProfile profile) async {
@@ -33,8 +35,10 @@ class ProfileRepositoryImpl implements ProfileRepository {
         if (profile.coverUrl != null) 'coverUrl': profile.coverUrl,
         if (profile.location != null) 'location': profile.location,
         if (profile.isJournalist) ...{
-          if (profile.organization != null) 'organization': profile.organization,
-          if (profile.journalistRole != null) 'journalistRole': profile.journalistRole,
+          if (profile.organization != null)
+            'organization': profile.organization,
+          if (profile.journalistRole != null)
+            'journalistRole': profile.journalistRole,
           if (profile.socialLinks != null) 'socialLinks': profile.socialLinks,
           if (profile.specialties != null && profile.specialties!.isNotEmpty)
             'specialties': profile.specialties,
@@ -51,7 +55,9 @@ class ProfileRepositoryImpl implements ProfileRepository {
         '/api/auth/profile',
         data: profileData,
       );
-      final userData = response.data['data']?['user'] ?? response.data['data'] ?? response.data;
+      final userData = response.data['data']?['user'] ??
+          response.data['data'] ??
+          response.data;
       return Right(UserProfile.fromJson(userData));
     } catch (e) {
       developer.log(
@@ -62,6 +68,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(ProfileFailure.serverError(e.toString()));
     }
   }
+
   @override
   Future<Either<ProfileFailure, void>> followUser(String userId) async {
     try {
@@ -76,6 +83,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(ProfileFailure.serverError(e.toString()));
     }
   }
+
   @override
   Future<Either<ProfileFailure, void>> unfollowUser(String userId) async {
     try {
@@ -90,6 +98,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(ProfileFailure.serverError(e.toString()));
     }
   }
+
   @override
   Future<Either<ProfileFailure, List<UserProfile>>> getFollowers(
       String userId) async {
@@ -101,6 +110,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(ProfileFailure.serverError(e.toString()));
     }
   }
+
   @override
   Future<Either<ProfileFailure, List<UserProfile>>> getFollowing(
       String userId) async {
@@ -151,6 +161,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Right([]);
     }
   }
+
   @override
   Future<Either<ProfileFailure, Map<String, dynamic>>> searchUsers({
     required String query,
@@ -168,7 +179,9 @@ class ProfileRepositoryImpl implements ProfileRepository {
           : ApiRoutes.buildPath(ApiRoutes.journalists);
       final journalistsResponse = await _apiService.get(endpoint);
       final data = journalistsResponse.data['data'];
-      final journalistsList = data is Map ? (data['journalists'] as List?) ?? [] : (data as List? ?? []);
+      final journalistsList = data is Map
+          ? (data['journalists'] as List?) ?? []
+          : (data as List? ?? []);
       final journalists = journalistsList
           .map((json) => UserProfile.fromJson({
                 ...json,
@@ -206,13 +219,16 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(ProfileFailure.serverError(e.toString()));
     }
   }
+
   @override
   Future<Either<ProfileFailure, List<UserProfile>>> getSuggestedUsers() async {
     try {
       final response =
           await _apiService.get(ApiRoutes.buildPath(ApiRoutes.journalists));
       final data = response.data['data'];
-      final journalistsList = data is Map ? (data['journalists'] as List?) ?? [] : (data as List? ?? []);
+      final journalistsList = data is Map
+          ? (data['journalists'] as List?) ?? []
+          : (data as List? ?? []);
       final users = journalistsList
           .map((json) => UserProfile.fromJson({
                 ...json,
@@ -225,6 +241,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(ProfileFailure.serverError(e.toString()));
     }
   }
+
   @override
   Future<Either<ProfileFailure, List<UserProfile>>> getTrendingUsers() async {
     try {
@@ -243,18 +260,22 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(ProfileFailure.serverError(e.toString()));
     }
   }
+
   @override
   List<String> getRecentSearches() {
     return List.from(_recentSearches);
   }
+
   @override
   void clearRecentSearches() {
     _recentSearches.clear();
   }
+
   @override
   void removeFromRecentSearches(String query) {
     _recentSearches.remove(query);
   }
+
   @override
   Future<List<String>> getSearchSuggestions(String query) async {
     if (query.isEmpty) return [];
@@ -284,11 +305,13 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return [];
     }
   }
+
   @override
   void clearCache() {
     _searchCache.clear();
     _cacheTimestamps.clear();
   }
+
   @override
   Future<Either<ProfileFailure, Map<String, dynamic>>> getSavedPosts({
     int page = 1,
@@ -337,6 +360,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(ProfileFailure.serverError(e.toString()));
     }
   }
+
   @override
   Future<Either<ProfileFailure, Map<String, dynamic>>> getSavedShorts({
     int page = 1,
@@ -385,6 +409,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(ProfileFailure.serverError(e.toString()));
     }
   }
+
   @override
   Future<Either<ProfileFailure, Map<String, dynamic>>> getUserProfile(
       String userId) async {
@@ -398,14 +423,14 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(ProfileFailure.serverError(e.toString()));
     }
   }
+
   @override
   Future<Either<ProfileFailure, Map<String, dynamic>>> getUserPublicContent(
     String userId, {
     String contentType = 'all',
   }) async {
     try {
-      final url =
-          '/api/users/public-content/$userId?type=$contentType';
+      final url = '/api/users/public-content/$userId?type=$contentType';
       developer.log(
         'ProfileRepository: Fetching public content',
         name: 'ProfileRepository',
@@ -446,6 +471,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(ProfileFailure.serverError(e.toString()));
     }
   }
+
   @override
   Future<Either<ProfileFailure, void>> togglePublicContent({
     required String contentId,
@@ -481,11 +507,13 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(ProfileFailure.serverError(e.toString()));
     }
   }
+
   String _getCacheKey(String query, Map<String, String>? filters, int page) {
     final filterKey =
         filters?.entries.map((e) => '${e.key}=${e.value}').join('&') ?? '';
     return '$query|$filterKey|$page';
   }
+
   bool _isCacheValid(String key) {
     if (!_searchCache.containsKey(key) || !_cacheTimestamps.containsKey(key)) {
       return false;
@@ -493,6 +521,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
     final timestamp = _cacheTimestamps[key]!;
     return DateTime.now().difference(timestamp) < _cacheExpiration;
   }
+
   void _addToRecentSearches(String query) {
     if (query.isEmpty) return;
     _recentSearches.remove(query);
@@ -501,6 +530,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       _recentSearches.removeLast();
     }
   }
+
   List<String> _generateSuggestions(String query, List<UserProfile> results) {
     final suggestions = <String>[];
     final specialties = results

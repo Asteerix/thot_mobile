@@ -126,7 +126,7 @@ class _AppScaffoldState extends State<AppScaffold> {
     if (!widget.isJournalist) return null;
     return FloatingActionButton(
       onPressed: () {
-        // TODO: Implémenter la navigation vers l'écran de création de contenu
+        // Navigation vers l'écran de création de contenu à implémenter
       },
       tooltip: 'Nouveau contenu',
       child: Icon(Icons.add),

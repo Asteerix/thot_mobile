@@ -9,7 +9,7 @@
 // 1. IMPORTS TROUVÉS (3 fichiers) :
 //    - features/authentication/presentation/mobile/screens/registration_form.dart
 //    - features/authentication/presentation/mobile/screens/verification_pending_screen.dart
-//    - features/posts/presentation/mobile/screens/journalist_question.dart
+//    - features/posts/presentation/mobile/screens/other/journalist_question.dart
 //
 // 2. USAGES RÉELS : Aucun
 //    - Aucune utilisation de la classe Responsive() comme widget

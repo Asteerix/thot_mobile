@@ -282,7 +282,10 @@ class AppRouter {
         path: RouteNames.postDetail,
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
-          final id = extra?['postId'] as String? ?? '';
+          final pathId = state.pathParameters['id'] ?? '';
+          final extraId = extra?['postId'] as String? ?? '';
+          final id = pathId.isNotEmpty ? pathId : extraId;
+          debugPrint('🛣️ APP_ROUTER - Post Detail Route | pathId: $pathId | extraId: $extraId | finalId: $id');
           return PostDetailScreen(initialPostId: id);
         },
       ),
@@ -299,6 +302,7 @@ class AppRouter {
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
           final id = extra?['postId'] as String? ?? '';
+          debugPrint('🛣️ APP_ROUTER - Video Detail Route | postId: $id');
           return VideoDetailScreen(initialPostId: id);
         },
       ),

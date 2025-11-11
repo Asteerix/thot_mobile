@@ -24,7 +24,7 @@ class AppAvatar extends StatelessWidget {
   final Color? backgroundColor;
 
   // PARAMÈTRES INUTILISÉS - Gardés pour rétrocompatibilité
-  // TODO: Supprimer dans une prochaine version si toujours inutilisés
+  // Note: À supprimer dans une prochaine version si toujours inutilisés
   // Ces paramètres ne sont jamais utilisés dans la codebase actuelle
   @Deprecated('Non utilisé dans la codebase - sera supprimé')
   final Widget? placeholder;

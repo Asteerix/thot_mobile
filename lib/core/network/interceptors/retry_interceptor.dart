@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'dart:developer' as developer;
+
 class RetryInterceptor extends Interceptor {
   RetryInterceptor({
     required this.dio,
@@ -28,6 +28,7 @@ class RetryInterceptor extends Interceptor {
     }
     handler.next(err);
   }
+
   bool _shouldRetryError(DioException err) {
     if (err.type == DioExceptionType.connectionTimeout ||
         err.type == DioExceptionType.sendTimeout ||
@@ -43,6 +44,7 @@ class RetryInterceptor extends Interceptor {
     }
     return false;
   }
+
   Future<void> _handleRetryableError(
     DioException err,
     ErrorInterceptorHandler handler,
@@ -51,21 +53,16 @@ class RetryInterceptor extends Interceptor {
     final currentRetries = _retryCount[requestKey] ?? 0;
     if (currentRetries >= maxRetries) {
       _retryCount.remove(requestKey);
-      developer.log(
-        'Max retries ($maxRetries) reached for ${err.requestOptions.method} ${err.requestOptions.uri}',
-        name: 'RetryInterceptor',
-        level: 900,
-      );
+      print(
+          '[RetryInterceptor] Max retries ($maxRetries) reached for ${err.requestOptions.method} ${err.requestOptions.uri}');
       handler.next(err);
       return;
     }
     _retryCount[requestKey] = currentRetries + 1;
-    final delay = _calculateBackoffDelay(currentRetries, statusCode: err.response?.statusCode);
-    developer.log(
-      'Retry ${currentRetries + 1}/$maxRetries after ${delay}ms | ${err.requestOptions.method} ${err.requestOptions.uri.path}',
-      name: 'RetryInterceptor',
-      level: 800,
-    );
+    final delay = _calculateBackoffDelay(currentRetries,
+        statusCode: err.response?.statusCode);
+    print(
+        '[RetryInterceptor] Retry ${currentRetries + 1}/$maxRetries after ${delay}ms | ${err.requestOptions.method} ${err.requestOptions.uri.path}');
     await Future.delayed(Duration(milliseconds: delay));
     try {
       final response = await dio.fetch(err.requestOptions);
@@ -86,6 +83,7 @@ class RetryInterceptor extends Interceptor {
       ));
     }
   }
+
   int _calculateBackoffDelay(int retryAttempt, {int? statusCode}) {
     if (statusCode == 429) {
       const delays = [2000, 5000, 10000];
@@ -96,6 +94,7 @@ class RetryInterceptor extends Interceptor {
     final delay = baseDelay * (1 << retryAttempt);
     return delay > maxDelay ? maxDelay : delay;
   }
+
   String _getRequestKey(RequestOptions options) {
     return '${options.method}:${options.uri}';
   }

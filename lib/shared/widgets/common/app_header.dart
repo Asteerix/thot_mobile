@@ -8,7 +8,6 @@ import 'package:thot/core/themes/app_colors.dart';
 import 'package:thot/core/utils/safe_navigation.dart';
 import 'package:thot/features/admin/presentation/shared/widgets/admin_mode_switch.dart';
 import 'package:thot/features/authentication/application/providers/auth_provider.dart';
-import '../logo_white.dart';
 
 /// En-tête principale de l'application avec logo, notifications et paramètres
 ///
@@ -44,7 +43,7 @@ class _AppHeaderState extends State<AppHeader> {
   static const double _toolbarHeight = 64.0;
   static const double _horizontalSpacing = 8.0;
 
-  // TODO: Implémenter le compteur de notifications non lues
+  // Note: Le compteur de notifications non lues sera implémenté
   // via NotificationRepository quand disponible
   int _unreadCount = 0;
 
@@ -152,25 +151,12 @@ class _AppHeaderState extends State<AppHeader> {
         children: [
           Container(
             padding: const EdgeInsets.symmetric(vertical: 4),
-            child: const LogoWhite(
-              fontSize: 32,
-              letterSpacing: 2,
-              showSubtitle: false,
+            child: Image.asset(
+              'assets/app_logo.png',
+              height: 32,
+              fit: BoxFit.contain,
             ),
           ),
-          if (widget.isProfileScreen && widget.username != null)
-            Text(
-              '@${widget.username}',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[300],
-                fontWeight: FontWeight.w600,
-                fontFamily: 'Tailwind',
-                letterSpacing: 0.2,
-              ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
         ],
       ),
     );

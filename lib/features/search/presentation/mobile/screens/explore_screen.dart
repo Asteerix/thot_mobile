@@ -11,11 +11,14 @@ import 'package:thot/features/search/presentation/shared/widgets/search_bar_widg
 import 'package:thot/features/search/presentation/shared/widgets/search_filter_chip.dart';
 import 'package:thot/features/search/presentation/shared/widgets/journalist_card.dart';
 import 'package:thot/features/search/presentation/shared/widgets/journalist_list_item.dart';
+import 'package:thot/core/themes/app_colors.dart';
+
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
   @override
   State<ExploreScreen> createState() => _ExploreScreenState();
 }
+
 class _ExploreScreenState extends State<ExploreScreen>
     with SingleTickerProviderStateMixin {
   final _logger = LoggerService.instance;
@@ -46,6 +49,7 @@ class _ExploreScreenState extends State<ExploreScreen>
     _loadPopularJournalists();
     _scrollController.addListener(_onScroll);
   }
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -54,6 +58,7 @@ class _ExploreScreenState extends State<ExploreScreen>
     _debounce?.cancel();
     super.dispose();
   }
+
   void _onScroll() {
     if (_scrollController.position.pixels >=
             _scrollController.position.maxScrollExtent - 200 &&
@@ -63,6 +68,7 @@ class _ExploreScreenState extends State<ExploreScreen>
       _loadMoreJournalists();
     }
   }
+
   Future<void> _loadPopularJournalists() async {
     if (!mounted) return;
     _logger.info('🌟 [ExploreScreen] Starting to load popular journalists');
@@ -137,6 +143,7 @@ class _ExploreScreenState extends State<ExploreScreen>
       });
     }
   }
+
   Future<void> _loadJournalists({String? search}) async {
     if (!mounted) return;
     _logger.info(
@@ -188,6 +195,7 @@ class _ExploreScreenState extends State<ExploreScreen>
       });
     }
   }
+
   Future<void> _loadMoreJournalists() async {
     if (!mounted || _isLoadingAll || !_hasMorePages) return;
     setState(() {
@@ -222,12 +230,14 @@ class _ExploreScreenState extends State<ExploreScreen>
       });
     }
   }
+
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 300), () {
       _loadJournalists(search: query);
     });
   }
+
   void _applyFilters() {
     if (!mounted) return;
     setState(() {
@@ -249,6 +259,7 @@ class _ExploreScreenState extends State<ExploreScreen>
       }
     });
   }
+
   void _handleFollow(UserProfile user, int index, bool isPopular) {
     FollowUtils.handleFollowAction(
       user,
@@ -277,6 +288,7 @@ class _ExploreScreenState extends State<ExploreScreen>
       (error) => FollowUtils.showErrorSnackBar(context, error),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -306,19 +318,36 @@ class _ExploreScreenState extends State<ExploreScreen>
                   SliverToBoxAdapter(
                     child: SearchFilterBar(
                       filters: const [
-                        SearchFilterChipData(label: 'Tous', value: ''),
                         SearchFilterChipData(
-                            label: 'Neutres', value: 'neutral'),
+                          label: 'Tous',
+                          value: '',
+                          color: AppColors.neutral,
+                        ),
                         SearchFilterChipData(
-                            label: 'Progressistes', value: 'progressive'),
+                          label: 'Neutres',
+                          value: 'neutral',
+                          color: AppColors.neutral,
+                        ),
                         SearchFilterChipData(
-                            label: 'Très progressistes',
-                            value: 'extremelyProgressive'),
+                          label: 'Progressistes',
+                          value: 'progressive',
+                          color: AppColors.progressive,
+                        ),
                         SearchFilterChipData(
-                            label: 'Conservateurs', value: 'conservative'),
+                          label: 'Très progressistes',
+                          value: 'extremelyProgressive',
+                          color: AppColors.extremelyProgressive,
+                        ),
                         SearchFilterChipData(
-                            label: 'Très conservateurs',
-                            value: 'extremelyConservative'),
+                          label: 'Conservateurs',
+                          value: 'conservative',
+                          color: AppColors.conservative,
+                        ),
+                        SearchFilterChipData(
+                          label: 'Très conservateurs',
+                          value: 'extremelyConservative',
+                          color: AppColors.extremelyConservative,
+                        ),
                       ],
                       selectedFilter: _selectedOrientation,
                       onFilterSelected: (filter) {
@@ -378,7 +407,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                     if (_isLoadingPopular)
                       SliverToBoxAdapter(
                         child: Container(
-                          height: 120,
+                          height: 150,
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: const Center(
                             child: CircularProgressIndicator(
@@ -391,7 +420,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                     else if (_popularJournalists.isNotEmpty)
                       SliverToBoxAdapter(
                         child: SizedBox(
-                          height: 120,
+                          height: 150,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             padding: const EdgeInsets.symmetric(horizontal: 16),
