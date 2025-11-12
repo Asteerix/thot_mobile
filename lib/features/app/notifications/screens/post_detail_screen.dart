@@ -1,0 +1,1 @@
+export 'package:thot/features/app/content/shared/widgets/post_detail_screen.dart';

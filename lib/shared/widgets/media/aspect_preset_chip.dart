@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:thot/core/themes/app_colors.dart';
+import 'package:thot/core/presentation/theme/app_colors.dart';
 
 /// Chip pour sélectionner un preset d'aspect ratio
 /// Utilisé dans l'éditeur d'images pour choisir les ratios

@@ -1,0 +1,16 @@
+enum PoliticalView {
+  none,
+  extremelyConservative,
+  conservative,
+  neutral,
+  progressive,
+  extremelyProgressive,
+  farLeft,
+  left,
+  centerLeft,
+  center,
+  centerRight,
+  right,
+  farRight,
+  nonPolitical,
+}

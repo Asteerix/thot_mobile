@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:thot/core/themes/app_colors.dart';
+import 'package:thot/core/presentation/theme/app_colors.dart';
 
 /// Poignée de recadrage pour l'éditeur d'images
 /// Widget réutilisable pour les coins du cadre de crop

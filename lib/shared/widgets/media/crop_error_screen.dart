@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:thot/core/themes/app_colors.dart';
-import 'package:thot/core/constants/app_constants.dart';
+import 'package:thot/core/presentation/theme/app_colors.dart';
+import 'package:thot/core/config/app_config.dart';
 
 /// Écran d'erreur pour le recadrage d'image
 /// Affiche un message d'erreur et permet d'utiliser l'image originale
@@ -40,7 +40,7 @@ class CropErrorScreen extends StatelessWidget {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(UIConstants.paddingXL),
+          padding: EdgeInsets.all(32.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

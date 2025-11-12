@@ -2,24 +2,24 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:thot/core/constants/timeago_config.dart';
+import 'package:thot/core/config/timeago_config.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart' as provider;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:thot/features/authentication/application/providers/auth_provider.dart';
-import 'package:thot/core/navigation/app_router.dart';
-import 'package:thot/core/providers/theme_provider.dart';
-import 'package:thot/core/monitoring/logger_service.dart';
-import 'package:thot/core/infrastructure/dependency_injection.dart';
-import 'package:thot/core/infrastructure/dependency_injection.dart';
+import 'package:thot/features/public/auth/shared/providers/auth_provider.dart';
+import 'package:thot/core/routing/app_router.dart';
+import 'package:thot/core/presentation/theme/theme_provider.dart';
+import 'package:thot/core/services/logging/logger_service.dart';
+import 'package:thot/core/di/service_locator.dart';
+import 'package:thot/core/di/service_locator.dart';
 import 'package:thot/core/utils/keyboard_service.dart';
-import 'package:thot/features/media/utils/url_helper.dart';
+import 'package:thot/shared/media/utils/url_helper.dart';
 import 'package:thot/core/config/env.dart';
-import 'package:thot/core/network/api_config.dart';
-import 'package:thot/core/realtime/socket_service.dart';
-import 'package:thot/shared/widgets/common/connection_status_indicator.dart';
+import 'package:thot/core/services/network/api_config.dart';
+import 'package:thot/core/services/realtime/socket_service.dart';
+import 'package:thot/shared/widgets/connectivity/connection_status_indicator.dart';
 
 void main() async {
   initTimeagoLocales();
