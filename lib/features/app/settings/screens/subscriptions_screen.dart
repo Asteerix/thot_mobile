@@ -456,7 +456,7 @@ class _SubscriptionsFeedListState extends State<_SubscriptionsFeedList>
     try {
       if (post.type == PostType.question) {
         GoRouter.of(context).push(
-          RouteNames.question,
+          RouteNames.questionDetail,
           extra: {
             'questionId': post.id,
             'isFromFeed': true,
@@ -470,10 +470,21 @@ class _SubscriptionsFeedListState extends State<_SubscriptionsFeedList>
             'isFromFeed': true,
           },
         );
+      } else if (post.type == PostType.podcast) {
+        GoRouter.of(context).push(
+          RouteNames.podcastDetail,
+          extra: {
+            'postId': post.id,
+            'isFromFeed': true,
+          },
+        );
       } else {
         GoRouter.of(context).push(
-          '/post/${post.id}',
-          extra: {'postId': post.id},
+          RouteNames.articleDetail,
+          extra: {
+            'postId': post.id,
+            'isFromFeed': true,
+          },
         );
       }
     } catch (e) {

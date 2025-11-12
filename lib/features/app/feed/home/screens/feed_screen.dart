@@ -891,6 +891,11 @@ class _FeedListState extends State<_FeedList>
           if (_hasMorePosts) _currentPage++;
           _isLoading = false;
         });
+
+        print('📱 FEED - Posts chargés: ${_posts.length} posts');
+        for (var i = 0; i < _posts.length; i++) {
+          print('  [$i] ${_posts[i].type.toString().split('.').last} - ${_posts[i].id} - ${_posts[i].title}');
+        }
       }
     } catch (e) {
       if (!mounted) return;
@@ -981,9 +986,9 @@ class _FeedListState extends State<_FeedList>
     try {
       if (post.type == PostType.question) {
         debugPrint(
-            '📱 FEED_SCREEN - Pushing to Question screen | Route: ${RouteNames.question}');
+            '📱 FEED_SCREEN - Pushing to Question screen | Route: ${RouteNames.questionDetail}');
         GoRouter.of(context).push(
-          RouteNames.question,
+          RouteNames.questionDetail,
           extra: {
             'questionId': post.id,
             'isFromFeed': true,
@@ -999,12 +1004,25 @@ class _FeedListState extends State<_FeedList>
             'isFromFeed': true,
           },
         );
+      } else if (post.type == PostType.podcast) {
+        debugPrint(
+            '📱 FEED_SCREEN - Pushing to Podcast Detail screen | Route: ${RouteNames.podcastDetail}');
+        GoRouter.of(context).push(
+          RouteNames.podcastDetail,
+          extra: {
+            'postId': post.id,
+            'isFromFeed': true,
+          },
+        );
       } else {
         debugPrint(
-            '📱 FEED_SCREEN - Pushing to Post Detail screen | Route: /post/${post.id}');
+            '📱 FEED_SCREEN - Pushing to Article Detail screen | Route: ${RouteNames.articleDetail}');
         GoRouter.of(context).push(
-          '/post/${post.id}',
-          extra: {'postId': post.id},
+          RouteNames.articleDetail,
+          extra: {
+            'postId': post.id,
+            'isFromFeed': true,
+          },
         );
       }
     } catch (e) {

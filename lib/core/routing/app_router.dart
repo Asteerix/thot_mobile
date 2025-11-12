@@ -15,12 +15,14 @@ import 'package:thot/features/public/auth/register/screens/verification_pending_
 import 'package:thot/features/public/auth/shared/screens/banned_account_screen.dart';
 import 'package:thot/features/app/feed/shared/main_screen.dart';
 import 'package:thot/features/app/feed/home/screens/feed_screen.dart';
-import 'package:thot/features/app/content/shared/widgets/post_detail_screen.dart';
-import 'package:thot/features/app/content/posts/articles/details/article_detail_screen.dart';
-import 'package:thot/features/app/content/posts/videos/details/video_detail_screen.dart';
-import 'package:thot/features/app/content/posts/podcasts/details/podcast_detail_screen.dart';
-// import 'package:thot/features/app/content/shared/widgets/poll_detail_screen.dart';
-import 'package:thot/features/app/content/posts/questions/details/question_detail_screen.dart';
+import 'package:thot/features/app/content/shared/models/post.dart';
+import 'package:thot/features/app/content/shared/screens/post_detail_wrapper.dart';
+import 'package:thot/features/app/content/shared/screens/content_feed_viewer.dart';
+import 'package:thot/features/app/content/posts/articles/screens/article_detail_screen.dart';
+import 'package:thot/features/app/content/posts/videos/screens/video_detail_screen.dart';
+import 'package:thot/features/app/content/posts/podcasts/screens/podcast_detail_screen.dart';
+import 'package:thot/features/app/content/posts/questions/screens/question_detail_screen.dart';
+import 'package:thot/features/app/content/posts/questions/details/question_screen.dart' as old_question;
 import 'package:thot/features/app/content/shorts/details/shorts_screen.dart';
 import 'package:thot/features/app/content/shorts/feed/shorts_feed_screen.dart';
 import 'package:thot/features/app/content/posts/articles/creation/new_article_screen.dart';
@@ -236,7 +238,7 @@ class AppRouter {
         ),
         GoRoute(
           path: RouteNames.questions,
-          builder: (context, state) => QuestionScreen(
+          builder: (context, state) => old_question.QuestionScreen(
             questionId: '',
             journalistId: '',
           ),
@@ -269,7 +271,7 @@ class AppRouter {
           final id = pathId.isNotEmpty ? pathId : extraId;
           debugPrint(
               '🛣️ APP_ROUTER - Post Detail Route | pathId: $pathId | extraId: $extraId | finalId: $id');
-          return PostDetailScreen(initialPostId: id);
+          return PostDetailWrapper(initialPostId: id);
         },
       ),
       GoRoute(
@@ -277,7 +279,14 @@ class AppRouter {
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
           final id = extra?['postId'] as String? ?? '';
-          return ArticleDetailScreen(postId: id);
+          final userId = extra?['userId'] as String?;
+          final isFromProfile = extra?['isFromProfile'] as bool? ?? false;
+          return ContentFeedViewer(
+            initialPostId: id,
+            filterType: PostType.article,
+            userId: userId,
+            isFromProfile: isFromProfile,
+          );
         },
       ),
       GoRoute(
@@ -285,8 +294,15 @@ class AppRouter {
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
           final id = extra?['postId'] as String? ?? '';
+          final userId = extra?['userId'] as String?;
+          final isFromProfile = extra?['isFromProfile'] as bool? ?? false;
           debugPrint('🛣️ APP_ROUTER - Video Detail Route | postId: $id');
-          return VideoDetailScreen(initialPostId: id);
+          return ContentFeedViewer(
+            initialPostId: id,
+            filterType: PostType.video,
+            userId: userId,
+            isFromProfile: isFromProfile,
+          );
         },
       ),
       GoRoute(
@@ -294,23 +310,29 @@ class AppRouter {
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
           final id = extra?['postId'] as String? ?? '';
-          return PodcastDetailScreen(postId: id);
+          final userId = extra?['userId'] as String?;
+          final isFromProfile = extra?['isFromProfile'] as bool? ?? false;
+          return ContentFeedViewer(
+            initialPostId: id,
+            filterType: PostType.podcast,
+            userId: userId,
+            isFromProfile: isFromProfile,
+          );
         },
       ),
-      // GoRoute(
-      //   path: RouteNames.pollDetail,
-      //   builder: (context, state) {
-      //     final extra = state.extra as Map<String, dynamic>?;
-      //     final id = extra?['postId'] as String? ?? '';
-      //     return PollDetailScreen(postId: id);
-      //   },
-      // ),
       GoRoute(
         path: RouteNames.questionDetail,
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
           final id = extra?['questionId'] as String? ?? '';
-          return QuestionDetailScreen(questionId: id);
+          final userId = extra?['userId'] as String?;
+          final isFromProfile = extra?['isFromProfile'] as bool? ?? false;
+          return ContentFeedViewer(
+            initialPostId: id,
+            filterType: PostType.question,
+            userId: userId,
+            isFromProfile: isFromProfile,
+          );
         },
       ),
     ];

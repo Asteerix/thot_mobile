@@ -5,7 +5,7 @@ import 'package:thot/shared/utils/color_utils.dart';
 import 'package:thot/core/di/service_locator.dart';
 import 'package:thot/features/admin/providers/admin_repository_impl.dart';
 import 'package:intl/intl.dart';
-import 'package:thot/features/app/content/shared/widgets/post_detail_screen.dart';
+import 'package:thot/features/app/content/shared/screens/post_detail_wrapper.dart';
 import 'package:thot/shared/media/utils/image_utils.dart';
 import 'package:thot/shared/utils/responsive_utils.dart';
 import 'report_details_screen.dart';
@@ -1139,7 +1139,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen>
     SafeNavigation.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PostDetailScreen(initialPostId: postId),
+        builder: (context) => PostDetailWrapper(initialPostId: postId),
       ),
     );
   }

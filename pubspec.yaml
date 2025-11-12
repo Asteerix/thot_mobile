@@ -28,6 +28,7 @@ dependencies:
   video_player: ^2.10.0
   chewie: ^1.13.0
   just_audio: ^0.10.5
+  audioplayers: ^6.1.0
   rxdart: ^0.28.0
   font_awesome_flutter: ^10.9.1
   url_launcher: ^6.3.2

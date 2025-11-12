@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:thot/core/utils/safe_navigation.dart';
 import 'package:thot/core/routing/route_names.dart';
 import 'package:thot/features/app/notifications/models/notification.dart';
-import 'package:thot/features/app/content/shared/widgets/post_detail_screen.dart';
+import 'package:thot/features/app/content/shared/screens/post_detail_wrapper.dart';
 import 'package:thot/features/app/content/shared/comments/comment_sheet.dart';
 import '../widgets/notification_filter.dart';
 import '../widgets/notification_card.dart';
@@ -366,7 +366,7 @@ class _NotificationListState extends State<NotificationList>
           SafeNavigation.push(
             context,
             MaterialPageRoute(
-              builder: (_) => PostDetailScreen(
+              builder: (_) => PostDetailWrapper(
                 initialPostId: notification.postId!,
                 isFromFeed: true,
               ),
@@ -381,7 +381,7 @@ class _NotificationListState extends State<NotificationList>
           SafeNavigation.push(
             context,
             MaterialPageRoute(
-              builder: (_) => PostDetailScreen(
+              builder: (_) => PostDetailWrapper(
                 initialPostId: notification.postId!,
                 isFromFeed: true,
               ),
@@ -408,7 +408,7 @@ class _NotificationListState extends State<NotificationList>
           SafeNavigation.push(
             context,
             MaterialPageRoute(
-              builder: (_) => PostDetailScreen(
+              builder: (_) => PostDetailWrapper(
                 initialPostId: notification.postId!,
                 isFromFeed: true,
               ),
@@ -425,7 +425,7 @@ class _NotificationListState extends State<NotificationList>
           SafeNavigation.push(
             context,
             MaterialPageRoute(
-              builder: (_) => PostDetailScreen(
+              builder: (_) => PostDetailWrapper(
                 initialPostId: notification.postId!,
                 isFromFeed: true,
               ),

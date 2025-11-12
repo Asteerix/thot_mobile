@@ -5,7 +5,7 @@ import 'package:thot/core/di/service_locator.dart';
 import 'package:thot/features/admin/providers/admin_repository_impl.dart';
 import 'package:thot/shared/media/utils/image_utils.dart';
 import 'package:thot/shared/utils/responsive_utils.dart';
-import 'package:thot/features/app/content/shared/widgets/post_detail_screen.dart';
+import 'package:thot/features/app/content/shared/screens/post_detail_wrapper.dart';
 import 'package:thot/core/utils/safe_navigation.dart';
 import 'package:thot/features/admin/widgets/stat_card.dart';
 import 'package:thot/features/admin/widgets/status_badge.dart';
@@ -758,7 +758,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
       context,
       MaterialPageRoute(
         builder: (context) =>
-            PostDetailScreen(initialPostId: _targetDetails!['_id']),
+            PostDetailWrapper(initialPostId: _targetDetails!['_id']),
       ),
     );
   }

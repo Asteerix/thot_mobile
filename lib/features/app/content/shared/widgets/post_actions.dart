@@ -17,6 +17,8 @@ class PostActions extends StatefulWidget {
   final VoidCallback onComment;
   final VoidCallback? onSave;
   final Function(Post)? onPostUpdated;
+  final List<Post>? opposingPosts;
+  final List<Post>? relatedPosts;
   const PostActions({
     super.key,
     required this.post,
@@ -24,6 +26,8 @@ class PostActions extends StatefulWidget {
     required this.onComment,
     this.onSave,
     this.onPostUpdated,
+    this.opposingPosts,
+    this.relatedPosts,
   });
   @override
   State<PostActions> createState() => _PostActionsState();
@@ -72,18 +76,18 @@ class _PostActionsState extends State<PostActions> {
   }) {
     return InkWell(
       onTap: onPressed,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: isActive
               ? Colors.red.withOpacity(0.15)
-              : Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(20),
+              : Colors.grey[900],
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isActive
                 ? Colors.red.withOpacity(0.3)
-                : Colors.white.withOpacity(0.2),
+                : Colors.white.withOpacity(0.1),
             width: 1,
           ),
         ),
@@ -93,10 +97,10 @@ class _PostActionsState extends State<PostActions> {
             Icon(
               icon,
               color: isActive ? Colors.red : Colors.white,
-              size: 24,
+              size: 22,
             ),
             if (label.isNotEmpty) ...[
-              const SizedBox(width: 6),
+              const SizedBox(width: 8),
               Text(
                 label,
                 style: TextStyle(
@@ -216,6 +220,140 @@ class _PostActionsState extends State<PostActions> {
     );
   }
 
+  void _showOpposingPostsSheet(BuildContext context, Post currentPost) {
+    if (widget.opposingPosts == null || widget.opposingPosts!.isEmpty) return;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.black,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.swap_horiz, color: Colors.white, size: 24),
+                const SizedBox(width: 12),
+                const Text(
+                  'Articles en opposition',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ...widget.opposingPosts!.map((post) => _buildPostListItem(context, post)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showRelatedPostsSheet(BuildContext context, Post currentPost) {
+    if (widget.relatedPosts == null || widget.relatedPosts!.isEmpty) return;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.black,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.compare_arrows, color: Colors.white, size: 24),
+                const SizedBox(width: 12),
+                const Text(
+                  'Articles opposés',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ...widget.relatedPosts!.map((post) => _buildPostListItem(context, post)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPostListItem(BuildContext context, Post post) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              width: 80,
+              height: 60,
+              color: Colors.grey[800],
+              child: post.imageUrl != null
+                  ? Image.network(
+                      post.imageUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const Icon(Icons.image, color: Colors.white54),
+                    )
+                  : const Icon(Icons.image, color: Colors.white54),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  post.title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  post.journalist?.name ?? 'Anonyme',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.6),
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Selector<PostsStateProvider, Post?>(
@@ -278,6 +416,22 @@ class _PostActionsState extends State<PostActions> {
                     },
                   ),
                   const Spacer(),
+                  if (widget.relatedPosts != null && widget.relatedPosts!.isNotEmpty)
+                    _buildActionButton(
+                      icon: Icons.compare_arrows,
+                      label: widget.relatedPosts!.length.toString(),
+                      onPressed: () => _showRelatedPostsSheet(context, displayPost),
+                    ),
+                  if (widget.relatedPosts != null && widget.relatedPosts!.isNotEmpty)
+                    const SizedBox(width: 8),
+                  if (widget.opposingPosts != null && widget.opposingPosts!.isNotEmpty)
+                    _buildActionButton(
+                      icon: Icons.swap_horiz,
+                      label: widget.opposingPosts!.length.toString(),
+                      onPressed: () => _showOpposingPostsSheet(context, displayPost),
+                    ),
+                  if (widget.opposingPosts != null && widget.opposingPosts!.isNotEmpty)
+                    const SizedBox(width: 8),
                   _buildActionButton(
                     icon: Icons.bookmark,
                     label: '',

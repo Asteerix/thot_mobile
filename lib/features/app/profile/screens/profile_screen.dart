@@ -1293,7 +1293,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     final post = _posts?.firstWhereOrNull((p) => p.id == postId);
     if (post != null && post.type == PostType.question) {
       GoRouter.of(context).push(
-        RouteNames.question,
+        RouteNames.questionDetail,
         extra: {
           'questionId': postId,
           'isFromProfile': true,
@@ -1314,9 +1314,21 @@ class _ProfileScreenState extends State<ProfileScreen>
       ).then((_) {
         _loadProfileContent();
       });
+    } else if (post?.type == PostType.podcast) {
+      GoRouter.of(context).push(
+        RouteNames.podcastDetail,
+        extra: {
+          'postId': postId,
+          'isFromProfile': true,
+          'userId': widget.userId ?? _userProfile?.id,
+          if (isSaved) 'isSaved': true,
+        },
+      ).then((_) {
+        _loadProfileContent();
+      });
     } else {
       GoRouter.of(context).push(
-        '/post/$postId',
+        RouteNames.articleDetail,
         extra: {
           'postId': postId,
           'isFromProfile': true,
