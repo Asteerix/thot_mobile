@@ -19,6 +19,7 @@ import 'package:thot/features/app/content/shared/comments/comment_repository_imp
 import 'package:thot/features/public/auth/shared/providers/auth_provider.dart';
 import 'package:thot/features/app/content/shared/providers/posts_state_provider.dart'
     as posts_state;
+import 'package:thot/features/app/profile/providers/follow_state_provider.dart';
 import 'package:thot/features/public/auth/shared/providers/auth_repository_impl.dart';
 import 'package:thot/features/app/content/shared/providers/post_repository_impl.dart';
 import 'package:thot/features/admin/providers/admin_repository_impl.dart';
@@ -54,6 +55,7 @@ class ServiceLocator {
   ThemeProvider? _themeProvider;
   AuthProvider? _authProvider;
   posts_state.PostsStateProvider? _postsStateProvider;
+  FollowStateProvider? _followStateProvider;
   String? _resolvedBaseUrl;
   int _retryCount = 0;
   static const int maxRetries = 3;
@@ -355,6 +357,7 @@ class ServiceLocator {
     try {
       _themeProvider = ThemeProvider();
       _postsStateProvider = posts_state.PostsStateProvider();
+      _followStateProvider = FollowStateProvider();
       if (kDebugMode) {
         LoggerService.instance.debug('UI providers initialized');
       }
@@ -401,6 +404,10 @@ class ServiceLocator {
   posts_state.PostsStateProvider get postsStateProvider =>
       _postsStateProvider ??
       (throw StateError('PostsStateProvider not initialized'));
+  FollowStateProvider get followStateProvider =>
+      _followStateProvider ??
+      (throw StateError('FollowStateProvider not initialized'));
+
   static List<SingleChildWidget> get providers {
     assert(instance.isInitialized,
         'ServiceLocator must be initialized before accessing providers');
@@ -414,6 +421,9 @@ class ServiceLocator {
       ),
       ChangeNotifierProvider<posts_state.PostsStateProvider>.value(
         value: instance.postsStateProvider,
+      ),
+      ChangeNotifierProvider<FollowStateProvider>.value(
+        value: instance.followStateProvider,
       ),
     ];
   }

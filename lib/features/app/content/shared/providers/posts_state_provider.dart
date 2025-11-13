@@ -297,6 +297,18 @@ class PostsStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> deletePost(String postId) async {
+    try {
+      print('🗑️ [POSTS_STATE_PROVIDER] Deleting post | postId: $postId');
+      await _postRepository.deletePost(postId);
+      removePost(postId);
+      print('✅ [POSTS_STATE_PROVIDER] Post deleted successfully | postId: $postId');
+    } catch (e) {
+      print('❌ [POSTS_STATE_PROVIDER] Error deleting post | postId: $postId, error: $e');
+      rethrow;
+    }
+  }
+
   @override
   void dispose() {
     print('🔌 [POSTS_STATE_PROVIDER] Disposing Socket.IO listeners');

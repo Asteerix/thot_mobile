@@ -28,6 +28,7 @@ import 'package:thot/features/app/profile/models/user_profile.dart';
 import 'package:thot/features/app/content/shared/models/question.dart';
 import 'package:thot/features/app/content/shared/models/post.dart';
 import 'package:thot/features/app/profile/widgets/profile_header.dart';
+import 'package:thot/features/app/profile/widgets/follow_button.dart';
 import 'package:thot/features/app/content/posts/questions/widgets/question_cards.dart';
 import 'package:thot/features/app/content/posts/questions/widgets/question_card_with_voting.dart';
 import 'package:thot/shared/media/utils/image_utils.dart';
@@ -137,10 +138,10 @@ class _ProfileScreenState extends State<ProfileScreen>
       if (widget.isCurrentUser ||
           (event.journalistId != null && event.journalistId == widget.userId)) {
         _logger.info('ProfileScreen received PostCreatedEvent');
-        if (event.postType == PostType.question) {
+        if (event.postType == 'question') {
           _logger.info('Calling _loadQuestions() from ProfileScreen');
           _loadQuestions();
-        } else if (event.postType == PostType.short) {
+        } else if (event.postType == 'short') {
           _logger.info('Calling _loadShorts() from ProfileScreen');
           _loadShorts();
         } else {
@@ -713,6 +714,108 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
+  Widget _buildActionButtonsRow() {
+    if (_userProfile == null) return const SliverToBoxAdapter(child: SizedBox.shrink());
+
+    final currentUserId = context.read<AuthProvider>().userProfile?.id;
+    final isOwnProfile = currentUserId == _userProfile!.id;
+    final isJournalist = _userProfile!.isJournalist;
+
+    return SliverToBoxAdapter(
+      child: Container(
+        color: Colors.black,
+        padding: const EdgeInsets.all(16),
+        child: isOwnProfile
+            ? (isJournalist
+                ? Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final result = await context.push('/edit-profile', extra: _userProfile);
+                            if (result != null && mounted) {
+                              _loadProfile();
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text(
+                            'Éditer',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => context.push('/stats', extra: {'journalistId': _userProfile!.id}),
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            side: const BorderSide(color: Colors.white, width: 1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text(
+                            'Statistiques',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final result = await context.push('/edit-profile', extra: _userProfile);
+                        if (result != null && mounted) {
+                          _loadProfile();
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        'Éditer',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ))
+            : FollowButton(
+                userId: _userProfile!.id,
+                isFollowing: _userProfile!.isFollowing,
+                compact: false,
+              ),
+      ),
+    );
+  }
+
   Widget _buildTabBar() {
     _tabItems = [
       TabItemData(
@@ -916,20 +1019,44 @@ class _ProfileScreenState extends State<ProfileScreen>
         ),
         if (widget.isCurrentUser) ...[
           const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: _showAddContentMenu,
-            icon: Icon(_userProfile?.isJournalist == true
-                ? Icons.add
-                : Icons.bookmark_add),
-            label: Text(_userProfile?.isJournalist == true
-                ? 'Ajouter du contenu'
-                : 'Gérer le contenu public'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.blue,
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+          Container(
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _showAddContentMenu,
+                borderRadius: BorderRadius.circular(20),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        _userProfile?.isJournalist == true
+                            ? Icons.add
+                            : Icons.bookmark_add,
+                        size: 16,
+                        color: Colors.black,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _userProfile?.isJournalist == true
+                            ? 'Ajouter du contenu'
+                            : 'Gérer le contenu public',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -1045,6 +1172,17 @@ class _ProfileScreenState extends State<ProfileScreen>
       });
       return;
     }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NewPublicationScreen(
+          journalistId: widget.userId ?? _userProfile?.id ?? '',
+        ),
+      ),
+    ).then((_) {
+      _loadProfileContent();
+    });
   }
 
   Widget _buildAddContentTile({double aspectRatio = 1.0}) {
@@ -1139,10 +1277,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                 Image.network(
                   short['thumbnailUrl'] ??
                       short['imageUrl'] ??
-                      'assets/images/default_journalist_avatar.png',
+                      'assets/images/defaults/default_journalist_avatar.png',
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Image.asset(
-                    'assets/images/default_journalist_avatar.png',
+                    'assets/images/defaults/default_journalist_avatar.png',
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -1506,6 +1644,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               ),
                             ),
                           ),
+                          _buildActionButtonsRow(),
                           _buildTabBar(),
                         ],
                         body: _buildContent(),

@@ -1,17 +1,15 @@
-import 'package:thot/core/presentation/theme/app_colors.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:thot/core/config/app_config.dart';
+import 'package:thot/core/presentation/theme/app_colors.dart';
 import 'package:thot/shared/media/config/media_config.dart';
-import 'package:thot/core/presentation/extensions/context_extensions.dart';
 import 'package:thot/features/app/content/shared/providers/post_repository_impl.dart';
 import 'package:thot/core/di/service_locator.dart';
 import 'package:thot/shared/media/services/upload_service.dart';
 import 'package:thot/core/utils/safe_navigation.dart';
 import 'package:thot/shared/media/widgets/media_picker.dart';
-import 'package:thot/features/app/content/shared/widgets/editor_ui.dart';
 
 enum QuestionType { poll, openEnded }
 
@@ -38,75 +36,12 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
   bool _isMultipleChoice = false;
   File? _selectedImage;
   bool _isUploading = false;
-  int _currentStep = 0;
   late final PostRepositoryImpl _postRepository;
   late final UploadService _uploadService;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   QuestionType _questionType = QuestionType.poll;
-  String? _selectedDomain;
-  static final List<Map<String, dynamic>> _domains = [
-    {
-      'id': 'politique',
-      'title': 'Politique',
-      'icon': Icons.account_balance,
-      'color': Colors.blue
-    },
-    {
-      'id': 'economie',
-      'title': 'Économie',
-      'icon': Icons.trending_up,
-      'color': Colors.green
-    },
-    {
-      'id': 'science',
-      'title': 'Science',
-      'icon': Icons.science,
-      'color': Colors.purple
-    },
-    {
-      'id': 'international',
-      'title': 'International',
-      'icon': Icons.public,
-      'color': Colors.orange
-    },
-    {
-      'id': 'juridique',
-      'title': 'Juridique',
-      'icon': Icons.gavel,
-      'color': Colors.red
-    },
-    {
-      'id': 'philosophie',
-      'title': 'Philosophie',
-      'icon': Icons.psychology,
-      'color': AppColors.purple
-    },
-    {
-      'id': 'societe',
-      'title': 'Société',
-      'icon': Icons.group,
-      'color': AppColors.success
-    },
-    {
-      'id': 'psychologie',
-      'title': 'Psychologie',
-      'icon': Icons.psychology,
-      'color': AppColors.red
-    },
-    {
-      'id': 'sport',
-      'title': 'Sport',
-      'icon': Icons.emoji_events,
-      'color': AppColors.warning
-    },
-    {
-      'id': 'technologie',
-      'title': 'Technologie',
-      'icon': Icons.laptop,
-      'color': AppColors.blue
-    },
-  ];
+
   @override
   void initState() {
     super.initState();
@@ -121,10 +56,6 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
       curve: Curves.easeInOut,
     );
     _animationController.forward();
-    if (widget.domain != null) {
-      _selectedDomain = widget.domain;
-      _currentStep = 1;
-    }
     if (widget.questionType != null) {
       _questionType = widget.questionType == 'debate'
           ? QuestionType.openEnded
@@ -161,7 +92,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
       builder: (context) => Container(
         margin: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
+          color: Colors.black,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -172,7 +103,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.outline,
+                color: Colors.white.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -256,7 +187,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
         if (imageUrl != null) 'imageUrl': imageUrl,
         'type': 'question',
         'journalist': widget.journalistId,
-        'domain': _selectedDomain ?? 'societe',
+        'domain': widget.domain ?? 'societe',
         'status': 'published',
         'metadata': {
           'question': {
@@ -302,87 +233,16 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
     }
   }
 
-  Widget _buildDomainSelection() {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: Text('Choisir un domaine',
-            style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back,
-              color: Theme.of(context).colorScheme.onPrimary),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 1.2,
-        ),
-        itemCount: _domains.length,
-        itemBuilder: (context, index) {
-          final domain = _domains[index];
-          return InkWell(
-            onTap: () {
-              setState(() {
-                _selectedDomain = domain['id'];
-                _currentStep = 1;
-              });
-              HapticFeedback.lightImpact();
-            },
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    (domain['color'] as Color).withOpacity(0.2),
-                    (domain['color'] as Color).withOpacity(0.1),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: (domain['color'] as Color).withOpacity(0.3),
-                  width: 1,
-                ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    domain['icon'] as IconData,
-                    size: 40,
-                    color: domain['color'] as Color,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    domain['title'] as String,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.surface,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
   Widget _buildQuestionTypeSelector() {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: Colors.white.withOpacity(0.03),
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.1),
+          width: 1,
+        ),
       ),
       child: Row(
         children: [
@@ -397,7 +257,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
                   color: _questionType == QuestionType.poll
-                      ? Colors.blue
+                      ? Colors.white
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -407,8 +267,8 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                     Icon(
                       Icons.bar_chart,
                       color: _questionType == QuestionType.poll
-                          ? Colors.white
-                          : AppColors.textSecondary,
+                          ? Colors.black
+                          : Colors.white.withOpacity(0.6),
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -416,8 +276,8 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                       'Sondage',
                       style: TextStyle(
                         color: _questionType == QuestionType.poll
-                            ? Colors.white
-                            : AppColors.textSecondary,
+                            ? Colors.black
+                            : Colors.white.withOpacity(0.6),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -437,7 +297,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
                   color: _questionType == QuestionType.openEnded
-                      ? Colors.purple
+                      ? Colors.white
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -447,8 +307,8 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                     Icon(
                       Icons.forum,
                       color: _questionType == QuestionType.openEnded
-                          ? Colors.white
-                          : AppColors.textSecondary,
+                          ? Colors.black
+                          : Colors.white.withOpacity(0.6),
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -456,8 +316,8 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                       'Débat',
                       style: TextStyle(
                         color: _questionType == QuestionType.openEnded
-                            ? Colors.white
-                            : AppColors.textSecondary,
+                            ? Colors.black
+                            : Colors.white.withOpacity(0.6),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -471,11 +331,40 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
     );
   }
 
+  Widget _buildDomainChip() {
+    final domainName = widget.domain ?? 'Société';
+    final capitalizedDomain = domainName[0].toUpperCase() + domainName.substring(1);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.1),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.tag, size: 14, color: Colors.white.withOpacity(0.6)),
+          const SizedBox(width: 6),
+          Text(
+            capitalizedDomain,
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.8),
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (_currentStep == 0) {
-      return _buildDomainSelection();
-    }
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -488,10 +377,14 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                 elevation: 0,
                 backgroundColor: Colors.black,
                 centerTitle: true,
-                title: Text(
+                leading: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                title: const Text(
                   'Nouvelle question',
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.surface,
+                    color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                   ),
@@ -501,14 +394,9 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                   child: Container(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
                     width: double.infinity,
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: Colors.black,
                     child: Row(children: [
-                      DomainChip(
-                        text: _domains.firstWhere(
-                          (d) => d['id'] == _selectedDomain,
-                          orElse: () => {'title': 'Société'},
-                        )['title'] as String,
-                      ),
+                      _buildDomainChip(),
                     ]),
                   ),
                 ),
@@ -526,26 +414,11 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Theme.of(context)
-                                    .colorScheme
-                                    .surface
-                                    .withOpacity(0.5),
-                                Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainerHighest
-                                    .withOpacity(0.5),
-                              ],
-                            ),
+                            color: Colors.black,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainerHighest,
-                              width: 0.5,
+                              color: Colors.white.withOpacity(0.1),
+                              width: 1,
                             ),
                           ),
                           child: Column(
@@ -562,17 +435,13 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                             ? Icons.help_outline
                                             : Icons.forum,
                                         size: 18,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .surface,
+                                        color: Colors.white.withOpacity(0.6),
                                       ),
                                       const SizedBox(width: 8),
-                                      Text(
+                                      const Text(
                                         'Votre question',
                                         style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .surface,
+                                          color: Colors.white,
                                           fontSize: 15,
                                           fontWeight: FontWeight.w600,
                                         ),
@@ -584,8 +453,8 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                     style: TextStyle(
                                       color:
                                           _questionController.text.length > 280
-                                              ? AppColors.warning
-                                              : AppColors.textSecondary,
+                                              ? Colors.orange
+                                              : Colors.white.withOpacity(0.4),
                                       fontSize: 12,
                                     ),
                                   ),
@@ -594,8 +463,8 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                               const SizedBox(height: 12),
                               TextField(
                                 controller: _questionController,
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.surface,
+                                style: const TextStyle(
+                                  color: Colors.white,
                                   fontSize: 16,
                                   height: 1.4,
                                 ),
@@ -607,18 +476,32 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                       ? 'Ex: Quelle est votre opinion sur...?'
                                       : 'Ex: Que pensez-vous de...? Débattons!',
                                   hintStyle: TextStyle(
-                                    color: AppColors.textSecondary,
+                                    color: Colors.white.withOpacity(0.4),
                                     fontSize: 15,
                                   ),
                                   filled: true,
-                                  fillColor: Theme.of(context)
-                                      .colorScheme
-                                      .surfaceContainerHighest,
+                                  fillColor: Colors.white.withOpacity(0.03),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide.none,
+                                    borderSide: BorderSide(
+                                      color: Colors.white.withOpacity(0.1),
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      color: Colors.white.withOpacity(0.1),
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(
+                                      color: Colors.white,
+                                      width: 1.5,
+                                    ),
                                   ),
                                   counterText: '',
+                                  contentPadding: const EdgeInsets.all(16),
                                 ),
                               ),
                             ],
@@ -629,16 +512,11 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surface
-                                  .withOpacity(0.5),
+                              color: Colors.black,
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainerHighest,
-                                width: 0.5,
+                                color: Colors.white.withOpacity(0.1),
+                                width: 1,
                               ),
                             ),
                             child: Column(
@@ -652,12 +530,14 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                       children: [
                                         Icon(Icons.list,
                                             size: 18,
-                                            color: AppColors.textSecondary),
+                                            color:
+                                                Colors.white.withOpacity(0.6)),
                                         const SizedBox(width: 8),
                                         Text(
                                           'Options de vote',
                                           style: TextStyle(
-                                            color: AppColors.textSecondary,
+                                            color:
+                                                Colors.white.withOpacity(0.8),
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600,
                                           ),
@@ -671,7 +551,8 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                               ? 'Multiple'
                                               : 'Unique',
                                           style: TextStyle(
-                                            color: AppColors.textSecondary,
+                                            color:
+                                                Colors.white.withOpacity(0.6),
                                             fontSize: 12,
                                           ),
                                         ),
@@ -684,7 +565,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                                   () => _isMultipleChoice = v);
                                               HapticFeedback.selectionClick();
                                             },
-                                            activeThumbColor: AppColors.blue,
+                                            activeColor: Colors.white,
                                           ),
                                         ),
                                       ],
@@ -702,22 +583,20 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                           width: 36,
                                           height: 36,
                                           decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [
-                                                AppColors.blue.withOpacity(0.2),
-                                                AppColors.purple
-                                                    .withOpacity(0.2),
-                                              ],
-                                            ),
+                                            color:
+                                                Colors.white.withOpacity(0.05),
                                             shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color:
+                                                  Colors.white.withOpacity(0.1),
+                                              width: 1,
+                                            ),
                                           ),
                                           child: Center(
                                             child: Text(
                                               String.fromCharCode(65 + index),
-                                              style: TextStyle(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .surface,
+                                              style: const TextStyle(
+                                                color: Colors.white,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
@@ -728,23 +607,21 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                           child: TextField(
                                             controller:
                                                 _optionControllers[index],
-                                            style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .surface,
+                                            style: const TextStyle(
+                                              color: Colors.white,
                                               fontSize: 15,
                                             ),
                                             maxLength: 100,
                                             decoration: InputDecoration(
                                               hintText: 'Option ${index + 1}',
                                               hintStyle: TextStyle(
-                                                color: AppColors.textSecondary,
+                                                color: Colors.white
+                                                    .withOpacity(0.4),
                                                 fontSize: 14,
                                               ),
                                               filled: true,
-                                              fillColor: Theme.of(context)
-                                                  .colorScheme
-                                                  .surfaceContainerHighest,
+                                              fillColor:
+                                                  Colors.white.withOpacity(0.03),
                                               contentPadding:
                                                   const EdgeInsets.symmetric(
                                                 horizontal: 16,
@@ -753,7 +630,26 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                               border: OutlineInputBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(12),
-                                                borderSide: BorderSide.none,
+                                                borderSide: BorderSide(
+                                                  color: Colors.white
+                                                      .withOpacity(0.1),
+                                                ),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                borderSide: BorderSide(
+                                                  color: Colors.white
+                                                      .withOpacity(0.1),
+                                                ),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                borderSide: const BorderSide(
+                                                  color: Colors.white,
+                                                  width: 1.5,
+                                                ),
                                               ),
                                               counterText: '',
                                             ),
@@ -761,9 +657,9 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                         ),
                                         if (_optionControllers.length > 2)
                                           IconButton(
-                                            icon: Icon(
+                                            icon: const Icon(
                                               Icons.remove_circle_outline,
-                                              color: AppColors.error,
+                                              color: Colors.red,
                                             ),
                                             onPressed: () =>
                                                 _removeOption(index),
@@ -776,11 +672,11 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                   Center(
                                     child: TextButton.icon(
                                       onPressed: _addOption,
-                                      icon: Icon(Icons.add_circle_outline),
-                                      label: Text('Ajouter une option'),
-                                      style: TextButton.styleFrom(
-                                        foregroundColor: AppColors.blue,
-                                      ),
+                                      icon: const Icon(Icons.add_circle_outline,
+                                          color: Colors.white),
+                                      label: const Text('Ajouter une option',
+                                          style:
+                                              TextStyle(color: Colors.white)),
                                     ),
                                   ),
                               ],
@@ -790,16 +686,11 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                         ],
                         Container(
                           decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .surface
-                                .withOpacity(0.5),
+                            color: Colors.black,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainerHighest,
-                              width: 0.5,
+                              color: Colors.white.withOpacity(0.1),
+                              width: 1,
                             ),
                           ),
                           child: Column(
@@ -815,12 +706,14 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                       children: [
                                         Icon(Icons.image,
                                             size: 18,
-                                            color: AppColors.textSecondary),
+                                            color:
+                                                Colors.white.withOpacity(0.6)),
                                         const SizedBox(width: 8),
                                         Text(
                                           'Image (optionnelle)',
                                           style: TextStyle(
-                                            color: AppColors.textSecondary,
+                                            color:
+                                                Colors.white.withOpacity(0.8),
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600,
                                           ),
@@ -831,17 +724,17 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                       Row(
                                         children: [
                                           IconButton(
-                                            icon: Icon(
+                                            icon: const Icon(
                                               Icons.swap_horiz,
-                                              color: AppColors.info,
+                                              color: Colors.blue,
                                               size: 20,
                                             ),
                                             onPressed: _replaceImage,
                                           ),
                                           IconButton(
-                                            icon: Icon(
+                                            icon: const Icon(
                                               Icons.close,
-                                              color: AppColors.error,
+                                              color: Colors.red,
                                               size: 20,
                                             ),
                                             onPressed: _removeImage,
@@ -886,17 +779,23 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
           ),
           if (_isUploading)
             Container(
-              color: Colors.black.withOpacity(0.8),
-              child: Center(
+              color: Colors.white.withOpacity(0.1),
+              child: const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(color: AppColors.blue),
+                    CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 3,
+                    ),
                     SizedBox(height: 16),
                     Text(
                       'Publication en cours...',
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface),
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -904,16 +803,59 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
             ),
         ],
       ),
-      bottomNavigationBar: PublishBar(
-        enabled: !_isUploading,
-        isSubmitting: _isUploading,
-        onSubmit: _publishQuestion,
-        primaryLabel: _questionType == QuestionType.poll
-            ? 'Lancer le sondage'
-            : 'Lancer le débat',
-        primaryColor: _questionType == QuestionType.poll
-            ? AppColors.blue
-            : AppColors.purple,
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.black,
+            border: Border(
+              top: BorderSide(
+                color: Colors.white.withOpacity(0.1),
+                width: 1,
+              ),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.white.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, -2),
+              ),
+            ],
+          ),
+          child: ElevatedButton(
+            onPressed: _isUploading ? null : _publishQuestion,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _isUploading
+                  ? Colors.white.withOpacity(0.3)
+                  : Colors.white,
+              foregroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              elevation: 0,
+            ),
+            child: _isUploading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                    ),
+                  )
+                : Text(
+                    _questionType == QuestionType.poll
+                        ? 'Lancer le sondage'
+                        : 'Lancer le débat',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+          ),
+        ),
       ),
     );
   }

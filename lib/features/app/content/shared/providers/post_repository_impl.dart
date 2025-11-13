@@ -218,15 +218,42 @@ class PostRepositoryImpl with ConnectivityAware {
           interactions['isBookmarked'] ?? interactions['isSaved'] ?? false,
     };
     if (transformed['journalist'] != null) {
-      var journalist = transformed['journalist'] as Map<String, dynamic>;
-      journalist['id'] = journalist['_id'] ?? journalist['id'];
+      var journalist = Map<String, dynamic>.from(transformed['journalist'] as Map<String, dynamic>);
+
+      // CORRECTION CRITIQUE: Mapper _id vers id
+      if (journalist['_id'] != null) {
+        if (journalist['_id'] is Map && journalist['_id']['\$oid'] != null) {
+          journalist['id'] = journalist['_id']['\$oid'].toString();
+        } else {
+          journalist['id'] = journalist['_id'].toString();
+        }
+      } else if (journalist['id'] == null) {
+        journalist['id'] = journalist['userId'] ??
+                          journalist['user']?['_id'] ??
+                          journalist['user']?['id'];
+      }
+
       journalist['name'] = journalist['name'] ?? 'Unknown';
       journalist['username'] = journalist['username'] ??
           journalist['name']?.toString().toLowerCase().replaceAll(' ', '_') ??
           'unknown';
       journalist['history'] = journalist['history'] ?? '';
       journalist['specialties'] = journalist['specialties'] ?? [];
-      journalist['isVerified'] = journalist['verified'] ?? false;
+      journalist['isVerified'] = journalist['verified'] ?? journalist['isVerified'] ?? false;
+      journalist['isFollowing'] = journalist['isFollowing'] ?? false;
+
+      transformed['journalist'] = journalist;
+
+      // Debug: Vérifier l'ID
+      if (journalist['id'] == null || journalist['id'].toString().isEmpty) {
+        print('⚠️ WARNING: Post "${transformed['title']}" has journalist but no ID!');
+        print('   Journalist data: $journalist');
+        print('   Full journalist keys: ${journalist.keys.toList()}');
+        print('   _id value: ${journalist['_id']}');
+        print('   _id type: ${journalist['_id'].runtimeType}');
+      }
+    } else {
+      print('⚠️ WARNING: Post "${transformed['title']}" has no journalist!');
     }
     transformed['metadata'] = _transformMetadata(
       transformed['type'] as String?,
@@ -830,12 +857,12 @@ class PostRepositoryImpl with ConnectivityAware {
   }
 
   static final _validJournalistPostTypes = {
-    PostType.article,
-    PostType.video,
-    PostType.podcast,
-    PostType.live,
-    PostType.short,
-    PostType.question,
+    'article',
+    'video',
+    'podcast',
+    'live',
+    'short',
+    'question',
   };
   static bool isValidJournalistPostType(String? type) {
     return type == null || _validJournalistPostTypes.contains(type);

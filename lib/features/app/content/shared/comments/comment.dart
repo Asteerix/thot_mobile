@@ -5,6 +5,7 @@ class CommentAuthor {
   final String? avatar;
   final String? avatarUrl;
   final bool isVerified;
+  final bool isJournalist;
   CommentAuthor({
     required this.id,
     required this.username,
@@ -12,6 +13,7 @@ class CommentAuthor {
     this.avatar,
     this.avatarUrl,
     this.isVerified = false,
+    this.isJournalist = false,
   });
 }
 

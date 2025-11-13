@@ -19,6 +19,7 @@ import 'package:thot/features/app/feed/home/widgets/feed_app_header.dart';
 import 'package:thot/shared/widgets/delegates/filters_header_delegate.dart';
 import 'package:thot/shared/widgets/empty/empty_state.dart';
 import 'package:thot/core/services/storage/search_history_service.dart';
+import 'package:thot/shared/widgets/images/user_avatar.dart';
 
 enum ViewMode { feed, list }
 
@@ -1273,46 +1274,11 @@ class ModernFeedCard extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: isDark
-                            ? Theme.of(context)
-                                .colorScheme
-                                .surfaceContainerHighest
-                            : Theme.of(context)
-                                .colorScheme
-                                .surfaceContainerHighest,
-                      ),
-                      child: ClipOval(
-                        child: post.journalist?.avatarUrl != null
-                            ? Image.network(
-                                post.journalist!.avatarUrl!,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => Center(
-                                  child: Text(
-                                    (post.journalist?.name ?? 'A')[0]
-                                        .toUpperCase(),
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : Center(
-                                child: Text(
-                                  (post.journalist?.name ?? 'A')[0]
-                                      .toUpperCase(),
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                      ),
+                    child: UserAvatar(
+                      avatarUrl: post.journalist?.avatarUrl,
+                      name: post.journalist?.name ?? post.journalist?.username,
+                      isJournalist: true,
+                      radius: 20,
                     ),
                   ),
                   SizedBox(width: 12),
@@ -1370,10 +1336,7 @@ class ModernFeedCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 11,
                                 color: isDark
-                                    ? Theme.of(context)
-                                        .colorScheme
-                                        .surfaceContainerHighest
-                                        .withOpacity(0.54)
+                                    ? Colors.white60
                                     : Colors.black45,
                               ),
                             ),
@@ -1483,11 +1446,11 @@ class ModernFeedCard extends StatelessWidget {
       case PoliticalOrientation.extremelyConservative:
         return Icons.keyboard_double_arrow_left;
       case PoliticalOrientation.conservative:
-        return Icons.arrow_back;
+        return Icons.chevron_left;
       case PoliticalOrientation.neutral:
         return Icons.remove;
       case PoliticalOrientation.progressive:
-        return Icons.arrow_forward;
+        return Icons.chevron_right;
       case PoliticalOrientation.extremelyProgressive:
         return Icons.keyboard_double_arrow_right;
     }
@@ -1496,15 +1459,15 @@ class ModernFeedCard extends StatelessWidget {
   String _getPoliticalLabel(PoliticalOrientation orientation) {
     switch (orientation) {
       case PoliticalOrientation.extremelyConservative:
-        return 'T.CONSERV';
+        return 'T.CONSERVATEUR';
       case PoliticalOrientation.conservative:
-        return 'CONSERV';
+        return 'CONSERVATEUR';
       case PoliticalOrientation.neutral:
         return 'NEUTRE';
       case PoliticalOrientation.progressive:
-        return 'PROGRESS';
+        return 'PROGRESSISTE';
       case PoliticalOrientation.extremelyProgressive:
-        return 'T.PROGRESS';
+        return 'T.PROGRESSISTE';
     }
   }
 
@@ -1805,10 +1768,7 @@ class YouTubeListItem extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 11,
                           color: isDark
-                              ? Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainerHighest
-                                  .withOpacity(0.54)
+                              ? Colors.white60
                               : Colors.black45,
                         ),
                       ),
@@ -1974,11 +1934,11 @@ class YouTubeListItem extends StatelessWidget {
       case PoliticalOrientation.extremelyConservative:
         return Icons.keyboard_double_arrow_left;
       case PoliticalOrientation.conservative:
-        return Icons.arrow_back;
+        return Icons.chevron_left;
       case PoliticalOrientation.neutral:
         return Icons.remove;
       case PoliticalOrientation.progressive:
-        return Icons.arrow_forward;
+        return Icons.chevron_right;
       case PoliticalOrientation.extremelyProgressive:
         return Icons.keyboard_double_arrow_right;
     }
@@ -1987,15 +1947,15 @@ class YouTubeListItem extends StatelessWidget {
   String _getPoliticalLabel(PoliticalOrientation orientation) {
     switch (orientation) {
       case PoliticalOrientation.extremelyConservative:
-        return 'T.CONSERV';
+        return 'T.CONSERVATEUR';
       case PoliticalOrientation.conservative:
-        return 'CONSERV';
+        return 'CONSERVATEUR';
       case PoliticalOrientation.neutral:
         return 'NEUTRE';
       case PoliticalOrientation.progressive:
-        return 'PROGRESS';
+        return 'PROGRESSISTE';
       case PoliticalOrientation.extremelyProgressive:
-        return 'T.PROGRESS';
+        return 'T.PROGRESSISTE';
     }
   }
 }

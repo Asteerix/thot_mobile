@@ -301,7 +301,7 @@ class _NewVideoScreenState extends State<NewVideoScreen> {
         'title': _titleController.text.trim(),
         'content': _descriptionController.text.trim(),
         'domain': widget.domain,
-        'type': PostType.video,
+        'type': 'video',
         'status': 'published',
         'journalistId': widget.journalistId,
         'videoUrl': videoUrl,

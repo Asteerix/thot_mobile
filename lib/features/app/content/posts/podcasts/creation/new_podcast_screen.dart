@@ -291,7 +291,7 @@ class _NewPodcastScreenState extends State<NewPodcastScreen> {
         'title': _titleController.text.trim(),
         'content': _descriptionController.text.trim(),
         'domain': widget.domain,
-        'type': PostType.podcast,
+        'type': 'podcast',
         'status': 'published',
         'journalistId': widget.journalistId,
         'audioUrl': audioUrl,

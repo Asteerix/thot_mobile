@@ -19,17 +19,20 @@ import 'package:thot/core/routing/route_names.dart';
 import 'package:thot/shared/media/widgets/media_picker.dart';
 import 'package:thot/shared/media/widgets/video_player_preview.dart';
 import 'package:thot/shared/widgets/loading/upload_progress_dialog.dart';
-import 'package:thot/features/app/content/shared/widgets/editor_ui.dart';
 import 'package:thot/features/app/content/shared/models/post.dart';
+import 'package:thot/shared/widgets/forms/custom_text_field.dart';
+import 'package:thot/shared/widgets/layouts/creation_screen_layout.dart';
 import '../feed/shorts_feed_screen.dart';
 
 class NewShortScreen extends StatefulWidget {
   final String journalistId;
   final bool isLiveMode;
+  final String? domain;
   const NewShortScreen({
     super.key,
     required this.journalistId,
     this.isLiveMode = false,
+    this.domain,
   });
   @override
   State<NewShortScreen> createState() => _NewShortScreenState();
@@ -40,6 +43,8 @@ class _NewShortScreenState extends State<NewShortScreen> {
   final _scrollController = ScrollController();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _titleFocus = FocusNode();
+  final _descriptionFocus = FocusNode();
   late final PostRepositoryImpl _postRepository;
   late final UploadService _uploadService;
   File? _selectedVideo;
@@ -47,70 +52,6 @@ class _NewShortScreenState extends State<NewShortScreen> {
   VideoPlayerController? _videoController;
   bool _isUploading = false;
   String? _error;
-  String? _selectedDomain;
-  int _currentStep = 0;
-  static final List<Map<String, dynamic>> _domains = [
-    {
-      'id': 'politique',
-      'title': 'Politique',
-      'icon': Icons.account_balance,
-      'color': Colors.blue
-    },
-    {
-      'id': 'economie',
-      'title': 'Économie',
-      'icon': Icons.trending_up,
-      'color': Colors.green
-    },
-    {
-      'id': 'science',
-      'title': 'Science',
-      'icon': Icons.science,
-      'color': Colors.purple
-    },
-    {
-      'id': 'international',
-      'title': 'International',
-      'icon': Icons.public,
-      'color': Colors.orange
-    },
-    {
-      'id': 'juridique',
-      'title': 'Juridique',
-      'icon': Icons.gavel,
-      'color': Colors.red
-    },
-    {
-      'id': 'philosophie',
-      'title': 'Philosophie',
-      'icon': Icons.psychology,
-      'color': AppColors.purple
-    },
-    {
-      'id': 'societe',
-      'title': 'Société',
-      'icon': Icons.group,
-      'color': AppColors.success
-    },
-    {
-      'id': 'psychologie',
-      'title': 'Psychologie',
-      'icon': Icons.psychology,
-      'color': AppColors.red
-    },
-    {
-      'id': 'sport',
-      'title': 'Sport',
-      'icon': Icons.emoji_events,
-      'color': Colors.amber
-    },
-    {
-      'id': 'technologie',
-      'title': 'Technologie',
-      'icon': Icons.laptop,
-      'color': AppColors.blue
-    },
-  ];
   @override
   void initState() {
     super.initState();
@@ -122,6 +63,8 @@ class _NewShortScreenState extends State<NewShortScreen> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _titleFocus.dispose();
+    _descriptionFocus.dispose();
     _scrollController.dispose();
     _videoController?.dispose();
     super.dispose();
@@ -172,7 +115,7 @@ class _NewShortScreenState extends State<NewShortScreen> {
       builder: (context) => Container(
         margin: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
+          color: Colors.black,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -183,7 +126,7 @@ class _NewShortScreenState extends State<NewShortScreen> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.outline,
+                color: Colors.white.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -212,7 +155,7 @@ class _NewShortScreenState extends State<NewShortScreen> {
       builder: (context) => Container(
         margin: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
+          color: Colors.black,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -223,7 +166,7 @@ class _NewShortScreenState extends State<NewShortScreen> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.outline,
+                color: Colors.white.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -371,7 +314,7 @@ class _NewShortScreenState extends State<NewShortScreen> {
         'thumbnailUrl': imageUrl,
         'type': widget.isLiveMode ? PostType.live : PostType.short,
         'journalistId': widget.journalistId,
-        'domain': _selectedDomain ?? 'societe',
+        'domain': widget.domain ?? 'societe',
         'status': 'published',
         'politicalOrientation': {
           'journalistChoice': 'neutral',
@@ -443,78 +386,8 @@ class _NewShortScreenState extends State<NewShortScreen> {
     }
   }
 
-  Widget _buildDomainSelection() {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: Text('Choisir un domaine',
-            style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back,
-              color: Theme.of(context).colorScheme.onPrimary),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 1.2,
-        ),
-        itemCount: _domains.length,
-        itemBuilder: (context, index) {
-          final domain = _domains[index];
-          return InkWell(
-            onTap: () {
-              setState(() {
-                _selectedDomain = domain['id'];
-                _currentStep = 1;
-              });
-            },
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  width: 1,
-                ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    domain['icon'] as IconData,
-                    size: 40,
-                    color: domain['color'] as Color,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    domain['title'] as String,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.surface,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_currentStep == 0) {
-      return _buildDomainSelection();
-    }
     if (_isUploading) {
       return PopScope(
         canPop: false,
@@ -523,25 +396,23 @@ class _NewShortScreenState extends State<NewShortScreen> {
           body: Stack(
             children: [
               Container(
-                color: Colors.black.withOpacity(0.8),
+                color: Colors.black,
               ),
               Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const CircularProgressIndicator(color: AppColors.blue),
+                    const CircularProgressIndicator(color: Colors.white),
                     const SizedBox(height: 20),
                     Text(
                       'Upload en cours...',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          fontSize: 16),
+                      style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Veuillez patienter',
                       style: TextStyle(
-                          color: AppColors.textSecondary, fontSize: 14),
+                          color: Colors.white.withOpacity(0.6), fontSize: 14),
                     ),
                   ],
                 ),
@@ -562,213 +433,154 @@ class _NewShortScreenState extends State<NewShortScreen> {
             const SizedBox(height: 16),
             ElevatedButton(
                 onPressed: () => setState(() => _error = null),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                ),
                 child: const Text('Réessayer')),
           ]),
         ),
       );
     }
+
+    final hasVideo = _selectedVideo != null;
+    final hasThumbnail = _selectedThumbnail != null;
+    final canSubmit = _titleController.text.trim().isNotEmpty &&
+        _descriptionController.text.trim().isNotEmpty &&
+        hasVideo &&
+        hasThumbnail;
+
     return AbsorbPointer(
       absorbing: _isUploading,
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        body: CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            SliverAppBar(
-              pinned: true,
-              elevation: 0,
-              backgroundColor: Colors.black,
-              centerTitle: true,
-              title: Text(widget.isLiveMode ? 'Nouveau live' : 'Nouveau short',
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface)),
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(42),
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-                  width: double.infinity,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  child: Row(children: [
-                    DomainChip(
-                      text: _domains.firstWhere(
-                        (d) => d['id'] == _selectedDomain,
-                        orElse: () => {'title': 'Société'},
-                      )['title'] as String,
+      child: CreationScreenLayout(
+        title: widget.isLiveMode ? 'Nouveau live' : 'Nouveau short',
+        subtitle: widget.domain ?? 'Société',
+        scrollController: _scrollController,
+        onSubmit: _checkAndPublish,
+        isSubmitting: _isUploading,
+        canSubmit: canSubmit,
+        submitLabel: widget.isLiveMode ? 'Démarrer' : 'Publier',
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomTextField(
+                controller: _titleController,
+                focusNode: _titleFocus,
+                textInputAction: TextInputAction.next,
+                label: 'Titre',
+                hint: widget.isLiveMode ? 'Titre du live' : 'Titre du short',
+                maxLength: ValidationConstants.maxTitleLength,
+                counterText: '',
+                validator: (v) => (v == null || v.isEmpty)
+                    ? ErrorMessages.requiredField
+                    : null,
+                onFieldSubmitted: (_) => _descriptionFocus.requestFocus(),
+              ),
+              SizedBox(height: 16.0),
+              CreationSection(
+                title: 'Vidéo (portrait 9:16, ≤ 30s)',
+                padding: EdgeInsets.zero,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_selectedVideo != null)
+                      Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            IconButton(
+                              onPressed: _replaceVideo,
+                              icon: Icon(Icons.swap_horiz,
+                                  color: AppColors.blue),
+                            ),
+                          ],
+                        ),
+                      ),
+                    AspectRatio(
+                      aspectRatio: 9 / 16,
+                      child: _selectedVideo != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(12.0),
+                              child: VideoPlayerPreview(
+                                  videoFile: _selectedVideo!,
+                                  height: MediaQuery.of(context).size.width *
+                                      (16 / 9),
+                                  autoPlay: true,
+                                  type: MediaType.short),
+                            )
+                          : MediaPicker(
+                              type: MediaType.short,
+                              onMediaSelected: _handleVideoSelected,
+                              height: MediaQuery.of(context).size.width *
+                                  (16 / 9)),
                     ),
-                  ]),
+                  ],
                 ),
               ),
-            ),
-            SliverToBoxAdapter(
-              child: Form(
-                key: _formKey,
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Glass(
-                        child: TextFormField(
-                          controller: _titleController,
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.surface,
-                              fontSize: 22,
-                              height: 1.2),
-                          decoration: InputDecoration(
-                            hintText: widget.isLiveMode
-                                ? 'Titre du live'
-                                : 'Titre du short',
-                            hintStyle: TextStyle(
-                                color: AppColors.textSecondary, fontSize: 20),
-                            border: InputBorder.none,
-                            counterText: '',
-                            contentPadding:
-                                const EdgeInsets.symmetric(vertical: 8),
-                          ),
-                          maxLength: ValidationConstants.maxTitleLength,
-                          validator: (v) => (v == null || v.isEmpty)
-                              ? ErrorMessages.requiredField
-                              : null,
+              SizedBox(height: 16.0),
+              CreationSection(
+                title: 'Miniature (portrait 9:16)',
+                padding: EdgeInsets.zero,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_selectedThumbnail != null)
+                      Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            IconButton(
+                              onPressed: _replaceThumbnail,
+                              icon: Icon(Icons.swap_horiz,
+                                  color: AppColors.blue),
+                            ),
+                          ],
                         ),
                       ),
-                      SizedBox(height: 16.0),
-                      Glass(
-                        padding: EdgeInsets.zero,
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(16.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Vidéo (portrait 9:16, ≤ 30s)',
-                                        style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant)),
-                                    if (_selectedVideo != null)
-                                      IconButton(
-                                        onPressed: _replaceVideo,
-                                        icon: Icon(Icons.swap_horiz,
-                                            color: AppColors.blue),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                              AspectRatio(
-                                aspectRatio: 9 / 16,
-                                child: _selectedVideo != null
-                                    ? ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                            12.0),
-                                        child: VideoPlayerPreview(
-                                            videoFile: _selectedVideo!,
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                (16 / 9),
-                                            autoPlay: true,
-                                            type: MediaType.short),
-                                      )
-                                    : MediaPicker(
-                                        type: MediaType.short,
-                                        onMediaSelected: _handleVideoSelected,
-                                        height:
-                                            MediaQuery.of(context).size.width *
-                                                (16 / 9)),
-                              ),
-                            ]),
-                      ),
-                      SizedBox(height: 16.0),
-                      Glass(
-                        padding: EdgeInsets.zero,
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(16.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Miniature (portrait 9:16)',
-                                        style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant)),
-                                    if (_selectedThumbnail != null)
-                                      IconButton(
-                                        onPressed: _replaceThumbnail,
-                                        icon: Icon(Icons.swap_horiz,
-                                            color: AppColors.blue),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                              AspectRatio(
-                                aspectRatio: 9 / 16,
-                                child: _selectedThumbnail != null
-                                    ? ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                            12.0),
-                                        child: Image.file(_selectedThumbnail!,
-                                            fit: BoxFit.cover),
-                                      )
-                                    : MediaPicker(
-                                        type: MediaType.shortThumbnail,
-                                        onMediaSelected:
-                                            _handleThumbnailSelected,
-                                        height:
-                                            MediaQuery.of(context).size.width *
-                                                (16 / 9)),
-                              ),
-                            ]),
-                      ),
-                      SizedBox(height: 16.0),
-                      Glass(
-                        child: TextFormField(
-                          controller: _descriptionController,
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.surface,
-                              height: 1.45,
-                              fontSize: 16),
-                          maxLines: 8,
-                          decoration: InputDecoration(
-                            hintText: widget.isLiveMode
-                                ? 'Décrivez votre live'
-                                : 'Décrivez votre short',
-                            hintStyle:
-                                TextStyle(color: AppColors.textSecondary),
-                            border: InputBorder.none,
-                          ),
-                          maxLength: ValidationConstants.maxContentLength,
-                          validator: (v) => (v == null || v.isEmpty)
-                              ? ErrorMessages.requiredField
-                              : null,
-                        ),
-                      ),
-                      if (_error != null) ...[
-                        SizedBox(height: 16.0),
-                        Text(_error!,
-                            style: const TextStyle(color: AppColors.red),
-                            textAlign: TextAlign.center),
-                      ],
-                      const SizedBox(height: 120),
-                    ],
-                  ),
+                    AspectRatio(
+                      aspectRatio: 9 / 16,
+                      child: _selectedThumbnail != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(12.0),
+                              child: Image.file(_selectedThumbnail!,
+                                  fit: BoxFit.cover),
+                            )
+                          : MediaPicker(
+                              type: MediaType.shortThumbnail,
+                              onMediaSelected: _handleThumbnailSelected,
+                              height: MediaQuery.of(context).size.width *
+                                  (16 / 9)),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
-        ),
-        bottomNavigationBar: PublishBar(
-          enabled: !_isUploading,
-          isSubmitting: _isUploading,
-          onSubmit: _checkAndPublish,
-          primaryLabel: widget.isLiveMode ? 'Démarrer' : 'Publier',
-          primaryColor: widget.isLiveMode ? AppColors.red : AppColors.blue,
+              SizedBox(height: 16.0),
+              CustomTextField(
+                controller: _descriptionController,
+                focusNode: _descriptionFocus,
+                label: 'Description',
+                hint: widget.isLiveMode
+                    ? 'Décrivez votre live'
+                    : 'Décrivez votre short',
+                maxLines: 8,
+                maxLength: ValidationConstants.maxContentLength,
+                validator: (v) => (v == null || v.isEmpty)
+                    ? ErrorMessages.requiredField
+                    : null,
+              ),
+              if (_error != null) ...[
+                SizedBox(height: 16.0),
+                Text(_error!,
+                    style: const TextStyle(color: AppColors.red),
+                    textAlign: TextAlign.center),
+              ],
+              const SizedBox(height: 100),
+            ],
+          ),
         ),
       ),
     );

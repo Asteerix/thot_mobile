@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:thot/features/public/auth/shared/providers/auth_provider.dart';
 import 'package:thot/core/routing/route_names.dart';
 import 'package:thot/core/utils/safe_navigation.dart';
+import 'package:thot/core/di/service_locator.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -15,6 +16,22 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool notifEnabled = true;
+  final TextEditingController _journalistCardController = TextEditingController();
+  bool _isUpdatingCard = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = context.read<AuthProvider>().userProfile;
+    _journalistCardController.text = user?.pressCard ?? '';
+  }
+
+  @override
+  void dispose() {
+    _journalistCardController.dispose();
+    super.dispose();
+  }
+
   Future<void> _launchURL(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
@@ -245,6 +262,192 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  Future<void> _updateJournalistCard() async {
+    if (_isUpdatingCard) return;
+
+    setState(() => _isUpdatingCard = true);
+
+    try {
+      final authProvider = context.read<AuthProvider>();
+      final currentUser = authProvider.userProfile;
+
+      if (currentUser == null) {
+        throw Exception('Utilisateur non connecté');
+      }
+
+      final cardNumber = _journalistCardController.text.trim();
+      final isVerified = cardNumber.isNotEmpty;
+
+      final updatedProfile = currentUser.copyWith(
+        pressCard: cardNumber.isNotEmpty ? cardNumber : null,
+        isVerified: isVerified,
+      );
+
+      final profileRepository = ServiceLocator.instance.profileRepository;
+      final result = await profileRepository.updateProfile(updatedProfile);
+
+      result.fold(
+        (failure) => throw Exception('Failed to update profile'),
+        (profile) async {
+          await authProvider.checkAuthStatus();
+        },
+      );
+
+      if (!mounted) return;
+
+      SafeNavigation.showSnackBar(
+        context,
+        SnackBar(
+          content: Text(
+            isVerified
+                ? 'Carte de journaliste enregistrée et profil vérifié'
+                : 'Carte de journaliste supprimée',
+            style: const TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      SafeNavigation.showSnackBar(
+        context,
+        SnackBar(
+          content: Text('Erreur: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isUpdatingCard = false);
+      }
+    }
+  }
+
+  void _showJournalistCardDialog() {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.black,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.green.withOpacity(0.1),
+                  border: Border.all(
+                      color: Colors.green.withOpacity(0.5), width: 2),
+                ),
+                child: const Icon(Icons.credit_card, color: Colors.green, size: 28),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Carte de journaliste',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Entrez votre numéro de carte de presse professionnelle. Une fois validée, votre profil sera automatiquement vérifié.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 24),
+              TextField(
+                controller: _journalistCardController,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Numéro de carte de presse',
+                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                  filled: true,
+                  fillColor: Colors.white.withOpacity(0.1),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Colors.green, width: 2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.of(ctx).pop(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        side: BorderSide(color: Colors.white.withOpacity(0.3)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Annuler',
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _isUpdatingCard
+                          ? null
+                          : () async {
+                              Navigator.of(ctx).pop();
+                              await _updateJournalistCard();
+                            },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: _isUpdatingCard
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text(
+                              'Enregistrer',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -353,6 +556,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         title: 'Contenu enregistré',
                         subtitle: 'Articles, vidéos, podcasts',
                         onTap: () => context.push(RouteNames.savedContent),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Selector<AuthProvider, ({bool isJournalist, dynamic user})>(
+                selector: (_, p) => (
+                  isJournalist: (p.userProfile?.isJournalist ?? false) &&
+                      (p.userProfile?.role == 'journalist'),
+                  user: p.userProfile,
+                ),
+                builder: (_, data, __) {
+                  if (!data.isJournalist) return const SizedBox.shrink();
+
+                  final user = data.user;
+                  final hasCard = user?.pressCard != null &&
+                                  user!.pressCard!.isNotEmpty;
+
+                  return _SectionCard(
+                    title: 'Vérification journaliste',
+                    children: [
+                      _SettingTile(
+                        icon: Icons.credit_card,
+                        title: 'Carte de journaliste',
+                        subtitle: hasCard
+                            ? '${user.pressCard} ${user.isVerified ? "✓ Vérifié" : ""}'
+                            : 'Ajouter votre carte de presse',
+                        onTap: _showJournalistCardDialog,
                       ),
                     ],
                   );

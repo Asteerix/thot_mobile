@@ -14,6 +14,7 @@ class PostHeader extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback? onShare;
   final VoidCallback? onReport;
+  final VoidCallback? onDelete;
   final bool showFollowButton;
   final bool isVideoPost;
   const PostHeader({
@@ -22,6 +23,7 @@ class PostHeader extends StatelessWidget {
     required this.onBack,
     this.onShare,
     this.onReport,
+    this.onDelete,
     this.showFollowButton = true,
     this.isVideoPost = false,
   });
@@ -46,18 +48,28 @@ class PostHeader extends StatelessWidget {
   }
 
   void _navigateToProfile(BuildContext context) {
-    if (post.journalist?.id != null) {
-      context.pushNamed(
+    final currentUserId = context.read<AuthProvider>().userProfile?.id;
+    final journalistId = post.journalist?.id;
+
+    if (journalistId == null) return;
+
+    final isOwnPost = currentUserId != null && currentUserId == journalistId;
+
+    if (isOwnPost) {
+      context.go(RouteNames.profile);
+    } else {
+      context.push(
         RouteNames.profile,
         extra: {
-          'userId': post.journalist!.id,
+          'userId': journalistId,
+          'isCurrentUser': false,
           'forceReload': true,
         },
       );
     }
   }
 
-  void _showOptionsMenu(BuildContext context) {
+  void _showOptionsMenu(BuildContext context, bool isOwnPost) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.black,
@@ -77,9 +89,21 @@ class PostHeader extends StatelessWidget {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
+            if (isOwnPost && onDelete != null)
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text(
+                  'Supprimer',
+                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showDeleteConfirmation(context);
+                },
+              ),
             if (onShare != null)
               ListTile(
-                leading: Icon(Icons.share, color: Colors.white),
+                leading: const Icon(Icons.share, color: Colors.white),
                 title: const Text(
                   'Partager',
                   style: TextStyle(color: Colors.white),
@@ -89,9 +113,9 @@ class PostHeader extends StatelessWidget {
                   onShare?.call();
                 },
               ),
-            if (onReport != null)
+            if (!isOwnPost && onReport != null)
               ListTile(
-                leading: Icon(Icons.flag, color: Colors.white),
+                leading: const Icon(Icons.flag, color: Colors.white),
                 title: const Text(
                   'Signaler',
                   style: TextStyle(color: Colors.white),
@@ -102,7 +126,7 @@ class PostHeader extends StatelessWidget {
                 },
               ),
             ListTile(
-              leading: Icon(Icons.link, color: Colors.white),
+              leading: const Icon(Icons.link, color: Colors.white),
               title: const Text(
                 'Copier le lien',
                 style: TextStyle(color: Colors.white),
@@ -114,6 +138,42 @@ class PostHeader extends StatelessWidget {
             const SizedBox(height: 8),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: const Text(
+          'Supprimer le post',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        content: const Text(
+          'Êtes-vous sûr de vouloir supprimer ce post ? Cette action est irréversible.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Annuler',
+              style: TextStyle(color: Colors.white70),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              onDelete?.call();
+            },
+            child: const Text(
+              'Supprimer',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -235,6 +295,51 @@ class PostHeader extends StatelessWidget {
                 isFollowing: post.journalist!.isFollowing,
                 compact: true,
               ),
+            if (isOwnPost && onDelete != null)
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.red.withOpacity(0.4),
+                    width: 1,
+                  ),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.delete_outline),
+                  iconSize: 22,
+                  color: Colors.red,
+                  onPressed: () => _showDeleteConfirmation(context),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                ),
+              ),
+            const SizedBox(width: 4),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.4),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.more_vert),
+                iconSize: 22,
+                color: Colors.white,
+                onPressed: () => _showOptionsMenu(context, isOwnPost),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+              ),
+            ),
           ],
         ),
       ),

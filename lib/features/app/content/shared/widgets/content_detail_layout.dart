@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:thot/core/presentation/theme/app_colors.dart';
 import 'package:thot/features/app/content/shared/models/post.dart';
 import 'package:thot/features/app/content/shared/widgets/post_actions.dart';
 import 'package:thot/features/app/profile/widgets/follow_button.dart';
 import 'package:thot/core/routing/route_names.dart';
+import 'package:thot/features/public/auth/shared/providers/auth_provider.dart';
+import 'package:thot/features/app/content/shared/providers/posts_state_provider.dart';
+import 'package:thot/core/utils/safe_navigation.dart';
+import 'package:thot/features/app/feed/shared/main_screen.dart';
+import 'package:thot/shared/widgets/images/user_avatar.dart';
 
 /// Layout de base commun pour tous les types de contenu (articles, vidéos, podcasts, questions)
 class ContentDetailLayout extends StatelessWidget {
@@ -65,6 +71,11 @@ class ContentDetailLayout extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final currentUserId = context.watch<AuthProvider>().userProfile?.id;
+    final isOwnPost = currentUserId != null &&
+        post.journalist?.id != null &&
+        currentUserId == post.journalist!.id;
+
     return Container(
       height: 64,
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -103,10 +114,92 @@ class ContentDetailLayout extends StatelessWidget {
             height: 32,
             fit: BoxFit.contain,
           ),
-          const SizedBox(width: 48),
+          if (isOwnPost)
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.red.withOpacity(0.2),
+                border: Border.all(
+                  color: Colors.red.withOpacity(0.4),
+                  width: 1,
+                ),
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                onPressed: () => _showDeleteConfirmation(context),
+                splashRadius: 22,
+                padding: const EdgeInsets.all(8),
+              ),
+            )
+          else
+            const SizedBox(width: 48),
         ],
       ),
     );
+  }
+
+  void _showDeleteConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: const Text(
+          'Supprimer le post',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        content: const Text(
+          'Êtes-vous sûr de vouloir supprimer ce post ? Cette action est irréversible.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Annuler',
+              style: TextStyle(color: Colors.white70),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _deletePost(context);
+            },
+            child: const Text(
+              'Supprimer',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deletePost(BuildContext context) async {
+    try {
+      final postsStateProvider = context.read<PostsStateProvider>();
+      await postsStateProvider.deletePost(post.id);
+
+      if (context.mounted) {
+        SafeNavigation.showSnackBar(
+          context,
+          const SnackBar(
+            content: Text('Post supprimé avec succès'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        context.pop();
+      }
+    } catch (e) {
+      if (context.mounted) {
+        SafeNavigation.showSnackBar(
+          context,
+          SnackBar(
+            content: Text('Erreur lors de la suppression: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildContentInfo(BuildContext context) {
@@ -144,73 +237,123 @@ class ContentDetailLayout extends StatelessWidget {
     );
   }
 
+  void _navigateToJournalistProfile(BuildContext context, String? journalistId, bool isOwnPost) {
+    if (journalistId == null || journalistId.isEmpty) return;
+
+    // Toujours fermer le viewer actuel avant de naviguer
+    context.pop();
+
+    // Puis naviguer vers le profil
+    if (isOwnPost) {
+      context.go(RouteNames.profile);
+    } else {
+      context.go(
+        RouteNames.profile,
+        extra: {
+          'userId': journalistId,
+          'isCurrentUser': false,
+          'forceReload': true,
+        },
+      );
+    }
+  }
+
   Widget _buildAuthorRow(BuildContext context) {
+    final currentUserId = context.watch<AuthProvider>().userProfile?.id;
+    final journalistId = post.journalist?.id;
+    final isOwnPost = currentUserId != null &&
+        journalistId != null &&
+        journalistId.isNotEmpty &&
+        currentUserId == journalistId;
+
+    final shouldShowFollow = journalistId != null &&
+        journalistId.isNotEmpty &&
+        !isOwnPost;
+
+    print('🔍 [CONTENT_DETAIL] Post: ${post.title}');
+    print('   - Journalist ID: $journalistId');
+    print('   - Current User ID: $currentUserId');
+    print('   - Is Own Post: $isOwnPost');
+    print('   - Should Show Follow: $shouldShowFollow');
+
     return Row(
       children: [
-        Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.grey[800],
-          ),
-          child: ClipOval(
-            child: post.journalist?.avatarUrl != null
-                ? Image.network(
-                    post.journalist!.avatarUrl!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Center(
-                      child: Text(
-                        (post.journalist?.name ?? 'A')[0].toUpperCase(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  )
-                : Center(
-                    child: Text(
-                      (post.journalist?.name ?? 'A')[0].toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+        GestureDetector(
+          onTap: () => _navigateToJournalistProfile(context, journalistId, isOwnPost),
+          child: UserAvatar(
+            avatarUrl: post.journalist?.avatarUrl,
+            name: post.journalist?.name ?? post.journalist?.username,
+            isJournalist: true,
+            radius: 16,
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                post.journalist?.name ?? 'Anonyme',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
+          child: GestureDetector(
+            onTap: () => _navigateToJournalistProfile(context, journalistId, isOwnPost),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  post.journalist?.name ?? 'Anonyme',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              Text(
-                '16h',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.6),
-                  fontSize: 12,
+                Text(
+                  '16h',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.6),
+                    fontSize: 12,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-        if (post.journalist?.id != null && post.journalist!.id != null && post.journalist!.id!.isNotEmpty)
+        if (shouldShowFollow)
           FollowButton(
-            userId: post.journalist!.id!,
+            userId: journalistId,
             isFollowing: post.journalist?.isFollowing ?? false,
             compact: false,
-          ),
+          )
+        else if (!isOwnPost && post.journalist != null)
+          Opacity(
+            opacity: 0.5,
+            child: Container(
+              height: 36,
+              width: 110,
+              decoration: BoxDecoration(
+                color: Colors.grey[800],
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: Colors.grey[700]!,
+                  width: 1,
+                ),
+              ),
+              child: const Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.person_add, color: Colors.grey, size: 16),
+                    SizedBox(width: 6),
+                    Text(
+                      'N/A',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
+        else if (isOwnPost)
+          const SizedBox(width: 110),
       ],
     );
   }

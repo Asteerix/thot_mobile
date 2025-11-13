@@ -17,7 +17,7 @@ import 'package:thot/features/app/feed/shared/main_screen.dart';
 import 'package:thot/features/app/feed/home/screens/feed_screen.dart';
 import 'package:thot/features/app/content/shared/models/post.dart';
 import 'package:thot/features/app/content/shared/screens/post_detail_wrapper.dart';
-import 'package:thot/features/app/content/shared/screens/content_feed_viewer.dart';
+import 'package:thot/features/app/content/shared/screens/content_viewer.dart';
 import 'package:thot/features/app/content/posts/articles/screens/article_detail_screen.dart';
 import 'package:thot/features/app/content/posts/videos/screens/video_detail_screen.dart';
 import 'package:thot/features/app/content/posts/podcasts/screens/podcast_detail_screen.dart';
@@ -59,6 +59,7 @@ import 'package:thot/features/admin/screens/report_details_screen.dart';
 import 'package:thot/features/admin/screens/admin_journalists_screen.dart';
 import 'package:thot/features/app/notifications/screens/notifications_screen.dart';
 import 'package:thot/shared/media/screens/image_crop_screen.dart';
+import 'package:thot/features/app/analytics/presentation/mobile/screens/stats_screen.dart';
 
 class AppRouter {
   static void replaceAllTo(BuildContext context, String route) {
@@ -139,6 +140,7 @@ class AppRouter {
       ..._contentCreationRoutes(),
       ..._profileRoutes(),
       ..._settingsRoutes(),
+      ..._analyticsRoutes(),
       ..._infoPageRoutes(),
       ..._adminRoutes(),
       ..._mediaRoutes(),
@@ -281,7 +283,7 @@ class AppRouter {
           final id = extra?['postId'] as String? ?? '';
           final userId = extra?['userId'] as String?;
           final isFromProfile = extra?['isFromProfile'] as bool? ?? false;
-          return ContentFeedViewer(
+          return ContentViewer(
             initialPostId: id,
             filterType: PostType.article,
             userId: userId,
@@ -297,7 +299,7 @@ class AppRouter {
           final userId = extra?['userId'] as String?;
           final isFromProfile = extra?['isFromProfile'] as bool? ?? false;
           debugPrint('🛣️ APP_ROUTER - Video Detail Route | postId: $id');
-          return ContentFeedViewer(
+          return ContentViewer(
             initialPostId: id,
             filterType: PostType.video,
             userId: userId,
@@ -312,7 +314,7 @@ class AppRouter {
           final id = extra?['postId'] as String? ?? '';
           final userId = extra?['userId'] as String?;
           final isFromProfile = extra?['isFromProfile'] as bool? ?? false;
-          return ContentFeedViewer(
+          return ContentViewer(
             initialPostId: id,
             filterType: PostType.podcast,
             userId: userId,
@@ -327,7 +329,7 @@ class AppRouter {
           final id = extra?['questionId'] as String? ?? '';
           final userId = extra?['userId'] as String?;
           final isFromProfile = extra?['isFromProfile'] as bool? ?? false;
-          return ContentFeedViewer(
+          return ContentViewer(
             initialPostId: id,
             filterType: PostType.question,
             userId: userId,
@@ -340,6 +342,47 @@ class AppRouter {
 
   static List<GoRoute> _contentCreationRoutes() {
     return [
+      GoRoute(
+        path: '/new-content/:formatId/:domain/:journalistId',
+        builder: (context, state) {
+          final formatId = state.pathParameters['formatId'] ?? '';
+          final domain = state.pathParameters['domain'] ?? 'default';
+          final journalistId = state.pathParameters['journalistId'] ?? '';
+
+          switch (formatId) {
+            case 'article':
+              return NewArticleScreen(
+                domain: domain,
+                journalistId: journalistId,
+              );
+            case 'video':
+              return NewVideoScreen(
+                domain: domain,
+                journalistId: journalistId,
+              );
+            case 'podcast':
+              return NewPodcastScreen(
+                domain: domain,
+                journalistId: journalistId,
+              );
+            case 'short':
+              return NewShortScreen(
+                journalistId: journalistId,
+                domain: domain,
+              );
+            case 'question':
+              return NewQuestionScreen(
+                journalistId: journalistId,
+                domain: domain,
+              );
+            default:
+              return NewArticleScreen(
+                domain: domain,
+                journalistId: journalistId,
+              );
+          }
+        },
+      ),
       GoRoute(
         path: RouteNames.createPost,
         builder: (context, state) => const NewArticleScreen(
@@ -473,6 +516,22 @@ class AppRouter {
       GoRoute(
         path: RouteNames.reportProblem,
         builder: (context, state) => const ReportProblemScreen(),
+      ),
+    ];
+  }
+
+  static List<GoRoute> _analyticsRoutes() {
+    return [
+      GoRoute(
+        path: RouteNames.stats,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final journalistId = extra?['journalistId'] as String? ?? '';
+          return StatsScreen(
+            journalistId: journalistId,
+            isCurrentUser: true,
+          );
+        },
       ),
     ];
   }

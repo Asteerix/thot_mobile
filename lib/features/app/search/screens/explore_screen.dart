@@ -326,26 +326,31 @@ class _ExploreScreenState extends State<ExploreScreen>
                         SearchFilterChipData(
                           label: 'Neutres',
                           value: 'neutral',
+                          icon: Icons.remove,
                           color: AppColors.neutral,
                         ),
                         SearchFilterChipData(
                           label: 'Progressistes',
                           value: 'progressive',
+                          icon: Icons.chevron_right,
                           color: AppColors.progressive,
                         ),
                         SearchFilterChipData(
                           label: 'Très progressistes',
                           value: 'extremelyProgressive',
+                          icon: Icons.keyboard_double_arrow_right,
                           color: AppColors.extremelyProgressive,
                         ),
                         SearchFilterChipData(
                           label: 'Conservateurs',
                           value: 'conservative',
+                          icon: Icons.chevron_left,
                           color: AppColors.conservative,
                         ),
                         SearchFilterChipData(
                           label: 'Très conservateurs',
                           value: 'extremelyConservative',
+                          icon: Icons.keyboard_double_arrow_left,
                           color: AppColors.extremelyConservative,
                         ),
                       ],
@@ -420,7 +425,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                     else if (_popularJournalists.isNotEmpty)
                       SliverToBoxAdapter(
                         child: SizedBox(
-                          height: 150,
+                          height: 160,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             padding: const EdgeInsets.symmetric(horizontal: 16),

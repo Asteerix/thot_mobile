@@ -99,7 +99,7 @@ class _ProfileContentState extends State<ProfileContent> {
                         return ProfileGridItem(
                           imageUrl: post['imageUrl'] ??
                               post['mediaUrl'] ??
-                              'assets/images/default_journalist_avatar.png',
+                              'assets/images/defaults/default_journalist_avatar.png',
                           type: post['type'] ?? PostType.article,
                         );
                       },
@@ -127,7 +127,7 @@ class _ProfileContentState extends State<ProfileContent> {
                           return ProfileGridItem(
                             imageUrl: short['imageUrl'] ??
                                 short['mediaUrl'] ??
-                                'assets/images/default_journalist_avatar.png',
+                                'assets/images/defaults/default_journalist_avatar.png',
                             type: PostType.short.name,
                           );
                         },

@@ -44,8 +44,7 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return TextFormField(
       controller: controller,
@@ -61,33 +60,62 @@ class CustomTextField extends StatelessWidget {
       onEditingComplete: onEditingComplete,
       onFieldSubmitted: onFieldSubmitted,
       validator: validator,
+      style: TextStyle(color: isDark ? Colors.white : Colors.black),
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: TextStyle(
+          color: isDark
+              ? Colors.white.withOpacity(0.7)
+              : Colors.black.withOpacity(0.6),
+        ),
         hintText: hint,
+        hintStyle: TextStyle(
+          color: isDark
+              ? Colors.white.withOpacity(0.5)
+              : Colors.black.withOpacity(0.4),
+        ),
         counterText: counterText,
+        counterStyle: TextStyle(
+          color: isDark
+              ? Colors.white.withOpacity(0.6)
+              : Colors.black.withOpacity(0.6),
+        ),
         suffixIcon: suffixIcon,
         prefixIcon: prefixIcon,
         filled: true,
-        fillColor: colorScheme.surface,
+        fillColor: isDark
+            ? Colors.white.withOpacity(0.05)
+            : Colors.black.withOpacity(0.03),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colorScheme.outline),
+          borderSide: BorderSide(
+            color: isDark
+                ? Colors.white.withOpacity(0.2)
+                : Colors.black.withOpacity(0.1),
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.5)),
+          borderSide: BorderSide(
+            color: isDark
+                ? Colors.white.withOpacity(0.2)
+                : Colors.black.withOpacity(0.1),
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colorScheme.primary, width: 2),
+          borderSide: BorderSide(
+            color: isDark ? Colors.white : Colors.black,
+            width: 2,
+          ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colorScheme.error),
+          borderSide: const BorderSide(color: Colors.red),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colorScheme.error, width: 2),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),

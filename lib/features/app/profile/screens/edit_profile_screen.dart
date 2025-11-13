@@ -599,56 +599,59 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ..._experiences.asMap().entries.map((entry) {
           final index = entry.key;
           final exp = entry.value;
-          return Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        exp.title,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+          return GestureDetector(
+            onTap: () => _showEditExperienceBottomSheet(exp, index),
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white.withOpacity(0.1)),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          exp.title,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${exp.company}${exp.location != null ? ' • ${exp.location}' : ''}',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.6),
-                          fontSize: 14,
+                        const SizedBox(height: 4),
+                        Text(
+                          '${exp.company}${exp.location != null ? ' • ${exp.location}' : ''}',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.6),
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${exp.startDate.year} - ${exp.current ? 'Présent' : exp.endDate?.year ?? ''}',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.5),
-                          fontSize: 13,
+                        const SizedBox(height: 4),
+                        Text(
+                          'De ${exp.startDate.month}/${exp.startDate.year} à ${exp.current ? 'Présent' : '${exp.endDate?.month}/${exp.endDate?.year}'}',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.5),
+                            fontSize: 13,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
-                  onPressed: () {
-                    setState(() {
-                      _experiences.removeAt(index);
-                    });
-                  },
-                ),
-              ],
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      setState(() {
+                        _experiences.removeAt(index);
+                      });
+                    },
+                  ),
+                ],
+              ),
             ),
           );
         }),
@@ -718,56 +721,59 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ..._formations.asMap().entries.map((entry) {
           final index = entry.key;
           final form = entry.value;
-          return Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        form.title,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+          return GestureDetector(
+            onTap: () => _showEditFormationBottomSheet(form, index),
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white.withOpacity(0.1)),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          form.title,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        form.institution,
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.6),
-                          fontSize: 14,
+                        const SizedBox(height: 4),
+                        Text(
+                          form.institution,
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.6),
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${form.year}',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.5),
-                          fontSize: 13,
+                        const SizedBox(height: 4),
+                        Text(
+                          'De ${form.startDate.month}/${form.startDate.year} à ${form.current ? 'En cours' : form.endDate != null ? '${form.endDate!.month}/${form.endDate!.year}' : 'Non spécifié'}',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.5),
+                            fontSize: 13,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
-                  onPressed: () {
-                    setState(() {
-                      _formations.removeAt(index);
-                    });
-                  },
-                ),
-              ],
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      setState(() {
+                        _formations.removeAt(index);
+                      });
+                    },
+                  ),
+                ],
+              ),
             ),
           );
         }),
@@ -847,6 +853,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       });
     }
   }
+
+  Future<void> _showEditExperienceBottomSheet(Experience experience, int index) async {
+    final result = await showModalBottomSheet<Experience?>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.black,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => _ExperienceBottomSheet(experience: experience),
+    );
+    if (result != null && mounted) {
+      setState(() {
+        _experiences[index] = result;
+      });
+    }
+  }
+
   Future<void> _showAddFormationBottomSheet() async {
     final result = await showModalBottomSheet<Formation?>(
       context: context,
@@ -863,9 +887,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       });
     }
   }
+
+  Future<void> _showEditFormationBottomSheet(Formation formation, int index) async {
+    final result = await showModalBottomSheet<Formation?>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.black,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => _FormationBottomSheet(formation: formation),
+    );
+    if (result != null && mounted) {
+      setState(() {
+        _formations[index] = result;
+      });
+    }
+  }
 }
 class _ExperienceBottomSheet extends StatefulWidget {
-  const _ExperienceBottomSheet();
+  final Experience? experience;
+
+  const _ExperienceBottomSheet({this.experience});
+
   @override
   State<_ExperienceBottomSheet> createState() => _ExperienceBottomSheetState();
 }
@@ -874,16 +918,30 @@ class _ExperienceBottomSheetState extends State<_ExperienceBottomSheet> {
   late TextEditingController _companyController;
   late TextEditingController _locationController;
   late TextEditingController _descriptionController;
-  DateTime _startDate = DateTime.now();
+  late DateTime _startDate;
   DateTime? _endDate;
-  bool _isCurrent = false;
+  late bool _isCurrent;
+  DateTime? _savedEndDate;
+
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController();
-    _companyController = TextEditingController();
-    _locationController = TextEditingController();
-    _descriptionController = TextEditingController();
+    _titleController = TextEditingController(text: widget.experience?.title ?? '');
+    _companyController = TextEditingController(text: widget.experience?.company ?? '');
+    _locationController = TextEditingController(text: widget.experience?.location ?? '');
+    _descriptionController = TextEditingController(text: widget.experience?.description ?? '');
+    _startDate = widget.experience?.startDate ?? DateTime.now();
+    _endDate = widget.experience?.endDate;
+    _isCurrent = widget.experience?.current ?? false;
+    _savedEndDate = _endDate;
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+      'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+    ];
+    return months[month - 1];
   }
   @override
   void dispose() {
@@ -914,6 +972,106 @@ class _ExperienceBottomSheetState extends State<_ExperienceBottomSheet> {
       ),
     );
   }
+
+  Future<void> _selectStartDate() async {
+    final now = DateTime.now();
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _startDate.isAfter(now) ? now : _startDate,
+      firstDate: DateTime(1950),
+      lastDate: now,
+      helpText: 'Date de début',
+      cancelText: 'Annuler',
+      confirmText: 'Valider',
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: Colors.white,
+              onPrimary: Colors.black,
+              surface: Color(0xFF1C1C1E),
+              onSurface: Colors.white,
+            ),
+            dialogBackgroundColor: const Color(0xFF1C1C1E),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(foregroundColor: Colors.white),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      if (_endDate != null && picked.isAfter(_endDate!)) {
+        if (mounted) {
+          SafeNavigation.showSnackBar(
+            context,
+            const SnackBar(
+              content: Text('La date de début doit être avant la date de fin'),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+        return;
+      }
+      setState(() {
+        _startDate = picked;
+      });
+    }
+  }
+
+  Future<void> _selectEndDate() async {
+    final now = DateTime.now();
+    final initialDate = _endDate ?? now;
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate.isAfter(now) ? now : initialDate,
+      firstDate: _startDate,
+      lastDate: now,
+      helpText: 'Date de fin',
+      cancelText: 'Annuler',
+      confirmText: 'Valider',
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: Colors.white,
+              onPrimary: Colors.black,
+              surface: Color(0xFF1C1C1E),
+              onSurface: Colors.white,
+            ),
+            dialogBackgroundColor: const Color(0xFF1C1C1E),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(foregroundColor: Colors.white),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      if (picked.isBefore(_startDate)) {
+        if (mounted) {
+          SafeNavigation.showSnackBar(
+            context,
+            const SnackBar(
+              content: Text('La date de fin doit être après la date de début'),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+        return;
+      }
+      setState(() {
+        _endDate = picked;
+        _savedEndDate = picked;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -930,9 +1088,9 @@ class _ExperienceBottomSheetState extends State<_ExperienceBottomSheet> {
           children: [
             Row(
               children: [
-                const Text(
-                  'Nouvelle expérience',
-                  style: TextStyle(
+                Text(
+                  widget.experience != null ? 'Modifier l\'expérience' : 'Nouvelle expérience',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -960,11 +1118,66 @@ class _ExperienceBottomSheetState extends State<_ExperienceBottomSheet> {
             _buildTextField(_locationController, 'Lieu (optionnel)'),
             const SizedBox(height: 16),
             _buildTextField(_descriptionController, 'Description (optionnel)', maxLines: 3),
+            const SizedBox(height: 24),
+            GestureDetector(
+              onTap: _selectStartDate,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.white.withOpacity(0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_today, color: Colors.white.withOpacity(0.7), size: 20),
+                    const SizedBox(width: 12),
+                    Text(
+                      'De: ${_getMonthName(_startDate.month)} ${_startDate.year}',
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (!_isCurrent)
+              GestureDetector(
+                onTap: _selectEndDate,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white.withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.calendar_today, color: Colors.white.withOpacity(0.7), size: 20),
+                      const SizedBox(width: 12),
+                      Text(
+                        _endDate != null
+                          ? 'À: ${_getMonthName(_endDate!.month)} ${_endDate!.year}'
+                          : 'À: Sélectionner',
+                        style: const TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             const SizedBox(height: 8),
             CheckboxListTile(
               title: const Text('Poste actuel', style: TextStyle(color: Colors.white)),
               value: _isCurrent,
-              onChanged: (value) => setState(() => _isCurrent = value ?? false),
+              onChanged: (value) => setState(() {
+                _isCurrent = value ?? false;
+                if (_isCurrent) {
+                  _savedEndDate = _endDate;
+                  _endDate = null;
+                } else {
+                  _endDate = _savedEndDate;
+                }
+              }),
               controlAffinity: ListTileControlAffinity.leading,
               contentPadding: EdgeInsets.zero,
               checkColor: Colors.black,
@@ -998,7 +1211,7 @@ class _ExperienceBottomSheetState extends State<_ExperienceBottomSheet> {
                         return;
                       }
                       final experience = Experience(
-                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        id: widget.experience?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
                         title: _titleController.text.trim(),
                         company: _companyController.text.trim(),
                         location: _locationController.text.trim().isEmpty ? null : _locationController.text.trim(),
@@ -1015,7 +1228,10 @@ class _ExperienceBottomSheetState extends State<_ExperienceBottomSheet> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Ajouter', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      widget.experience != null ? 'Modifier' : 'Ajouter',
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ],
@@ -1027,36 +1243,54 @@ class _ExperienceBottomSheetState extends State<_ExperienceBottomSheet> {
   }
 }
 class _FormationBottomSheet extends StatefulWidget {
-  const _FormationBottomSheet();
+  final Formation? formation;
+
+  const _FormationBottomSheet({this.formation});
+
   @override
   State<_FormationBottomSheet> createState() => _FormationBottomSheetState();
 }
 class _FormationBottomSheetState extends State<_FormationBottomSheet> {
   late TextEditingController _titleController;
   late TextEditingController _institutionController;
-  late TextEditingController _yearController;
   late TextEditingController _descriptionController;
+  late DateTime _startDate;
+  DateTime? _endDate;
+  late bool _isCurrent;
+  DateTime? _savedEndDate;
+
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController();
-    _institutionController = TextEditingController();
-    _yearController = TextEditingController(text: DateTime.now().year.toString());
-    _descriptionController = TextEditingController();
+    _titleController = TextEditingController(text: widget.formation?.title ?? '');
+    _institutionController = TextEditingController(text: widget.formation?.institution ?? '');
+    _descriptionController = TextEditingController(text: widget.formation?.description ?? '');
+    _startDate = widget.formation?.startDate ?? DateTime.now();
+    _endDate = widget.formation?.endDate;
+    _isCurrent = widget.formation?.current ?? false;
+    _savedEndDate = _endDate;
   }
+
+  String _getMonthName(int month) {
+    const months = [
+      'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+      'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+    ];
+    return months[month - 1];
+  }
+
   @override
   void dispose() {
     _titleController.dispose();
     _institutionController.dispose();
-    _yearController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
-  Widget _buildTextField(TextEditingController controller, String label, {int maxLines = 1, TextInputType? keyboardType}) {
+
+  Widget _buildTextField(TextEditingController controller, String label, {int maxLines = 1}) {
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
-      keyboardType: keyboardType,
       style: const TextStyle(color: Colors.white, fontSize: 16),
       decoration: InputDecoration(
         labelText: label,
@@ -1074,6 +1308,106 @@ class _FormationBottomSheetState extends State<_FormationBottomSheet> {
       ),
     );
   }
+
+  Future<void> _selectStartDate() async {
+    final now = DateTime.now();
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _startDate.isAfter(now) ? now : _startDate,
+      firstDate: DateTime(1950),
+      lastDate: now,
+      helpText: 'Date de début',
+      cancelText: 'Annuler',
+      confirmText: 'Valider',
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: Colors.white,
+              onPrimary: Colors.black,
+              surface: Color(0xFF1C1C1E),
+              onSurface: Colors.white,
+            ),
+            dialogBackgroundColor: const Color(0xFF1C1C1E),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(foregroundColor: Colors.white),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      if (_endDate != null && picked.isAfter(_endDate!)) {
+        if (mounted) {
+          SafeNavigation.showSnackBar(
+            context,
+            const SnackBar(
+              content: Text('La date de début doit être avant la date de fin'),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+        return;
+      }
+      setState(() {
+        _startDate = picked;
+      });
+    }
+  }
+
+  Future<void> _selectEndDate() async {
+    final now = DateTime.now();
+    final initialDate = _endDate ?? now;
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate.isAfter(now) ? now : initialDate,
+      firstDate: _startDate,
+      lastDate: now,
+      helpText: 'Date de fin',
+      cancelText: 'Annuler',
+      confirmText: 'Valider',
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: Colors.white,
+              onPrimary: Colors.black,
+              surface: Color(0xFF1C1C1E),
+              onSurface: Colors.white,
+            ),
+            dialogBackgroundColor: const Color(0xFF1C1C1E),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(foregroundColor: Colors.white),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      if (picked.isBefore(_startDate)) {
+        if (mounted) {
+          SafeNavigation.showSnackBar(
+            context,
+            const SnackBar(
+              content: Text('La date de fin doit être après la date de début'),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+        return;
+      }
+      setState(() {
+        _endDate = picked;
+        _savedEndDate = picked;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -1090,9 +1424,9 @@ class _FormationBottomSheetState extends State<_FormationBottomSheet> {
           children: [
             Row(
               children: [
-                const Text(
-                  'Nouvelle formation',
-                  style: TextStyle(
+                Text(
+                  widget.formation != null ? 'Modifier la formation' : 'Nouvelle formation',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -1116,8 +1450,71 @@ class _FormationBottomSheetState extends State<_FormationBottomSheet> {
             _buildTextField(_titleController, 'Diplôme'),
             const SizedBox(height: 16),
             _buildTextField(_institutionController, 'École / Université'),
+            const SizedBox(height: 24),
+            GestureDetector(
+              onTap: _selectStartDate,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.white.withOpacity(0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_today, color: Colors.white.withOpacity(0.7), size: 20),
+                    const SizedBox(width: 12),
+                    Text(
+                      'De: ${_getMonthName(_startDate.month)} ${_startDate.year}',
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             const SizedBox(height: 16),
-            _buildTextField(_yearController, 'Année', keyboardType: TextInputType.number),
+            if (!_isCurrent)
+              GestureDetector(
+                onTap: _selectEndDate,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white.withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.calendar_today, color: Colors.white.withOpacity(0.7), size: 20),
+                      const SizedBox(width: 12),
+                      Text(
+                        _endDate != null
+                          ? 'À: ${_getMonthName(_endDate!.month)} ${_endDate!.year}'
+                          : 'À: Sélectionner',
+                        style: const TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            const SizedBox(height: 8),
+            CheckboxListTile(
+              title: const Text('Formation en cours', style: TextStyle(color: Colors.white)),
+              value: _isCurrent,
+              onChanged: (value) => setState(() {
+                _isCurrent = value ?? false;
+                if (_isCurrent) {
+                  _savedEndDate = _endDate;
+                  _endDate = null;
+                } else {
+                  _endDate = _savedEndDate;
+                }
+              }),
+              controlAffinity: ListTileControlAffinity.leading,
+              contentPadding: EdgeInsets.zero,
+              checkColor: Colors.black,
+              activeColor: Colors.white,
+            ),
             const SizedBox(height: 16),
             _buildTextField(_descriptionController, 'Description (optionnel)', maxLines: 3),
             const SizedBox(height: 24),
@@ -1147,22 +1544,14 @@ class _FormationBottomSheetState extends State<_FormationBottomSheet> {
                         );
                         return;
                       }
-                      final year = int.tryParse(_yearController.text.trim());
-                      if (year == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('L\'année doit être un nombre valide', style: TextStyle(color: Colors.white)),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                        return;
-                      }
                       final formation = Formation(
-                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        id: widget.formation?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
                         title: _titleController.text.trim(),
                         institution: _institutionController.text.trim(),
-                        year: year,
-                        startDate: DateTime(year, 1, 1),
+                        year: _startDate.year,
+                        startDate: _startDate,
+                        endDate: _isCurrent ? null : _endDate,
+                        current: _isCurrent,
                         description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
                       );
                       Navigator.pop(context, formation);
@@ -1173,7 +1562,10 @@ class _FormationBottomSheetState extends State<_FormationBottomSheet> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Ajouter', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      widget.formation != null ? 'Modifier' : 'Ajouter',
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ],

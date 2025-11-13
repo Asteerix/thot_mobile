@@ -28,6 +28,7 @@ class SearchBarWidget extends StatelessWidget {
         autocorrect: false,
         enableSuggestions: true,
         style: TextStyle(color: isDark ? Colors.white : Colors.black),
+        cursorColor: Colors.white,
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(

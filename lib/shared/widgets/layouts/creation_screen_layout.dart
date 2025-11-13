@@ -58,14 +58,13 @@ class CreationScreenLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? AppColors.darkBackground : AppColors.background;
+    final bgColor = Colors.black;
 
     return Scaffold(
       backgroundColor: bgColor,
       appBar: _buildAppBar(bgColor),
       body: _buildBody(),
-      bottomNavigationBar: _buildBottomBar(isDark),
+      bottomNavigationBar: _buildBottomBar(false),
     );
   }
 
@@ -144,16 +143,16 @@ class CreationScreenLayout extends StatelessWidget {
       top: false,
       child: Container(
         padding: EdgeInsets.all(16.0),
-        decoration: _buildBottomBarDecoration(isDark),
+        decoration: _buildBottomBarDecoration(),
         child: Row(
           children: [
             if (onPreview != null) ...[
-              Expanded(child: _buildPreviewButton(isDark)),
+              Expanded(child: _buildPreviewButton()),
               const SizedBox(width: 12),
             ],
             Expanded(
               flex: onPreview != null ? 1 : 2,
-              child: _buildSubmitButton(isDark),
+              child: _buildSubmitButton(),
             ),
           ],
         ),
@@ -161,12 +160,12 @@ class CreationScreenLayout extends StatelessWidget {
     );
   }
 
-  BoxDecoration _buildBottomBarDecoration(bool isDark) {
+  BoxDecoration _buildBottomBarDecoration() {
     return BoxDecoration(
-      color: isDark ? AppColors.darkSurface : AppColors.surface,
+      color: Colors.black,
       border: Border(
         top: BorderSide(
-          color: isDark ? AppColors.darkBorder : AppColors.border,
+          color: Colors.white.withOpacity(0.1),
         ),
       ),
     );
@@ -176,11 +175,11 @@ class CreationScreenLayout extends StatelessWidget {
   // Bouton d'aperçu (optionnel)
   // --------------------------------------------------------------------------
 
-  Widget _buildPreviewButton(bool isDark) {
+  Widget _buildPreviewButton() {
     return _ActionButton(
       onTap: onPreview,
       backgroundColor: Colors.transparent,
-      borderColor: isDark ? Colors.white.withOpacity(0.2) : AppColors.border,
+      borderColor: Colors.white.withOpacity(0.1),
       icon: Icons.visibility,
       label: 'Aperçu',
       textColor: Colors.white,
@@ -191,26 +190,15 @@ class CreationScreenLayout extends StatelessWidget {
   // Bouton de soumission
   // --------------------------------------------------------------------------
 
-  Widget _buildSubmitButton(bool isDark) {
+  Widget _buildSubmitButton() {
     final isEnabled = canSubmit && !isSubmitting;
 
     return _ActionButton(
       onTap: isEnabled ? onSubmit : null,
-      gradient: isEnabled
-          ? const LinearGradient(
-              colors: [AppColors.primary, AppColors.primaryDark],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            )
-          : null,
-      backgroundColor: !isEnabled
-          ? (isDark ? AppColors.darkCard : AppColors.surface)
-          : null,
-      borderColor:
-          !isEnabled ? (isDark ? AppColors.darkBorder : AppColors.border) : null,
+      backgroundColor: isEnabled ? Colors.white : Colors.white.withOpacity(0.3),
       icon: isSubmitting ? null : Icons.check,
       label: submitLabel,
-      textColor: canSubmit ? Colors.white : Colors.white.withOpacity(0.3),
+      textColor: Colors.black,
       isLoading: isSubmitting,
     );
   }
@@ -247,7 +235,6 @@ class _ActionButton extends StatelessWidget {
     return Container(
       height: 50,
       decoration: BoxDecoration(
-        gradient: gradient,
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
         border: borderColor != null
@@ -269,7 +256,7 @@ class _ActionButton extends StatelessWidget {
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.white.withOpacity(0.7),
+                      Colors.white,
                     ),
                   ),
                 )
@@ -321,8 +308,6 @@ class CreationSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -331,7 +316,7 @@ class CreationSection extends StatelessWidget {
           _buildSectionTitle(),
           const SizedBox(height: 12),
         ],
-        _buildSectionContent(isDark),
+        _buildSectionContent(),
       ],
     );
   }
@@ -347,15 +332,15 @@ class CreationSection extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionContent(bool isDark) {
+  Widget _buildSectionContent() {
     return Container(
       width: double.infinity,
       padding: padding ?? EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : AppColors.surface,
+        color: Colors.white.withOpacity(0.03),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark ? AppColors.darkBorder : AppColors.border,
+          color: Colors.white.withOpacity(0.1),
         ),
       ),
       child: child,

@@ -4,6 +4,7 @@ class CommentAuthorDto {
   final String name;
   final String? avatarUrl;
   final bool isVerified;
+  final bool? isJournalist;
   final String role;
   const CommentAuthorDto({
     required this.id,
@@ -12,6 +13,7 @@ class CommentAuthorDto {
     this.avatarUrl,
     required this.isVerified,
     required this.role,
+    this.isJournalist,
   });
   factory CommentAuthorDto.fromJson(Map<String, dynamic> json) {
     return CommentAuthorDto(
@@ -21,6 +23,7 @@ class CommentAuthorDto {
       name: json['name'] as String? ?? json['username'] as String? ?? 'Unknown',
       avatarUrl: json['avatarUrl'] as String?,
       isVerified: json['isVerified'] as bool? ?? false,
+      isJournalist: json['isJournalist'] as bool? ?? (json['role'] == 'journalist'),
       role: json['role'] as String? ?? 'user',
     );
   }

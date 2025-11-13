@@ -484,7 +484,7 @@ class _CommentListItemState extends State<CommentListItem>
                                                 const SizedBox(width: 4),
                                                 Icon(
                                                   Icons.verified,
-                                                  color: colorScheme.primary,
+                                                  color: Colors.green,
                                                   size: 14,
                                                 ),
                                               ],

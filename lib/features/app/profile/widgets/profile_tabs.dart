@@ -56,11 +56,11 @@ class ProfileTabs extends StatelessWidget implements PreferredSizeWidget {
                 tooltip: 'Publications'),
             if (isJournalist) ...[
               _tab(
-                  icon: Icons.videocam,
-                  text: showText ? 'Vidéos' : null,
+                  icon: Icons.play_circle,
+                  text: showText ? 'Shorts' : null,
                   tooltip: 'Courts formats'),
               _tab(
-                  icon: Icons.comment,
+                  icon: Icons.help_outline,
                   text: showText ? 'Questions' : null,
                   tooltip: 'Questions'),
             ] else

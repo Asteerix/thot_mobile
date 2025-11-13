@@ -50,8 +50,11 @@ class _SearchScreenState extends State<SearchScreen> {
       appBar: AppBar(
         title: TextField(
           controller: _searchController,
+          cursorColor: Colors.white,
+          style: const TextStyle(color: Colors.white),
           decoration: const InputDecoration(
             hintText: 'Rechercher...',
+            hintStyle: TextStyle(color: Colors.white54),
             border: InputBorder.none,
           ),
           onSubmitted: _performSearch,

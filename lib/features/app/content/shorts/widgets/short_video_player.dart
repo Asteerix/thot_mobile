@@ -4,6 +4,16 @@ import 'package:video_player/video_player.dart';
 import 'package:thot/features/app/content/shared/models/post.dart';
 import 'package:thot/features/app/content/shared/providers/post_repository_impl.dart';
 import 'package:thot/shared/media/utils/image_utils.dart';
+import 'package:provider/provider.dart';
+import 'package:thot/features/app/content/shared/providers/posts_state_provider.dart';
+import 'package:thot/features/app/content/shared/comments/comment_sheet.dart';
+import 'package:thot/features/app/content/posts/questions/widgets/voting_dialog.dart';
+import 'package:thot/features/app/content/shared/widgets/political_orientation_utils.dart';
+import 'package:thot/core/utils/safe_navigation.dart';
+import 'package:go_router/go_router.dart';
+import 'package:thot/features/public/auth/shared/providers/auth_provider.dart';
+import 'package:thot/shared/widgets/images/user_avatar.dart';
+import 'package:thot/core/routing/route_names.dart';
 
 class ShortVideoPlayer extends StatefulWidget {
   final Post post;
@@ -27,10 +37,35 @@ class _ShortVideoPlayerState extends State<ShortVideoPlayer> {
   VideoPlayerController? _controller;
   bool _isInitialized = false;
   bool _isDescriptionExpanded = false;
+  late Post _currentPost;
+  bool _isLikeProcessing = false;
+
   @override
   void initState() {
     super.initState();
+    _currentPost = widget.post;
     _initializeVideo();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final postsStateProvider = context.read<PostsStateProvider>();
+      postsStateProvider.updatePostSilently(_currentPost);
+    });
+  }
+
+  @override
+  void didUpdateWidget(ShortVideoPlayer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.post.id != widget.post.id) {
+      _currentPost = widget.post;
+    }
+  }
+
+  String _formatNumber(int number) {
+    if (number >= 1000000) {
+      return '${(number / 1000000).floor()}M';
+    } else if (number >= 1000) {
+      return '${(number / 1000).floor()}K';
+    }
+    return number.toString();
   }
 
   Future<void> _initializeVideo() async {
@@ -107,6 +142,150 @@ class _ShortVideoPlayerState extends State<ShortVideoPlayer> {
     }
   }
 
+  void _showDeleteConfirmation() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: const Text(
+          'Supprimer le post',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        content: const Text(
+          'Êtes-vous sûr de vouloir supprimer ce post ? Cette action est irréversible.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Annuler',
+              style: TextStyle(color: Colors.white70),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _deletePost();
+            },
+            child: const Text(
+              'Supprimer',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deletePost() async {
+    try {
+      final postsStateProvider = context.read<PostsStateProvider>();
+      await postsStateProvider.deletePost(widget.post.id);
+
+      if (context.mounted) {
+        SafeNavigation.showSnackBar(
+          context,
+          const SnackBar(
+            content: Text('Post supprimé avec succès'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        SafeNavigation.showSnackBar(
+          context,
+          SnackBar(
+            content: Text('Erreur lors de la suppression: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Widget _buildPoliticalOrientationButton(Post post) {
+    final votes = post.politicalOrientation.userVotes;
+    final frequencies = [
+      votes['extremelyConservative'] ?? 0,
+      votes['conservative'] ?? 0,
+      votes['neutral'] ?? 0,
+      votes['progressive'] ?? 0,
+      votes['extremelyProgressive'] ?? 0,
+    ];
+    final totalVotes = frequencies.fold(0, (sum, freq) => sum + freq);
+    PoliticalOrientation? medianOrientation;
+    if (totalVotes > 0) {
+      final medianPosition = totalVotes / 2;
+      var cumulative = 0;
+      for (var i = 0; i < frequencies.length; i++) {
+        cumulative += frequencies[i];
+        if (cumulative > medianPosition) {
+          medianOrientation = PoliticalOrientation.values[i];
+          break;
+        }
+      }
+    }
+    final color = medianOrientation != null
+        ? PoliticalOrientationUtils.getColor(medianOrientation)
+        : Colors.grey;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: () {
+            if (post.id.startsWith('invalid_post_id_')) return;
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => VotingDialog(
+                post: post,
+                onVoteChanged: (updatedPost) {
+                  setState(() {
+                    _currentPost = updatedPost;
+                  });
+                },
+              ),
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.25),
+              shape: BoxShape.circle,
+              border: Border.all(color: color.withOpacity(0.5), width: 2),
+            ),
+            child: Icon(
+              Icons.public,
+              color: color,
+              size: 28,
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
+        if (totalVotes > 0)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.7),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              '$totalVotes',
+              style: TextStyle(
+                color: color,
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
   Widget _buildVideoLayer() {
     if (_controller != null && _controller!.value.isInitialized) {
       final size = _controller!.value.size;
@@ -143,6 +322,10 @@ class _ShortVideoPlayerState extends State<ShortVideoPlayer> {
     final avatarUrl = journalist?.avatarUrl != null
         ? ImageUtils.getAvatarUrl(journalist!.avatarUrl!)
         : null;
+    final currentUserId = context.watch<AuthProvider>().userProfile?.id;
+    final isOwnPost = currentUserId != null &&
+        post.journalist?.id != null &&
+        currentUserId == post.journalist!.id;
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -163,6 +346,32 @@ class _ShortVideoPlayerState extends State<ShortVideoPlayer> {
             const Center(
               child: CircularProgressIndicator(color: Colors.white),
             ),
+          if (isOwnPost)
+            Positioned(
+              top: 0,
+              right: 0,
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.red.withOpacity(0.2),
+                      border: Border.all(
+                        color: Colors.red.withOpacity(0.4),
+                        width: 1,
+                      ),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.red, size: 24),
+                      onPressed: _showDeleteConfirmation,
+                      splashRadius: 22,
+                      padding: const EdgeInsets.all(8),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           Positioned(
             right: 0,
             top: 0,
@@ -170,49 +379,93 @@ class _ShortVideoPlayerState extends State<ShortVideoPlayer> {
             child: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.only(right: 8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        post.isLiked ? Icons.favorite : Icons.favorite,
-                        color: Colors.white,
-                      ),
-                      onPressed: () async {
-                        try {
-                          await widget.shortsService.likeShort(post.id);
-                          widget.onLike?.call();
-                        } catch (e) {
-                          debugPrint('likeShort error: $e');
-                        }
-                      },
-                    ),
-                    Text('${post.likesCount}',
-                        style: const TextStyle(color: Colors.white)),
-                    const SizedBox(height: 16),
-                    IconButton(
-                      icon: const Icon(Icons.thumb_down, color: Colors.white),
-                      onPressed: () async {
-                        try {
-                          await widget.shortsService.dislikeShort(post.id);
-                          widget.onDislike?.call();
-                        } catch (e) {
-                          debugPrint('dislikeShort error: $e');
-                        }
-                      },
-                    ),
-                    Text('${post.dislikesCount}',
-                        style: const TextStyle(color: Colors.white)),
-                    const SizedBox(height: 16),
-                    IconButton(
-                      icon: Icon(Icons.comment, color: Colors.white),
-                      onPressed: widget.onComment,
-                    ),
-                    Text('${post.commentsCount}',
-                        style: const TextStyle(color: Colors.white)),
-                    const SizedBox(height: 16),
-                    Icon(Icons.public, color: Colors.white70),
-                  ],
+                child: Selector<PostsStateProvider, Post?>(
+                  selector: (context, provider) =>
+                      provider.getPost(_currentPost.id),
+                  builder: (context, providerPost, _) {
+                    final displayPost = providerPost ?? _currentPost;
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            Icons.favorite,
+                            color:
+                                displayPost.isLiked ? Colors.red : Colors.white,
+                            size: 32,
+                          ),
+                          onPressed: () async {
+                            if (_isLikeProcessing) return;
+                            if (displayPost.id.startsWith('invalid_post_id_')) {
+                              return;
+                            }
+                            setState(() {
+                              _isLikeProcessing = true;
+                            });
+                            final postsStateProvider =
+                                context.read<PostsStateProvider>();
+                            try {
+                              await postsStateProvider
+                                  .toggleLike(displayPost.id);
+                            } catch (e) {
+                              if (!mounted) return;
+                              SafeNavigation.showSnackBar(
+                                context,
+                                SnackBar(
+                                  content: Text('Erreur: ${e.toString()}'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            } finally {
+                              Future.delayed(const Duration(milliseconds: 500),
+                                  () {
+                                if (mounted) {
+                                  setState(() {
+                                    _isLikeProcessing = false;
+                                  });
+                                }
+                              });
+                            }
+                          },
+                        ),
+                        Text(
+                          _formatNumber(displayPost.likesCount),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        IconButton(
+                          icon: const Icon(Icons.comment,
+                              color: Colors.white, size: 30),
+                          onPressed: () {
+                            if (displayPost.id.startsWith('invalid_post_id_')) {
+                              return;
+                            }
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) =>
+                                  CommentsBottomSheet(postId: displayPost.id),
+                            );
+                          },
+                        ),
+                        Text(
+                          _formatNumber(displayPost.commentsCount),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        _buildPoliticalOrientationButton(displayPost),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
@@ -281,43 +534,62 @@ class _ShortVideoPlayerState extends State<ShortVideoPlayer> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 18,
-                          backgroundImage:
-                              (avatarUrl != null && avatarUrl.isNotEmpty)
-                                  ? NetworkImage(avatarUrl)
-                                  : null,
-                          child: (avatarUrl == null || avatarUrl.isEmpty)
-                              ? Icon(Icons.person,
-                                  color: Colors.white, size: 24)
-                              : null,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            journalist?.name.isNotEmpty == true
-                                ? journalist!.name
-                                : (journalist?.username?.isNotEmpty == true
-                                    ? '@${journalist!.username}'
-                                    : '@journalist'),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                              shadows: [
-                                Shadow(
-                                  blurRadius: 4,
-                                  color: Colors.black,
-                                  offset: Offset(0, 1),
-                                ),
-                              ],
+                    GestureDetector(
+                      onTap: () {
+                        if (journalist?.id == null || journalist!.id!.isEmpty) return;
+
+                        if (isOwnPost) {
+                          context.go(RouteNames.profile);
+                        } else {
+                          context.pop();
+                          context.go(
+                            RouteNames.profile,
+                            extra: {
+                              'userId': journalist.id,
+                              'isCurrentUser': false,
+                              'forceReload': true,
+                            },
+                          );
+                        }
+                      },
+                      child: Row(
+                        children: [
+                          UserAvatar(
+                            avatarUrl: journalist?.avatarUrl,
+                            name: journalist?.name ?? journalist?.username,
+                            isJournalist: true,
+                            radius: 18,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              journalist?.name.isNotEmpty == true
+                                  ? journalist!.name
+                                  : (journalist?.username?.isNotEmpty == true
+                                      ? '@${journalist!.username}'
+                                      : '@journalist'),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                                shadows: [
+                                  Shadow(
+                                    blurRadius: 4,
+                                    color: Colors.black,
+                                    offset: Offset(0, 1),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.white70,
+                            size: 16,
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 8),
                     if (post.title.isNotEmpty)

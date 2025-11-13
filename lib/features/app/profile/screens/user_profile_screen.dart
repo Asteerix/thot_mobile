@@ -40,7 +40,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       return NetworkImage(url ?? 'https://via.placeholder.com/150');
     }
     return AssetImage(widget.userProfile.isJournalist
-        ? 'assets/images/default_journalist_avatar.png'
+        ? 'assets/images/defaults/default_journalist_avatar.png'
         : 'assets/images/default_user_avatar.png');
   }
   @override

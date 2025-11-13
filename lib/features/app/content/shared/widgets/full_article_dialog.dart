@@ -8,6 +8,8 @@ import 'package:thot/core/di/service_locator.dart';
 import 'post_actions.dart';
 import 'package:thot/features/app/content/shared/comments/comment_sheet.dart';
 import 'package:thot/core/utils/safe_navigation.dart';
+import 'package:thot/shared/media/widgets/professional_video_player.dart';
+import 'package:thot/shared/media/widgets/professional_audio_player.dart';
 
 class FullArticleDialog extends StatefulWidget {
   final Post post;
@@ -143,6 +145,104 @@ class _FullArticleDialogState extends State<FullArticleDialog> {
     );
   }
 
+  Widget _buildMediaHeader(bool isDark) {
+    if (_currentPost.type == PostType.video && _currentPost.videoUrl != null) {
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          ProfessionalVideoPlayer(
+            videoUrl: _currentPost.videoUrl!,
+            thumbnailUrl: _currentPost.thumbnailUrl ?? _currentPost.imageUrl,
+            autoPlay: false,
+            looping: false,
+            showControls: true,
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 80,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    (isDark ? Colors.black : Colors.white).withOpacity(0.9),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (_currentPost.type == PostType.podcast && _currentPost.videoUrl != null) {
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          ProfessionalAudioPlayer(
+            audioUrl: _currentPost.videoUrl!,
+            thumbnailUrl: _currentPost.thumbnailUrl ?? _currentPost.imageUrl,
+            autoPlay: false,
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 80,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    (isDark ? Colors.black : Colors.white).withOpacity(0.9),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        if (_currentPost.imageUrl != null)
+          Image.network(
+            _currentPost.imageUrl!,
+            fit: BoxFit.cover,
+          )
+        else
+          Container(
+            color: isDark ? const Color(0xFF1C1C1E) : Colors.grey[200],
+            child: Icon(
+              Icons.broken_image,
+              size: 48,
+              color: isDark ? Colors.grey[600] : Colors.grey[400],
+            ),
+          ),
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.transparent,
+                (isDark ? Colors.black : Colors.white).withOpacity(0.9),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -181,42 +281,7 @@ class _FullArticleDialogState extends State<FullArticleDialog> {
                     stretch: true,
                     stretchTriggerOffset: 100,
                     flexibleSpace: FlexibleSpaceBar(
-                      background: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          if (_currentPost.imageUrl != null)
-                            Image.network(
-                              _currentPost.imageUrl!,
-                              fit: BoxFit.cover,
-                            )
-                          else
-                            Container(
-                              color: isDark
-                                  ? const Color(0xFF1C1C1E)
-                                  : Colors.grey[200],
-                              child: Icon(
-                                Icons.broken_image,
-                                size: 48,
-                                color: isDark
-                                    ? Colors.grey[600]
-                                    : Colors.grey[400],
-                              ),
-                            ),
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.transparent,
-                                  (isDark ? Colors.black : Colors.white)
-                                      .withOpacity(0.9),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      background: _buildMediaHeader(isDark),
                     ),
                   ),
                   SliverToBoxAdapter(

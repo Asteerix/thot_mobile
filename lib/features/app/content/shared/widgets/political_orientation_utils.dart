@@ -7,9 +7,9 @@ class PoliticalOrientationUtils {
     return switch (view) {
       PoliticalOrientation.extremelyConservative =>
         Icons.keyboard_double_arrow_left,
-      PoliticalOrientation.conservative => Icons.arrow_back,
+      PoliticalOrientation.conservative => Icons.chevron_left,
       PoliticalOrientation.neutral => Icons.remove,
-      PoliticalOrientation.progressive => Icons.arrow_forward,
+      PoliticalOrientation.progressive => Icons.chevron_right,
       PoliticalOrientation.extremelyProgressive =>
         Icons.keyboard_double_arrow_right,
       null => Icons.public,

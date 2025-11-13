@@ -201,9 +201,9 @@ class _BottomNavBarState extends State<BottomNavBar>
 
     // Home (always visible)
     items.add(_buildNavItem(
-      icon: Icons.home,
-      activeIcon: Icons.home,
-      label: 'Accueil',
+      icon: Icons.feed,
+      activeIcon: Icons.dynamic_feed,
+      label: 'Publications',
       index: itemIndex++,
     ));
 
@@ -227,20 +227,20 @@ class _BottomNavBarState extends State<BottomNavBar>
         index: index++,
       ),
       _buildNavItem(
-        icon: Icons.play_circle,
-        activeIcon: Icons.play_circle,
+        icon: Icons.play_circle_outline,
+        activeIcon: Icons.play_circle_filled,
         label: 'Shorts',
         index: index++,
       ),
       _buildNavItem(
-        icon: Icons.explore,
-        activeIcon: Icons.explore,
+        icon: Icons.search,
+        activeIcon: Icons.search,
         label: 'Explorer',
         index: index++,
       ),
       _buildNavItem(
         icon: Icons.person,
-        activeIcon: Icons.account_circle,
+        activeIcon: Icons.person,
         label: 'Profil',
         index: index++,
       ),
@@ -252,20 +252,20 @@ class _BottomNavBarState extends State<BottomNavBar>
     var index = startIndex;
     return [
       _buildNavItem(
-        icon: Icons.play_circle,
-        activeIcon: Icons.play_circle,
+        icon: Icons.play_circle_outline,
+        activeIcon: Icons.play_circle_filled,
         label: 'Shorts',
         index: index++,
       ),
       _buildNavItem(
-        icon: Icons.explore,
-        activeIcon: Icons.explore,
+        icon: Icons.search,
+        activeIcon: Icons.search,
         label: 'Explorer',
         index: index++,
       ),
       _buildNavItem(
         icon: Icons.person,
-        activeIcon: Icons.account_circle,
+        activeIcon: Icons.person,
         label: 'Connexion',
         index: index++,
       ),

@@ -7,10 +7,10 @@ class AppTheme {
         seedColor: AppColors.primary,
         brightness: Brightness.light,
       ),
-      textSelectionTheme: TextSelectionThemeData(
-        cursorColor: AppColors.primary,
-        selectionColor: AppColors.primary.withOpacity(0.3),
-        selectionHandleColor: AppColors.primary,
+      textSelectionTheme: const TextSelectionThemeData(
+        cursorColor: Colors.black,
+        selectionColor: Colors.black26,
+        selectionHandleColor: Colors.black,
       ),
     );
   }
@@ -60,10 +60,10 @@ class AppTheme {
         unselectedItemColor: AppColors.textSecondary,
         elevation: 0,
       ),
-      textSelectionTheme: TextSelectionThemeData(
-        cursorColor: AppColors.primary,
-        selectionColor: AppColors.primary.withOpacity(0.3),
-        selectionHandleColor: AppColors.primary,
+      textSelectionTheme: const TextSelectionThemeData(
+        cursorColor: Colors.white,
+        selectionColor: Colors.white24,
+        selectionHandleColor: Colors.white,
       ),
     );
   }

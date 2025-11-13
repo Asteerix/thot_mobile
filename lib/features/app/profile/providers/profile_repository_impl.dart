@@ -103,10 +103,59 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<Either<ProfileFailure, List<UserProfile>>> getFollowers(
       String userId) async {
     try {
-      final response = await _apiService.get('/users/$userId/followers');
-      final List<dynamic> data = response.data;
-      return Right(data.map((json) => UserProfile.fromJson(json)).toList());
-    } catch (e) {
+      final url = '/api/users/$userId/followers';
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('[FOLLOWERS_REPO] Fetching followers');
+      print('   userId: $userId');
+      print('   url: $url');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+      final response = await _apiService.get(url);
+      print('[FOLLOWERS_REPO] Response received: ${response.statusCode}');
+      print('[FOLLOWERS_REPO] Response data type: ${response.data.runtimeType}');
+
+      final data = response.data;
+
+      List<dynamic> followersList;
+      if (data is List) {
+        print('[FOLLOWERS_REPO] Data is List with ${data.length} items');
+        followersList = data;
+      } else if (data is Map) {
+        print('[FOLLOWERS_REPO] Data is Map with keys: ${data.keys}');
+        if (data['data'] is Map && data['data']['followers'] is List) {
+          followersList = data['data']['followers'] as List<dynamic>;
+          print('[FOLLOWERS_REPO] Extracted ${followersList.length} followers from data.followers');
+        } else if (data['data'] is List) {
+          followersList = data['data'] as List<dynamic>;
+          print('[FOLLOWERS_REPO] Using data["data"] with ${followersList.length} items');
+        } else if (data['followers'] is List) {
+          followersList = data['followers'] as List<dynamic>;
+          print('[FOLLOWERS_REPO] Using data["followers"] with ${followersList.length} items');
+        } else {
+          print('[FOLLOWERS_REPO] No List found, keys: ${data.keys}');
+          followersList = [];
+        }
+      } else {
+        print('[FOLLOWERS_REPO] ⚠️ Unexpected data type: ${data.runtimeType}');
+        followersList = [];
+      }
+
+      final result = followersList.map((json) {
+        try {
+          final profile = UserProfile.fromJson(json);
+          print('[FOLLOWERS_REPO] ✅ Parsed follower: ${profile.username}');
+          return profile;
+        } catch (e) {
+          print('[FOLLOWERS_REPO] ❌ Error parsing follower: $e');
+          return null;
+        }
+      }).where((p) => p != null).cast<UserProfile>().toList();
+
+      print('[FOLLOWERS_REPO] ✅ Returning ${result.length} followers');
+      return Right(result);
+    } catch (e, stackTrace) {
+      print('[FOLLOWERS_REPO] ❌ Exception: $e');
+      print('[FOLLOWERS_REPO] Stack: $stackTrace');
       return Left(ProfileFailure.serverError(e.toString()));
     }
   }
@@ -116,30 +165,50 @@ class ProfileRepositoryImpl implements ProfileRepository {
       String userId) async {
     try {
       final url = ApiRoutes.journalistFollowing(userId);
-      developer.log(
-        'ProfileRepository: Fetching user following',
-        name: 'ProfileRepository',
-        error: {
-          'userId': userId,
-          'url': url,
-          'timestamp': DateTime.now().toIso8601String(),
-        },
-      );
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('[FOLLOWING_REPO] Fetching following');
+      print('   userId: $userId');
+      print('   url: $url');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
       final response = await _apiService.get(url);
+      print('[FOLLOWING_REPO] Response received: ${response.statusCode}');
+      print('[FOLLOWING_REPO] Response data type: ${response.data.runtimeType}');
+
       dynamic responseData = response.data;
-      if (responseData is Map && responseData['data'] != null) {
-        responseData = responseData['data'];
+      if (responseData is Map) {
+        print('[FOLLOWING_REPO] Response is Map with keys: ${responseData.keys}');
+        print('[FOLLOWING_REPO] data value: ${responseData['data']}');
+        print('[FOLLOWING_REPO] data type: ${responseData['data'].runtimeType}');
+
+        if (responseData['data'] is Map) {
+          print('[FOLLOWING_REPO] data is Map with keys: ${responseData['data'].keys}');
+          if (responseData['data']['following'] != null) {
+            print('[FOLLOWING_REPO] Extracting data.following');
+            responseData = responseData['data']['following'];
+          } else {
+            print('[FOLLOWING_REPO] ❌ No "following" key in data');
+            responseData = [];
+          }
+        } else if (responseData['data'] is List) {
+          print('[FOLLOWING_REPO] data is List with ${responseData['data'].length} items');
+          responseData = responseData['data'];
+        } else {
+          print('[FOLLOWING_REPO] ❌ Unexpected data type');
+          responseData = [];
+        }
       }
+
+      print('[FOLLOWING_REPO] Processing list, type: ${responseData.runtimeType}');
+      print('[FOLLOWING_REPO] List length: ${responseData is List ? responseData.length : 'not a list'}');
       final users = (responseData as List?)
               ?.map((user) {
                 try {
-                  return UserProfile.fromJson(user as Map<String, dynamic>);
+                  final profile = UserProfile.fromJson(user as Map<String, dynamic>);
+                  print('[FOLLOWING_REPO] ✅ Parsed user: ${profile.username}');
+                  return profile;
                 } catch (e) {
-                  developer.log(
-                    'Error parsing user profile',
-                    name: 'ProfileRepository',
-                    error: e,
-                  );
+                  print('[FOLLOWING_REPO] ❌ Error parsing user: $e');
                   return null;
                 }
               })
@@ -147,17 +216,12 @@ class ProfileRepositoryImpl implements ProfileRepository {
               .cast<UserProfile>()
               .toList() ??
           [];
+
+      print('[FOLLOWING_REPO] ✅ Returning ${users.length} following');
       return Right(users);
     } catch (e, stackTrace) {
-      developer.log(
-        'ProfileRepository: Error fetching user following',
-        name: 'ProfileRepository',
-        error: e.toString(),
-      );
-      developer.log(
-        'Stack trace: ${stackTrace.toString()}',
-        name: 'ProfileRepository',
-      );
+      print('[FOLLOWING_REPO] ❌ Exception: $e');
+      print('[FOLLOWING_REPO] Stack: $stackTrace');
       return Right([]);
     }
   }

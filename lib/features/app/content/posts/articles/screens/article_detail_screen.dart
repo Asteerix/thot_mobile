@@ -57,7 +57,8 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
       if (post.opposingPosts != null) {
         for (final opposingData in post.opposingPosts!) {
           try {
-            final opposingPost = await postsStateProvider.loadPost(opposingData.postId);
+            final opposingPost =
+                await postsStateProvider.loadPost(opposingData.postId);
             if (opposingPost != null) opposing.add(opposingPost);
           } catch (e) {
             debugPrint('Erreur chargement post opposé: $e');
@@ -196,7 +197,8 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                 top: 12,
                 left: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.7),
                     borderRadius: BorderRadius.circular(8),
@@ -226,7 +228,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                     const Icon(Icons.schedule, color: Colors.white, size: 16),
                     const SizedBox(width: 6),
                     Text(
-                      '${_calculateReadingTime(_post!.content ?? '')} min',
+                      '${_calculateReadingTime(_post!.content)} min',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 13,

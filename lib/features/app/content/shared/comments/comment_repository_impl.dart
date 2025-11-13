@@ -252,6 +252,7 @@ class CommentRepositoryImpl implements CommentRepository {
         name: dto.author.name,
         avatarUrl: dto.author.avatarUrl,
         isVerified: dto.author.isVerified,
+        isJournalist: dto.author.isJournalist ?? false,
       ),
       likes: dto.likesCount,
       isLiked: dto.isLiked,

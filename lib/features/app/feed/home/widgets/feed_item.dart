@@ -441,34 +441,6 @@ class _FeedItemState extends State<FeedItem>
                                                 .journalist?.isFollowing ??
                                             false,
                                         compact: true,
-                                        onFollowChanged: (isFollowing) {
-                                          setState(() {
-                                            _currentPost =
-                                                _currentPost.copyWith(
-                                              journalist: JournalistProfile(
-                                                id: displayPost.journalist?.id,
-                                                name: displayPost
-                                                        .journalist?.name ??
-                                                    '',
-                                                username: displayPost
-                                                    .journalist?.username,
-                                                avatarUrl: displayPost
-                                                    .journalist?.avatarUrl,
-                                                specialties: displayPost
-                                                        .journalist
-                                                        ?.specialties ??
-                                                    [],
-                                                history: displayPost
-                                                    .journalist?.history,
-                                                isVerified: displayPost
-                                                        .journalist
-                                                        ?.isVerified ??
-                                                    false,
-                                                isFollowing: isFollowing,
-                                              ),
-                                            );
-                                          });
-                                        },
                                       ),
                                     );
                                   },

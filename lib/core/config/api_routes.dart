@@ -57,9 +57,9 @@ class ApiRoutes {
   static String getCommentLikes(String id) => '/api/comments/$id/likes';
   static const String journalists = '/api/journalists';
   static String journalistFollowers(String id) =>
-      '/api/journalists/$id/followers';
+      '/api/users/$id/followers';
   static String journalistFollowing(String id) =>
-      '/api/journalists/$id/following';
+      '/api/users/$id/following';
   static String removeJournalistFollower(String id, String followerId) =>
       '/api/journalists/$id/followers/$followerId';
   static String followStatus(String id) => '/api/journalists/$id/follow/status';

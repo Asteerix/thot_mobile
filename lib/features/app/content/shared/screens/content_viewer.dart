@@ -4,17 +4,25 @@ import 'package:provider/provider.dart';
 import 'package:thot/features/app/content/shared/models/post.dart';
 import 'package:thot/features/app/content/shared/providers/posts_state_provider.dart';
 import 'package:thot/features/app/content/shared/widgets/content_detail_layout.dart';
+import 'package:thot/features/app/content/shared/widgets/full_article_dialog.dart';
+import 'package:thot/features/app/content/shared/comments/comment_sheet.dart';
 import 'package:thot/core/di/service_locator.dart';
+import 'package:thot/core/utils/safe_navigation.dart';
+import 'package:thot/shared/media/widgets/professional_video_player.dart';
+import 'package:thot/shared/media/widgets/professional_audio_player.dart';
 
 /// Viewer avec PageView vertical pour scroller entre les posts
-/// Similaire au système des shorts mais pour tous les types de contenu
-class ContentFeedViewer extends StatefulWidget {
+/// Adapte le contenu selon la source :
+/// - Depuis le feed général : tous les posts du feed
+/// - Depuis les abonnements : posts des comptes suivis
+/// - Depuis un profil : posts de cet utilisateur uniquement
+class ContentViewer extends StatefulWidget {
   final String initialPostId;
   final PostType? filterType;
   final String? userId;
   final bool isFromProfile;
 
-  const ContentFeedViewer({
+  const ContentViewer({
     super.key,
     required this.initialPostId,
     this.filterType,
@@ -23,10 +31,10 @@ class ContentFeedViewer extends StatefulWidget {
   });
 
   @override
-  State<ContentFeedViewer> createState() => _ContentFeedViewerState();
+  State<ContentViewer> createState() => _ContentViewerState();
 }
 
-class _ContentFeedViewerState extends State<ContentFeedViewer> {
+class _ContentViewerState extends State<ContentViewer> {
   final _postRepository = ServiceLocator.instance.postRepository;
   final PageController _pageController = PageController();
   List<Post> _posts = [];
@@ -55,7 +63,9 @@ class _ContentFeedViewerState extends State<ContentFeedViewer> {
 
   void _onScroll() {
     // Charger plus de posts quand on approche de la fin
-    if (_currentIndex >= _posts.length - 2 && !_isLoadingMore && _hasMorePosts) {
+    if (_currentIndex >= _posts.length - 2 &&
+        !_isLoadingMore &&
+        _hasMorePosts) {
       _loadMorePosts();
     }
   }
@@ -98,7 +108,8 @@ class _ContentFeedViewerState extends State<ContentFeedViewer> {
 
   Future<void> _loadMorePosts() async {
     if (_isLoadingMore || !_hasMorePosts) {
-      print('⏸️ SKIP LOAD: isLoadingMore=$_isLoadingMore, hasMorePosts=$_hasMorePosts');
+      print(
+          '⏸️ SKIP LOAD: isLoadingMore=$_isLoadingMore, hasMorePosts=$_hasMorePosts');
       return;
     }
 
@@ -110,7 +121,7 @@ class _ContentFeedViewerState extends State<ContentFeedViewer> {
     try {
       final response = await _postRepository.getPosts(
         page: _currentPage + 1,
-        type: widget.filterType?.name,
+        type: null,
         userId: widget.userId,
       );
 
@@ -120,15 +131,14 @@ class _ContentFeedViewerState extends State<ContentFeedViewer> {
       final newPosts = postsData
           .map((json) => Post.fromJson(json as Map<String, dynamic>))
           .where((post) {
-            final isValid = post.id.isNotEmpty &&
-                !post.id.startsWith('invalid_post_id_') &&
-                !_loadedPostIds.contains(post.id);
-            if (isValid) {
-              _loadedPostIds.add(post.id);
-            }
-            return isValid;
-          })
-          .toList();
+        final isValid = post.id.isNotEmpty &&
+            !post.id.startsWith('invalid_post_id_') &&
+            !_loadedPostIds.contains(post.id);
+        if (isValid) {
+          _loadedPostIds.add(post.id);
+        }
+        return isValid;
+      }).toList();
 
       print('✅ FILTERED TO ${newPosts.length} new unique posts');
 
@@ -214,7 +224,9 @@ class _ContentFeedViewerState extends State<ContentFeedViewer> {
                     _currentIndex = index;
                   });
                   // Charger plus de posts si on approche de la fin
-                  if (index >= _posts.length - 2 && !_isLoadingMore && _hasMorePosts) {
+                  if (index >= _posts.length - 2 &&
+                      !_isLoadingMore &&
+                      _hasMorePosts) {
                     _loadMorePosts();
                   }
                 }
@@ -236,35 +248,6 @@ class _ContentFeedViewerState extends State<ContentFeedViewer> {
                 return _buildPostScreen(post);
               },
             ),
-            Positioned(
-              top: 50,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                color: Colors.red.withOpacity(0.7),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'DEBUG: Page ${_currentIndex + 1}/${_posts.length} (Total loaded: ${_posts.length})',
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      'Loading: $_isLoadingMore | HasMore: $_hasMorePosts | Current Page: $_currentPage',
-                      style: const TextStyle(color: Colors.white, fontSize: 10),
-                      textAlign: TextAlign.center,
-                    ),
-                    const Text(
-                      'Swipe UP/DOWN to navigate',
-                      style: TextStyle(color: Colors.white70, fontSize: 10),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -272,26 +255,71 @@ class _ContentFeedViewerState extends State<ContentFeedViewer> {
   }
 
   Widget _buildPostScreen(Post post) {
+    // Récupérer les posts liés directement (déjà des Post)
+    final relatedPostsList = post.relatedPosts ?? [];
+
+    // Pour les posts opposés, on doit les charger via leur ID
+    // Pour l'instant, on passe les listes vides et on les chargera plus tard
+    final opposingPostsList = <Post>[];
+
     return SafeArea(
       child: _ContentDetailView(
         key: ValueKey(post.id),
         post: post,
         onComment: () => _showComments(post),
-        opposingPosts: [],
-        relatedPosts: [],
+        onShowFullContent: () => _showFullContent(post),
+        opposingPosts: opposingPostsList,
+        relatedPosts: relatedPostsList,
       ),
     );
   }
 
   void _showComments(Post post) {
-    // Navigation vers commentaires
+    if (post.id.isEmpty || post.id.startsWith('invalid_post_id_')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Impossible d\'afficher les commentaires'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    SafeNavigation.showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      enableDrag: true,
+      builder: (context) => CommentsBottomSheet(postId: post.id),
+    );
+  }
+
+  void _showFullContent(Post post) {
+    if (post.id.isEmpty || post.id.startsWith('invalid_post_id_')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Impossible d\'afficher le contenu complet'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    SafeNavigation.showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      enableDrag: true,
+      builder: (context) => FullArticleDialog(post: post),
+    );
   }
 }
 
 /// Vue de détail d'un post individuel dans le feed
-class _ContentDetailView extends StatelessWidget {
+class _ContentDetailView extends StatefulWidget {
   final Post post;
   final VoidCallback onComment;
+  final VoidCallback onShowFullContent;
   final List<Post> opposingPosts;
   final List<Post> relatedPosts;
 
@@ -299,26 +327,119 @@ class _ContentDetailView extends StatelessWidget {
     super.key,
     required this.post,
     required this.onComment,
+    required this.onShowFullContent,
     required this.opposingPosts,
     required this.relatedPosts,
   });
 
   @override
+  State<_ContentDetailView> createState() => _ContentDetailViewState();
+}
+
+class _ContentDetailViewState extends State<_ContentDetailView> {
+  final _postRepository = ServiceLocator.instance.postRepository;
+  List<Post> _loadedOpposingPosts = [];
+  bool _isLoadingOpposing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOpposingPosts();
+  }
+
+  Future<void> _loadOpposingPosts() async {
+    if (widget.post.opposingPosts == null || widget.post.opposingPosts!.isEmpty) {
+      return;
+    }
+
+    setState(() {
+      _isLoadingOpposing = true;
+    });
+
+    try {
+      final loadedPosts = <Post>[];
+      for (final opposition in widget.post.opposingPosts!) {
+        try {
+          final response = await _postRepository.getPost(opposition.postId);
+          final post = Post.fromJson(response);
+          loadedPosts.add(post);
+        } catch (e) {
+          print('Error loading opposing post ${opposition.postId}: $e');
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _loadedOpposingPosts = loadedPosts;
+          _isLoadingOpposing = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoadingOpposing = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ContentDetailLayout(
-      post: post,
+      post: widget.post,
       previewWidget: _buildPreview(),
       actionButtonText: _getActionButtonText(),
-      onActionPressed: () => _showFullContent(context),
-      onComment: onComment,
-      opposingPosts: opposingPosts.isEmpty ? null : opposingPosts,
-      relatedPosts: relatedPosts.isEmpty ? null : relatedPosts,
+      onActionPressed: widget.onShowFullContent,
+      onComment: widget.onComment,
+      opposingPosts: _loadedOpposingPosts.isEmpty ? null : _loadedOpposingPosts,
+      relatedPosts: widget.relatedPosts.isEmpty ? null : widget.relatedPosts,
       additionalContent:
-          post.type == PostType.question ? _buildQuestionVoting() : null,
+          widget.post.type == PostType.question ? _buildQuestionVoting() : null,
     );
   }
 
   Widget _buildPreview() {
+    final post = widget.post;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    if (post.type == PostType.video && post.videoUrl != null) {
+      return SizedBox(
+        width: screenWidth,
+        height: screenWidth * 9 / 16,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: ProfessionalVideoPlayer(
+              videoUrl: post.videoUrl!,
+              thumbnailUrl: post.thumbnailUrl ?? post.imageUrl,
+              autoPlay: true,
+              looping: true,
+              showControls: true,
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (post.type == PostType.podcast) {
+      return SizedBox(
+        width: screenWidth,
+        height: screenWidth * 9 / 16,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: ProfessionalAudioPlayer(
+              audioUrl: post.videoUrl ?? '',
+              thumbnailUrl: post.thumbnailUrl ?? post.imageUrl,
+              autoPlay: false,
+            ),
+          ),
+        ),
+      );
+    }
+
     return AspectRatio(
       aspectRatio: 16 / 9,
       child: Container(
@@ -340,7 +461,6 @@ class _ContentDetailView extends StatelessWidget {
                 )
               else
                 _buildPlaceholder(),
-              _buildTypeOverlay(),
             ],
           ),
         ),
@@ -350,76 +470,25 @@ class _ContentDetailView extends StatelessWidget {
 
   Widget _buildPlaceholder() {
     IconData icon = Icons.article;
-    if (post.type == PostType.video) icon = Icons.videocam;
-    if (post.type == PostType.podcast) icon = Icons.podcasts;
-    if (post.type == PostType.question) icon = Icons.help_outline;
+    if (widget.post.type == PostType.video) icon = Icons.videocam;
+    if (widget.post.type == PostType.podcast) icon = Icons.podcasts;
+    if (widget.post.type == PostType.question) icon = Icons.help_outline;
 
     return Center(
       child: Icon(icon, color: Colors.white54, size: 64),
     );
   }
 
-  Widget _buildTypeOverlay() {
-    Color color = Colors.grey;
-    IconData icon = Icons.article;
-    String label = 'Article';
-
-    if (post.type == PostType.video) {
-      color = Colors.red;
-      icon = Icons.videocam;
-      label = 'Vidéo';
-    } else if (post.type == PostType.podcast) {
-      color = Colors.purple;
-      icon = Icons.podcasts;
-      label = 'Podcast';
-    } else if (post.type == PostType.question) {
-      color = Colors.blue;
-      icon = Icons.help_outline;
-      label = 'Question';
-    }
-
-    return Positioned(
-      top: 12,
-      left: 12,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: Colors.white, size: 16),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   String _getActionButtonText() {
-    if (post.type == PostType.question) return "Répondre à la question";
-    if (post.type == PostType.video) return "Lire la description complète";
-    if (post.type == PostType.podcast) return "Lire la description complète";
+    if (widget.post.type == PostType.question) return "Répondre à la question";
+    if (widget.post.type == PostType.video) return "Lire la description complète";
+    if (widget.post.type == PostType.podcast) return "Lire la description complète";
     return "Lire l'article complet";
   }
 
-  void _showFullContent(BuildContext context) {
-    // TODO: Ouvrir la modale appropriée selon le type
-  }
-
   Widget? _buildQuestionVoting() {
-    if (post.type != PostType.question) return null;
-    // TODO: Ajouter le widget de vote
+    if (widget.post.type != PostType.question) return null;
+    // TODO: Ajouter le widget de vote pour les questions
     return null;
   }
 }

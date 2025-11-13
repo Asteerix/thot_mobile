@@ -51,7 +51,6 @@ class _NewArticleScreenState extends State<NewArticleScreen> {
   String? _error;
   bool _isDirty = false;
   Post? _opposingPost;
-  String? _oppositionDescription = '';
   File? _selectedImage;
   String? _existingImageUrl;
   int _wordCount = 0;
@@ -102,7 +101,6 @@ class _NewArticleScreenState extends State<NewArticleScreen> {
             (post['opposingPosts'] as List).isNotEmpty) {
           final opposingPost = post['opposingPosts'][0];
           _opposingPost = Post.fromJson(opposingPost);
-          _oppositionDescription = opposingPost['description'] ?? '';
         }
         _wordCount = _countWords(_contentController.text);
         _readingMinutes = (_wordCount / 220).ceil().clamp(1, 60);
@@ -160,51 +158,8 @@ class _NewArticleScreenState extends State<NewArticleScreen> {
         onPostSelected: (post) {
           setState(() {
             _opposingPost = post;
-            _oppositionDescription = '';
             _isDirty = true;
           });
-          SafeNavigation.showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              backgroundColor: Colors.black,
-              title: Text('Raison de l\'opposition',
-                  style: TextStyle(color: Colors.white)),
-              content: TextField(
-                onChanged: (value) => _oppositionDescription = value,
-                style: TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText:
-                      'Expliquez pourquoi cette publication est en opposition...',
-                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                  filled: true,
-                  fillColor: Colors.white.withOpacity(0.05),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: Colors.white.withOpacity(0.1),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: Colors.white.withOpacity(0.1),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.white, width: 2),
-                  ),
-                ),
-                maxLines: 3,
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => SafeNavigation.pop(context),
-                  child: Text('Valider', style: TextStyle(color: Colors.white)),
-                ),
-              ],
-            ),
-          );
         },
       ),
     );
@@ -259,7 +214,7 @@ class _NewArticleScreenState extends State<NewArticleScreen> {
         'title': _titleController.text.trim(),
         'content': _contentController.text.trim(),
         'domain': widget.domain,
-        'type': PostType.article,
+        'type': 'article',
         'status': 'published',
         'journalistId': widget.journalistId,
         'imageUrl': imageUrl,
@@ -267,8 +222,7 @@ class _NewArticleScreenState extends State<NewArticleScreen> {
           'opposingPosts': [
             {
               'postId': _opposingPost!.id,
-              'description': _oppositionDescription ?? ''
-            }
+              'description': ''}
           ],
         'politicalOrientation': <String, dynamic>{
           'journalistChoice': 'neutral',
@@ -304,18 +258,23 @@ class _NewArticleScreenState extends State<NewArticleScreen> {
         ));
         _isDirty = false;
         if (!mounted) return;
+
+        SafeNavigation.showSnackBar(
+          context,
+          const SnackBar(
+            content: Text('Article publié avec succès !'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+
         if (postId != null) {
-          GoRouter.of(context).go(
-            '/post/$postId',
-            extra: {
-              'postId': postId,
-              'isFromProfile': false,
-              'filterType': PostType.article,
-              'isFromFeed': true,
-            },
-          );
+          GoRouter.of(context).push('/article-detail', extra: {
+            'postId': postId,
+            'isFromProfile': true,
+          });
         } else {
-          SafeNavigation.pop(context, true);
+          GoRouter.of(context).go('/feed');
         }
       }
     } catch (e) {
@@ -360,7 +319,7 @@ class _NewArticleScreenState extends State<NewArticleScreen> {
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,
                 ),
-                child: Text('Réessayer'),
+                child: Text('Réessayer', style: TextStyle(color: Colors.black)),
               ),
             ],
           ),
@@ -519,23 +478,12 @@ class _NewArticleScreenState extends State<NewArticleScreen> {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        subtitle: _oppositionDescription?.isNotEmpty ?? false
-                            ? Text(
-                                _oppositionDescription!,
-                                style: TextStyle(
-                                    color: Colors.white.withOpacity(0.6)),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              )
-                            : null,
                         trailing: IconButton(
                           icon: Icon(Icons.close,
                               color: Colors.white.withOpacity(0.5)),
                           onPressed: () {
                             setState(() {
                               _opposingPost = null;
-                              _oppositionDescription = '';
-                              _isDirty = true;
                             });
                           },
                         ),

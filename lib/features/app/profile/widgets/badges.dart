@@ -11,7 +11,7 @@ class VerificationBadge extends StatelessWidget {
     return Icon(
       Icons.verified,
       size: size,
-      color: AppColors.blue,
+      color: Colors.green,
       semanticLabel: 'Vérifié',
     );
   }

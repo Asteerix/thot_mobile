@@ -12,6 +12,13 @@ import 'package:thot/shared/media/utils/image_utils.dart';
 import 'package:thot/features/app/profile/widgets/badges.dart';
 import 'package:thot/core/utils/safe_navigation.dart';
 import 'package:thot/core/services/logging/logger_service.dart';
+import 'package:provider/provider.dart';
+import 'package:thot/features/app/content/shared/providers/posts_state_provider.dart';
+import 'package:thot/features/app/content/shared/comments/comment_sheet.dart';
+import 'package:thot/features/app/content/posts/questions/widgets/voting_dialog.dart';
+import 'package:thot/features/app/content/shared/widgets/political_orientation_utils.dart';
+import 'package:go_router/go_router.dart';
+import 'package:thot/shared/widgets/images/user_avatar.dart';
 
 class ShortsFeedScreen extends StatefulWidget {
   final String? initialShortId;
@@ -127,6 +134,158 @@ class _ShortsFeedScreenState extends State<ShortsFeedScreen> {
 
   IconData _getPoliticalIcon(PoliticalOrientation? orientation) {
     return Icons.public;
+  }
+
+  String _formatNumber(int number) {
+    if (number >= 1000000) {
+      return '${(number / 1000000).floor()}M';
+    } else if (number >= 1000) {
+      return '${(number / 1000).floor()}K';
+    }
+    return number.toString();
+  }
+
+  Widget _buildShortActions(Post short) {
+    return Consumer<PostsStateProvider>(
+      builder: (context, postsStateProvider, _) {
+        final displayPost = postsStateProvider.getPost(short.id) ?? short;
+        final votes = displayPost.politicalOrientation.userVotes;
+        final frequencies = [
+          votes['extremelyConservative'] ?? 0,
+          votes['conservative'] ?? 0,
+          votes['neutral'] ?? 0,
+          votes['progressive'] ?? 0,
+          votes['extremelyProgressive'] ?? 0,
+        ];
+        final totalVotes = frequencies.fold(0, (sum, freq) => sum + freq);
+        PoliticalOrientation? medianOrientation;
+        if (totalVotes > 0) {
+          final medianPosition = totalVotes / 2;
+          var cumulative = 0;
+          for (var i = 0; i < frequencies.length; i++) {
+            cumulative += frequencies[i];
+            if (cumulative > medianPosition) {
+              medianOrientation = PoliticalOrientation.values[i];
+              break;
+            }
+          }
+        }
+        final color = medianOrientation != null
+            ? PoliticalOrientationUtils.getColor(medianOrientation)
+            : Colors.grey;
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.favorite,
+                color: displayPost.isLiked ? Colors.red : Colors.white,
+                size: 32,
+              ),
+              onPressed: () async {
+                if (displayPost.id.startsWith('invalid_post_id_')) return;
+                try {
+                  await postsStateProvider.toggleLike(displayPost.id);
+                } catch (e) {
+                  if (!mounted) return;
+                  SafeNavigation.showSnackBar(
+                    context,
+                    SnackBar(
+                      content: Text('Erreur: ${e.toString()}'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+            ),
+            Text(
+              _formatNumber(displayPost.likesCount),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 12,
+              ),
+            ),
+            const SizedBox(height: 16),
+            IconButton(
+              icon: const Icon(Icons.comment, color: Colors.white, size: 30),
+              onPressed: () {
+                if (displayPost.id.startsWith('invalid_post_id_')) return;
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => CommentsBottomSheet(postId: displayPost.id),
+                );
+              },
+            ),
+            Text(
+              _formatNumber(displayPost.commentsCount),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 12,
+              ),
+            ),
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: () {
+                if (displayPost.id.startsWith('invalid_post_id_')) return;
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => VotingDialog(
+                    post: displayPost,
+                    onVoteChanged: (updatedPost) {
+                      setState(() {});
+                    },
+                  ),
+                );
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.25),
+                      shape: BoxShape.circle,
+                      border:
+                          Border.all(color: color.withOpacity(0.5), width: 2),
+                    ),
+                    child: Icon(
+                      Icons.public,
+                      color: color,
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  if (totalVotes > 0)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.7),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        '$totalVotes',
+                        style: TextStyle(
+                          color: color,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _loadShorts() async {
@@ -576,33 +735,7 @@ class _ShortsFeedScreenState extends State<ShortsFeedScreen> {
                   ),
                 ),
               const SizedBox(height: 16),
-              IconButton(
-                icon: Icon(Icons.favorite),
-                color: Colors.white,
-                onPressed: () {},
-              ),
-              Text(
-                '${short.likesCount}',
-                style: TextStyle(color: Colors.white),
-              ),
-              const SizedBox(height: 16),
-              IconButton(
-                icon: Icon(Icons.comment),
-                color: Colors.white,
-                onPressed: () {},
-              ),
-              Text(
-                '${short.commentsCount}',
-                style: TextStyle(color: Colors.white),
-              ),
-              const SizedBox(height: 16),
-              IconButton(
-                icon: Icon(
-                    _getPoliticalIcon(short.politicalOrientation.dominantView)),
-                color:
-                    _getPoliticalColor(short.politicalOrientation.dominantView),
-                onPressed: () {},
-              ),
+              _buildShortActions(short),
             ],
           ),
         ),
@@ -656,86 +789,64 @@ class _ShortsFeedScreenState extends State<ShortsFeedScreen> {
                 ),
               ],
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color:
-                          Theme.of(context).colorScheme.surfaceContainerHighest,
+              GestureDetector(
+                onTap: () {
+                  if (short.journalist?.id != null) {
+                    context.push('/profile/${short.journalist!.id}');
+                  }
+                },
+                child: Row(
+                  children: [
+                    UserAvatar(
+                      avatarUrl: short.journalist?.avatarUrl,
+                      name: short.journalist?.name ?? short.journalist?.username,
+                      isJournalist: true,
+                      radius: 16,
                     ),
-                    child: ClipOval(
-                      child: short.journalist?.avatarUrl != null &&
-                              short.journalist!.avatarUrl!.isNotEmpty
-                          ? Image.network(
-                              ImageUtils.getAvatarUrl(
-                                  short.journalist!.avatarUrl!),
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                _logger.error(
-                                    'Avatar load error: $error for journalist: ${short.journalist?.name}');
-                                return Center(
-                                  child: Text(
-                                    (short.journalist?.name?.substring(0, 1) ??
-                                            '?')
-                                        .toUpperCase(),
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                );
-                              },
-                            )
-                          : Center(
-                              child: Text(
-                                (short.journalist?.name?.substring(0, 1) ?? '?')
-                                    .toUpperCase(),
-                                style: const TextStyle(
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  short.journalist?.name ??
+                                      'Journaliste inconnu',
+                                  style: const TextStyle(
                                     color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Flexible(
-                              child: Text(
-                                short.journalist?.name ?? 'Journaliste inconnu',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                overflow: TextOverflow.ellipsis,
                               ),
-                            ),
-                            if (short.journalist?.isVerified == true) ...[
-                              const SizedBox(width: 4),
-                              const VerificationBadge(size: 16),
+                              if (short.journalist?.isVerified == true) ...[
+                                const SizedBox(width: 4),
+                                const VerificationBadge(size: 16),
+                              ],
                             ],
-                          ],
-                        ),
-                        if (short.journalist?.username != null)
-                          Text(
-                            '@${short.journalist!.username}',
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 12,
-                            ),
-                            overflow: TextOverflow.ellipsis,
                           ),
-                      ],
+                          if (short.journalist?.username != null)
+                            Text(
+                              '@${short.journalist!.username}',
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 12,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.white70,
+                      size: 16,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

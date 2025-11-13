@@ -521,12 +521,11 @@ class _AdvancedFiltersSheetState extends State<_AdvancedFiltersSheet>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     return Container(
       height: MediaQuery.of(context).size.height * 0.7,
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: const BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
         children: [
@@ -535,7 +534,7 @@ class _AdvancedFiltersSheetState extends State<_AdvancedFiltersSheet>
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: isDark ? Colors.white24 : Colors.black12,
+              color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -547,6 +546,7 @@ class _AdvancedFiltersSheetState extends State<_AdvancedFiltersSheet>
                   'Filtres avancés',
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
                 const Spacer(),
@@ -558,6 +558,9 @@ class _AdvancedFiltersSheetState extends State<_AdvancedFiltersSheet>
                       _selectedPoliticalView = PoliticalView.all;
                     });
                   },
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white,
+                  ),
                   child: const Text('Réinitialiser'),
                 ),
               ],
@@ -566,6 +569,9 @@ class _AdvancedFiltersSheetState extends State<_AdvancedFiltersSheet>
           TabBar(
             controller: _tabController,
             labelStyle: const TextStyle(fontWeight: FontWeight.w600),
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white.withOpacity(0.6),
+            indicatorColor: Colors.white,
             tabs: const [
               Tab(text: 'Type'),
               Tab(text: 'Catégories'),
@@ -587,7 +593,7 @@ class _AdvancedFiltersSheetState extends State<_AdvancedFiltersSheet>
             decoration: BoxDecoration(
               border: Border(
                 top: BorderSide(
-                  color: isDark ? Colors.white12 : Colors.black12,
+                  color: Colors.white.withOpacity(0.2),
                 ),
               ),
             ),
@@ -598,6 +604,8 @@ class _AdvancedFiltersSheetState extends State<_AdvancedFiltersSheet>
                     onPressed: () => Navigator.pop(context),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
+                      foregroundColor: Colors.white,
+                      side: BorderSide(color: Colors.white.withOpacity(0.2)),
                     ),
                     child: const Text('Annuler'),
                   ),
@@ -614,6 +622,8 @@ class _AdvancedFiltersSheetState extends State<_AdvancedFiltersSheet>
                     },
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
                     ),
                     child: const Text('Appliquer'),
                   ),
@@ -741,11 +751,10 @@ class _SelectionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     return Material(
       color: isSelected
-          ? theme.colorScheme.primaryContainer
-          : (isDark ? Colors.white.withOpacity(0.05) : Colors.grey[50]),
+          ? Colors.white.withOpacity(0.1)
+          : Colors.white.withOpacity(0.05),
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
@@ -756,8 +765,8 @@ class _SelectionTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected
-                  ? theme.colorScheme.primary
-                  : (isDark ? Colors.white12 : Colors.black12),
+                  ? Colors.white
+                  : Colors.white.withOpacity(0.2),
               width: isSelected ? 2 : 1,
             ),
           ),
@@ -767,8 +776,8 @@ class _SelectionTile extends StatelessWidget {
                 icon,
                 size: 28,
                 color: isSelected
-                    ? theme.colorScheme.primary
-                    : (isDark ? Colors.white60 : Colors.black54),
+                    ? Colors.white
+                    : Colors.white.withOpacity(0.6),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -780,22 +789,22 @@ class _SelectionTile extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        color: isSelected ? theme.colorScheme.primary : null,
+                        color: Colors.white,
                       ),
                     ),
                     Text(
                       subtitle,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: isDark ? Colors.white54 : Colors.black54,
+                        color: Colors.white.withOpacity(0.6),
                       ),
                     ),
                   ],
                 ),
               ),
               if (isSelected)
-                Icon(
+                const Icon(
                   Icons.check_circle,
-                  color: theme.colorScheme.primary,
+                  color: Colors.white,
                 ),
             ],
           ),
@@ -819,11 +828,10 @@ class _CategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     return Material(
       color: isSelected
-          ? theme.colorScheme.primaryContainer
-          : (isDark ? Colors.white.withOpacity(0.05) : Colors.grey[50]),
+          ? Colors.white.withOpacity(0.1)
+          : Colors.white.withOpacity(0.05),
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
@@ -834,8 +842,8 @@ class _CategoryCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected
-                  ? theme.colorScheme.primary
-                  : (isDark ? Colors.white12 : Colors.black12),
+                  ? Colors.white
+                  : Colors.white.withOpacity(0.2),
               width: isSelected ? 2 : 1,
             ),
           ),
@@ -846,8 +854,8 @@ class _CategoryCard extends StatelessWidget {
                 icon,
                 size: 18,
                 color: isSelected
-                    ? theme.colorScheme.primary
-                    : (isDark ? Colors.white60 : Colors.black54),
+                    ? Colors.white
+                    : Colors.white.withOpacity(0.6),
               ),
               const SizedBox(width: 6),
               Flexible(
@@ -856,7 +864,7 @@ class _CategoryCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: isSelected ? theme.colorScheme.primary : null,
+                    color: isSelected ? Colors.white : Colors.white.withOpacity(0.7),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -875,11 +883,11 @@ IconData _getPoliticalIcon(PoliticalView view) {
     case PoliticalView.extremelyConservative:
       return Icons.keyboard_double_arrow_left;
     case PoliticalView.conservative:
-      return Icons.arrow_back;
+      return Icons.chevron_left;
     case PoliticalView.neutral:
       return Icons.remove;
     case PoliticalView.progressive:
-      return Icons.arrow_forward;
+      return Icons.chevron_right;
     case PoliticalView.extremelyProgressive:
       return Icons.keyboard_double_arrow_right;
     case PoliticalView.all:
@@ -899,11 +907,10 @@ class _PoliticalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     return Material(
       color: isSelected
           ? view.color.withOpacity(0.1)
-          : (isDark ? Colors.white.withOpacity(0.05) : Colors.grey[50]),
+          : Colors.white.withOpacity(0.05),
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
@@ -915,7 +922,7 @@ class _PoliticalCard extends StatelessWidget {
             border: Border.all(
               color: isSelected
                   ? view.color
-                  : (isDark ? Colors.white12 : Colors.black12),
+                  : Colors.white.withOpacity(0.2),
               width: isSelected ? 2 : 1,
             ),
           ),
@@ -943,9 +950,7 @@ class _PoliticalCard extends StatelessWidget {
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                     color: isSelected
                         ? view.color
-                        : (isDark
-                            ? Colors.white.withOpacity(0.9)
-                            : Colors.black87),
+                        : Colors.white.withOpacity(0.9),
                   ),
                 ),
               ),

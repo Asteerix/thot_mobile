@@ -1,5 +1,6 @@
 import 'package:thot/core/presentation/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:thot/core/config/app_config.dart';
 import 'package:thot/core/routing/app_router.dart';
 import 'package:thot/core/routing/route_names.dart';
@@ -61,6 +62,133 @@ class _ProfileHeaderState extends State<ProfileHeader>
         widget.onLoadProfile();
       }
     });
+  }
+
+  Widget buildActionButtonsRow() {
+    if (widget.isCurrentUser) {
+      if (widget.userProfile.type == UserType.journalist) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildActionButton(
+                  'Éditer',
+                  Icons.edit,
+                  onPressed: _navigateToEditProfile,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildActionButton(
+                  'Statistiques',
+                  Icons.bar_chart,
+                  onPressed: _showStatisticsComingSoon,
+                ),
+              ),
+            ],
+          ),
+        );
+      } else {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          child: _buildActionButton(
+            'Éditer',
+            Icons.edit,
+            onPressed: _navigateToEditProfile,
+          ),
+        );
+      }
+    }
+
+    if (widget.userProfile.type == UserType.journalist) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: GestureDetector(
+          onTap: widget.isProcessingFollow
+              ? null
+              : () {
+                  ProfileLogger.d(
+                    'Follow button tapped - userId: ${widget.userProfile.id}, currentState: ${widget.userProfile.isFollowing}',
+                  );
+                  widget.onFollowToggle(widget.userProfile);
+                },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: 40,
+            decoration: BoxDecoration(
+              color: widget.userProfile.isFollowing
+                  ? Colors.grey[900]
+                  : Theme.of(context).primaryColor,
+              border: widget.userProfile.isFollowing
+                  ? Border.all(color: Colors.grey[700]!, width: 1)
+                  : null,
+              borderRadius: BorderRadius.circular(20),
+              gradient: widget.userProfile.isFollowing
+                  ? null
+                  : LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Theme.of(context).primaryColor,
+                        Theme.of(context).primaryColor.withOpacity(0.8),
+                      ],
+                    ),
+              boxShadow: widget.userProfile.isFollowing
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: Theme.of(context).primaryColor.withOpacity(0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+            ),
+            child: widget.isProcessingFollow
+                ? Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          widget.userProfile.isFollowing
+                              ? Colors.grey[400]!
+                              : Colors.white,
+                        ),
+                      ),
+                    ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        widget.userProfile.isFollowing ? Icons.check : Icons.add,
+                        color: widget.userProfile.isFollowing
+                            ? Colors.grey[400]
+                            : Colors.white,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        widget.userProfile.isFollowing ? 'Abonné' : 'Suivre',
+                        style: TextStyle(
+                          color: widget.userProfile.isFollowing
+                              ? Colors.grey[400]
+                              : Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+        ),
+      );
+    }
+
+    return const SizedBox.shrink();
   }
   Future<void> _launchUrl(String urlString) async {
     try {
@@ -210,8 +338,91 @@ class _ProfileHeaderState extends State<ProfileHeader>
                   ),
                   const SizedBox(height: 16),
                 ],
-                _buildActionButtons(),
                 if (widget.userProfile.type == UserType.journalist) ...[
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            context.push('/followers/${widget.userProfile.id}');
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.1),
+                                width: 1,
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  '${widget.userProfile.followersCount}',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Abonnés',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.white.withOpacity(0.7),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            context.push('/following/${widget.userProfile.id}');
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.1),
+                                width: 1,
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  '${widget.userProfile.followingCount}',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Abonnements',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.white.withOpacity(0.7),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 16),
                   _buildFormations(),
                 ],
@@ -224,12 +435,33 @@ class _ProfileHeaderState extends State<ProfileHeader>
   }
   Widget _buildActionButtons() {
     if (widget.isCurrentUser) {
-      return _buildPrimaryButton(
-        'Modifier le profil',
-        Icons.edit,
-        onPressed: _navigateToEditProfile,
-        isPrimary: true,
-      );
+      if (widget.userProfile.type == UserType.journalist) {
+        return Row(
+          children: [
+            Expanded(
+              child: _buildActionButton(
+                'Éditer',
+                Icons.edit,
+                onPressed: _navigateToEditProfile,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _buildActionButton(
+                'Statistiques',
+                Icons.bar_chart,
+                onPressed: _showStatisticsComingSoon,
+              ),
+            ),
+          ],
+        );
+      } else {
+        return _buildActionButton(
+          'Éditer',
+          Icons.edit,
+          onPressed: _navigateToEditProfile,
+        );
+      }
     }
     if (widget.userProfile.type == UserType.journalist) {
       return GestureDetector(
@@ -405,17 +637,15 @@ class _ProfileHeaderState extends State<ProfileHeader>
       ],
     );
   }
-  Widget _buildPrimaryButton(
+  Widget _buildActionButton(
     String label,
     IconData icon, {
     required VoidCallback onPressed,
-    required bool isPrimary,
   }) {
     return Container(
       height: 40,
       decoration: BoxDecoration(
-        color: isPrimary ? AppColors.blue : Colors.transparent,
-        border: Border.all(color: AppColors.blue),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(18),
       ),
       child: Material(
@@ -431,13 +661,13 @@ class _ProfileHeaderState extends State<ProfileHeader>
                 Icon(
                   icon,
                   size: 16,
-                  color: isPrimary ? Colors.white : AppColors.blue,
+                  color: Colors.black,
                 ),
                 const SizedBox(width: 8),
                 Text(
                   label,
-                  style: TextStyle(
-                    color: isPrimary ? Colors.white : AppColors.blue,
+                  style: const TextStyle(
+                    color: Colors.black,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
@@ -447,6 +677,14 @@ class _ProfileHeaderState extends State<ProfileHeader>
           ),
         ),
       ),
+    );
+  }
+
+  void _showStatisticsComingSoon() {
+    if (!mounted) return;
+    context.push(
+      RouteNames.stats,
+      extra: {'journalistId': widget.userProfile.id},
     );
   }
   Widget _buildFormations() {

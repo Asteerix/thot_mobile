@@ -1,140 +1,113 @@
-import 'package:thot/core/presentation/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:thot/features/app/profile/utils/follow_utils.dart';
-import 'package:thot/features/app/profile/models/user_profile.dart';
-class FollowButton extends StatefulWidget {
+import 'package:provider/provider.dart';
+import 'package:thot/features/app/profile/providers/follow_state_provider.dart';
+import 'package:thot/core/utils/safe_navigation.dart';
+
+class FollowButton extends StatelessWidget {
   final String userId;
-  final bool isFollowing;
-  final Function(bool)? onFollowChanged;
+  final bool initialIsFollowing;
   final bool compact;
+
   const FollowButton({
     super.key,
     required this.userId,
-    required this.isFollowing,
-    this.onFollowChanged,
+    required bool isFollowing,
     this.compact = false,
-  });
-  @override
-  State<FollowButton> createState() => _FollowButtonState();
-}
-class _FollowButtonState extends State<FollowButton> {
-  bool _isLoading = false;
-  late bool _isFollowing;
-  @override
-  void initState() {
-    super.initState();
-    _isFollowing = widget.isFollowing;
-  }
-  @override
-  void didUpdateWidget(FollowButton oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.isFollowing != widget.isFollowing) {
-      _isFollowing = widget.isFollowing;
-    }
-  }
-  Future<void> _toggleFollow() async {
-    if (_isLoading) return;
-    setState(() {
-      _isLoading = true;
-    });
-    HapticFeedback.lightImpact();
-    final tempUser = UserProfile(
-      id: widget.userId,
-      username: '',
-      email: '',
-      type: UserType.journalist,
-      postsCount: 0,
-      followersCount: 0,
-      followingCount: 0,
-      isFollowing: _isFollowing,
-    );
-    await FollowUtils.handleFollowAction(
-      tempUser,
-      (updatedUser) {
-        if (mounted) {
-          setState(() {
-            _isFollowing = updatedUser.isFollowing;
-            _isLoading = false;
-          });
-          widget.onFollowChanged?.call(updatedUser.isFollowing);
-        }
-      },
-      (error) {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-          FollowUtils.showErrorSnackBar(context, error);
-        }
-      },
-    );
-  }
+  }) : initialIsFollowing = isFollowing;
+
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      height: widget.compact ? 28 : 32,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: _isLoading ? null : _toggleFollow,
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: widget.compact ? 12 : 16,
-              vertical: 4,
-            ),
-            decoration: BoxDecoration(
-              gradient: _isFollowing
-                  ? null
-                  : const LinearGradient(
-                      colors: [Colors.purple, Colors.orange],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-              color: _isFollowing ? Colors.grey[800] : null,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: _isFollowing ? Colors.grey[700]! : Colors.transparent,
-                width: 1,
+    return Consumer<FollowStateProvider>(
+      builder: (context, followProvider, _) {
+        followProvider.initializeFollowState(userId, initialIsFollowing);
+
+        final isFollowing = followProvider.isFollowing(userId);
+        final isProcessing = followProvider.isProcessing(userId);
+
+        return SizedBox(
+          height: compact ? 32 : 36,
+          width: compact ? 100 : 110,
+          child: ElevatedButton(
+            onPressed: isProcessing
+                ? null
+                : () async {
+                    HapticFeedback.lightImpact();
+                    try {
+                      await followProvider.toggleFollow(userId);
+                    } catch (e) {
+                      if (context.mounted) {
+                        SafeNavigation.showSnackBar(
+                          context,
+                          SnackBar(
+                            content: Text('Erreur: ${e.toString()}'),
+                            backgroundColor: Colors.red,
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    }
+                  },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
               ),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (_isLoading)
-                  SizedBox(
-                    width: widget.compact ? 12 : 14,
-                    height: widget.compact ? 12 : 14,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        _isFollowing ? Colors.white : Colors.white,
+            child: Ink(
+              decoration: BoxDecoration(
+                gradient: isFollowing
+                    ? const LinearGradient(
+                        colors: [Color(0xFF10B981), Color(0xFF059669)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    : const LinearGradient(
+                        colors: [Colors.purple, Colors.orange],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                    ),
-                  )
-                else
-                  Icon(
-                    _isFollowing ? Icons.check : Icons.add,
-                    size: widget.compact ? 14 : 16,
-                    color: Colors.white,
-                  ),
-                SizedBox(width: widget.compact ? 4 : 6),
-                Text(
-                  _isFollowing ? 'Abonné' : 'S\'abonner',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: widget.compact ? 12 : 13,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.2,
-                  ),
-                ),
-              ],
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                child: isProcessing
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            isFollowing ? Icons.check : Icons.add,
+                            size: compact ? 14 : 16,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            isFollowing ? 'Abonné' : 'Suivre',
+                            style: TextStyle(
+                              fontSize: compact ? 12 : 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

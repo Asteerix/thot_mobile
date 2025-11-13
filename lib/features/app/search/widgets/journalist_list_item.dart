@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:thot/features/app/profile/models/user_profile.dart';
-import 'package:thot/shared/widgets/images/safe_network_image.dart';
 import 'package:thot/features/app/profile/widgets/badges.dart';
 import 'package:thot/features/app/profile/widgets/follow_button.dart';
+import 'package:thot/shared/widgets/images/user_avatar.dart';
 class JournalistListItem extends StatelessWidget {
   final UserProfile journalist;
   final VoidCallback onFollow;
@@ -27,21 +27,11 @@ class JournalistListItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isDark ? Colors.black : Colors.white,
-              ),
-              child: ClipOval(
-                child: SafeNetworkImage(
-                  url: journalist.avatarUrl,
-                  placeholderAsset:
-                      'assets/images/defaults/default_journalist_avatar.png',
-                  fit: BoxFit.cover,
-                ),
-              ),
+            UserAvatar(
+              avatarUrl: journalist.avatarUrl,
+              name: journalist.name ?? journalist.username,
+              isJournalist: true,
+              radius: 28,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -115,9 +105,6 @@ class JournalistListItem extends StatelessWidget {
             FollowButton(
               userId: journalist.id,
               isFollowing: journalist.isFollowing,
-              onFollowChanged: (isFollowing) {
-                onFollow();
-              },
             ),
           ],
         ),

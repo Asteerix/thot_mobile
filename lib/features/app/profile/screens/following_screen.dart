@@ -1,562 +1,396 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:thot/core/routing/route_names.dart';
-import 'package:thot/features/app/content/shared/providers/post_repository_impl.dart';
-import 'package:thot/core/di/service_locator.dart';
 import 'package:thot/features/app/profile/models/user_profile.dart';
-import 'package:thot/features/app/profile/utils/follow_utils.dart';
-import 'package:thot/shared/widgets/loading/loading_indicator.dart';
-import 'package:thot/shared/widgets/errors/error_view.dart';
-import 'package:thot/shared/widgets/empty/empty_state.dart';
-import 'package:thot/shared/media/utils/image_utils.dart';
+import 'package:thot/core/di/service_locator.dart';
+import 'package:thot/features/public/auth/shared/providers/auth_provider.dart';
+import 'package:thot/features/app/profile/providers/follow_state_provider.dart';
 import 'package:thot/core/utils/safe_navigation.dart';
+import 'package:thot/shared/widgets/images/user_avatar.dart';
+
 class FollowingScreen extends StatefulWidget {
   final String userId;
-  final bool isCurrentUser;
+
   const FollowingScreen({
     super.key,
     required this.userId,
-    this.isCurrentUser = false,
   });
+
   @override
   State<FollowingScreen> createState() => _FollowingScreenState();
 }
+
 class _FollowingScreenState extends State<FollowingScreen> {
-  final _profileRepository = ServiceLocator.instance.profileRepository;
-  final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
-  final _debouncer = _Debouncer(milliseconds: 250);
-  List<UserProfile>? _allFollowing;
-  List<UserProfile>? _filteredFollowing;
+  final _profileRepository = ServiceLocator.instance.profileRepository;
+
+  List<UserProfile> _allFollowing = [];
+  List<UserProfile> _filteredFollowing = [];
   bool _isLoading = true;
-  String? _error;
-  final Map<String, bool> _processingIds = <String, bool>{};
   String _searchQuery = '';
-  bool _showAppBarShadow = false;
+  Set<String> _processingFollows = {};
+
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_onScroll);
     _loadFollowing();
+    _searchController.addListener(_onSearchChanged);
   }
+
   @override
   void dispose() {
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
     _searchController.dispose();
-    _debouncer.dispose();
     super.dispose();
   }
-  void _onScroll() {
-    final bool newShadow = _scrollController.positions.isNotEmpty &&
-        _scrollController.offset > 1.0;
-    if (newShadow != _showAppBarShadow && mounted) {
-      setState(() => _showAppBarShadow = newShadow);
-    }
-    if (FocusManager.instance.primaryFocus?.hasFocus == true) {
-      FocusManager.instance.primaryFocus?.unfocus();
+
+  void _onSearchChanged() {
+    setState(() {
+      _searchQuery = _searchController.text.toLowerCase();
+      _filterFollowing();
+    });
+  }
+
+  void _filterFollowing() {
+    if (_searchQuery.isEmpty) {
+      _filteredFollowing = List.from(_allFollowing);
+    } else {
+      _filteredFollowing = _allFollowing.where((user) {
+        final name = (user.name ?? '').toLowerCase();
+        final username = user.username.toLowerCase();
+        return name.contains(_searchQuery) || username.contains(_searchQuery);
+      }).toList();
     }
   }
+
   Future<void> _loadFollowing() async {
-    if (!mounted) return;
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    print('📥 [FOLLOWING] Loading following for userId: ${widget.userId}');
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+    setState(() => _isLoading = true);
+
     try {
+      print('📡 [FOLLOWING] Calling API...');
       final result = await _profileRepository.getFollowing(widget.userId);
-      if (!mounted) return;
+
+      print('📦 [FOLLOWING] API response received');
+
       result.fold(
         (failure) {
-          setState(() {
-            _error = failure.message;
-            _isLoading = false;
-          });
+          print('❌ [FOLLOWING] API failed: ${failure.message}');
+          if (mounted) {
+            setState(() => _isLoading = false);
+            SafeNavigation.showSnackBar(
+              context,
+              SnackBar(
+                content: Text('Erreur: ${failure.message}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
         },
         (following) {
-          setState(() {
-            _allFollowing = following;
-            _filteredFollowing = following;
-            _isLoading = false;
-          });
+          print('✅ [FOLLOWING] Success! Received ${following.length} following');
+          if (following.isNotEmpty) {
+            print('   First following: ${following[0].username} (${following[0].id})');
+          }
+          if (mounted) {
+            setState(() {
+              _allFollowing = following;
+              _filterFollowing();
+              _isLoading = false;
+            });
+            print('✅ [FOLLOWING] State updated - displaying ${_filteredFollowing.length} following');
+          }
         },
       );
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
+    } catch (e, stackTrace) {
+      print('❌ [FOLLOWING] Exception: $e');
+      print('   Stack: $stackTrace');
+      if (mounted) {
+        setState(() => _isLoading = false);
+        SafeNavigation.showSnackBar(
+          context,
+          SnackBar(
+            content: Text('Erreur: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
-  Future<void> _handleFollowToggle(UserProfile user) async {
-    if (!mounted || _processingIds[user.id] == true) return;
-    HapticFeedback.selectionClick();
-    setState(() => _processingIds[user.id] = true);
+
+  Future<void> _toggleFollow(UserProfile user) async {
+    if (_processingFollows.contains(user.id)) return;
+
+    setState(() => _processingFollows.add(user.id));
+    HapticFeedback.lightImpact();
+
     try {
-      await FollowUtils.handleFollowAction(
-        user,
-        (updatedUser) {
-          if (!mounted) return;
-          setState(() {
-            if (!updatedUser.isFollowing) {
-              _allFollowing?.removeWhere((f) => f.id == user.id);
-              _filteredFollowing?.removeWhere((f) => f.id == user.id);
-            } else {
-              final int iAll =
-                  _allFollowing?.indexWhere((f) => f.id == user.id) ?? -1;
-              if (iAll >= 0) _allFollowing![iAll] = updatedUser;
-              final int iFilt =
-                  _filteredFollowing?.indexWhere((f) => f.id == user.id) ?? -1;
-              if (iFilt >= 0) _filteredFollowing![iFilt] = updatedUser;
+      final profileRepository = ServiceLocator.instance.profileRepository;
+
+      if (user.isFollowing) {
+        final result = await profileRepository.unfollowUser(user.id);
+        result.fold(
+          (failure) => throw Exception(failure.message),
+          (_) {
+            if (mounted) {
+              setState(() {
+                final index = _allFollowing.indexWhere((u) => u.id == user.id);
+                if (index != -1) {
+                  _allFollowing[index] = _allFollowing[index].copyWith(
+                    isFollowing: false,
+                    followersCount: _allFollowing[index].followersCount - 1,
+                  );
+                }
+                _filterFollowing();
+              });
             }
-            _processingIds[user.id] = false;
-          });
-        },
-        (error) {
-          if (!mounted) return;
-          FollowUtils.showErrorSnackBar(context, error);
-          setState(() => _processingIds[user.id] = false);
-        },
-      );
+          },
+        );
+      } else {
+        final result = await profileRepository.followUser(user.id);
+        result.fold(
+          (failure) => throw Exception(failure.message),
+          (_) {
+            if (mounted) {
+              setState(() {
+                final index = _allFollowing.indexWhere((u) => u.id == user.id);
+                if (index != -1) {
+                  _allFollowing[index] = _allFollowing[index].copyWith(
+                    isFollowing: true,
+                    followersCount: _allFollowing[index].followersCount + 1,
+                  );
+                }
+                _filterFollowing();
+              });
+            }
+          },
+        );
+      }
     } catch (e) {
-      if (!mounted) return;
-      FollowUtils.showErrorSnackBar(context, e.toString());
-      setState(() => _processingIds[user.id] = false);
+      if (mounted) {
+        SafeNavigation.showSnackBar(
+          context,
+          SnackBar(
+            content: Text('Erreur: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _processingFollows.remove(user.id));
+      }
     }
   }
-  void _navigateToProfile(UserProfile user) {
-    if (!mounted) return;
-    context.pushNamed(
-      RouteNames.profile,
-      extra: {'userId': user.id, 'forceReload': true},
-    );
-  }
-  void _handleSearch(String query) {
-    _debouncer.run(() {
-      if (!mounted) return;
-      setState(() {
-        _searchQuery = query.trim();
-        if (_searchQuery.isEmpty) {
-          _filteredFollowing = _allFollowing;
-        } else {
-          final q = _searchQuery.toLowerCase();
-          _filteredFollowing = _allFollowing?.where((user) {
-            final displayName = (user.name ?? user.username).toLowerCase();
-            final o = user.organization?.toLowerCase() ?? '';
-            return displayName.contains(q) || o.contains(q);
-          }).toList();
-        }
-      });
-    });
-  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
-        backgroundColor: cs.surface,
-        body: Scrollbar(
-          controller: _scrollController,
-          interactive: true,
-          child: RefreshIndicator.adaptive(
-            onRefresh: _loadFollowing,
-            edgeOffset: 80,
-            child: CustomScrollView(
-              controller: _scrollController,
-              physics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics()),
-              slivers: [
-                SliverAppBar(
-                  pinned: true,
-                  backgroundColor: cs.surface,
-                  elevation: _showAppBarShadow ? 1.0 : 0.0,
-                  leading: IconButton(
-                    icon: Icon(Icons.arrow_back),
-                    onPressed: () => SafeNavigation.pop(context),
-                    tooltip: 'Retour',
-                  ),
-                  title: Text(
-                    'Abonnements',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.2,
-                    ),
-                  ),
-                  centerTitle: false,
+    final currentUserId = context.watch<AuthProvider>().userProfile?.id;
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => context.pop(),
+        ),
+        title: const Text(
+          'Abonnements',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      body: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.white.withOpacity(0.1),
+                  width: 0.5,
                 ),
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: _SearchHeaderDelegate(
-                    height: 64,
-                    child: _SearchField(
-                      controller: _searchController,
-                      onChanged: _handleSearch,
-                      onClear: () {
-                        _searchController.clear();
-                        _handleSearch('');
-                      },
-                      placeholder: 'Rechercher des journalistes ou rédactions…',
-                    ),
-                  ),
+              ),
+            ),
+            child: TextField(
+              controller: _searchController,
+              style: const TextStyle(color: Colors.white, fontSize: 15),
+              decoration: InputDecoration(
+                hintText: 'Rechercher',
+                hintStyle: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 15),
+                prefixIcon: Icon(Icons.search, color: Colors.white.withOpacity(0.4)),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.1),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
                 ),
-                if (_isLoading)
-                  const SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(child: LoadingIndicator()),
-                  )
-                else if (_error != null)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: ErrorView(error: _error!, onRetry: _loadFollowing),
-                  )
-                else if (_filteredFollowing == null ||
-                    _filteredFollowing!.isEmpty)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: EmptyState(
-                      icon: Icons.group,
-                      title: 'Aucun abonnement',
-                      subtitle: _searchQuery.isNotEmpty
-                          ? 'Aucun résultat pour "$_searchQuery"'
-                          : widget.isCurrentUser
-                              ? 'Vous n\'êtes abonné à aucun journaliste'
-                              : 'Aucun abonnement disponible',
-                    ),
-                  )
-                else
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final user = _filteredFollowing![index];
-                        final isProcessing = _processingIds[user.id] == true;
-                        return _FollowingTile(
-                          key: ValueKey('following_${user.id}'),
-                          user: user,
-                          isLast: index == _filteredFollowing!.length - 1,
-                          isProcessing: isProcessing,
-                          searchQuery: _searchQuery,
-                          onOpen: () => _navigateToProfile(user),
-                          onToggle: () => _handleFollowToggle(user),
-                        );
-                      },
-                      childCount: _filteredFollowing!.length,
-                    ),
-                  ),
-              ],
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-class _SearchField extends StatelessWidget {
-  final TextEditingController controller;
-  final ValueChanged<String> onChanged;
-  final VoidCallback onClear;
-  final String placeholder;
-  const _SearchField({
-    required this.controller,
-    required this.onChanged,
-    required this.onClear,
-    required this.placeholder,
-  });
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-      decoration: BoxDecoration(
-        color: cs.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: cs.outlineVariant, width: 1),
-      ),
-      child: TextField(
-        controller: controller,
-        onChanged: onChanged,
-        textInputAction: TextInputAction.search,
-        style: TextStyle(
-          color: cs.onSurface,
-          fontSize: 16,
-          letterSpacing: -0.2,
-        ),
-        decoration: InputDecoration(
-          hintText: placeholder,
-          hintStyle: TextStyle(
-            color: cs.onSurfaceVariant,
-            fontSize: 14,
+          Expanded(
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : _filteredFollowing.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.people_outline,
+                              size: 80,
+                              color: Colors.white.withOpacity(0.3),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              _searchQuery.isEmpty
+                                  ? 'Aucun abonnement'
+                                  : 'Aucun résultat',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.6),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        itemCount: _filteredFollowing.length,
+                        itemBuilder: (context, index) {
+                          final user = _filteredFollowing[index];
+                          final isCurrentUser = currentUserId == user.id;
+                          final isProcessing = _processingFollows.contains(user.id);
+
+                          return InkWell(
+                            onTap: () {
+                              if (isCurrentUser) {
+                                context.go('/profile');
+                              } else {
+                                context.push('/profile', extra: {
+                                  'userId': user.id,
+                                  'isCurrentUser': false,
+                                  'forceReload': true,
+                                });
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              child: Row(
+                                children: [
+                                  UserAvatar(
+                                    avatarUrl: user.avatarUrl,
+                                    name: user.name ?? user.username,
+                                    isJournalist: user.isJournalist,
+                                    radius: 24,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Row(
+                                      children: [
+                                        Flexible(
+                                          child: Text(
+                                            user.username,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        if (user.isVerified) ...[
+                                          const SizedBox(width: 4),
+                                          const Icon(
+                                            Icons.verified,
+                                            color: Colors.green,
+                                            size: 16,
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                  if (!isCurrentUser) ...[
+                                    const SizedBox(width: 12),
+                                    SizedBox(
+                                      height: 32,
+                                      child: isProcessing
+                                          ? const SizedBox(
+                                              width: 100,
+                                              child: Center(
+                                                child: SizedBox(
+                                                  width: 16,
+                                                  height: 16,
+                                                  child: CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          : ElevatedButton(
+                                              onPressed: () => _toggleFollow(user),
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: user.isFollowing
+                                                    ? Colors.transparent
+                                                    : Colors.white,
+                                                foregroundColor: user.isFollowing
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                                elevation: 0,
+                                                side: user.isFollowing
+                                                    ? BorderSide(
+                                                        color: Colors.white.withOpacity(0.3),
+                                                      )
+                                                    : null,
+                                                padding: const EdgeInsets.symmetric(
+                                                  horizontal: 24,
+                                                  vertical: 6,
+                                                ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(8),
+                                                ),
+                                                minimumSize: const Size(100, 32),
+                                              ),
+                                              child: Text(
+                                                user.isFollowing ? 'Abonné' : 'Suivre',
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
           ),
-          prefixIcon:
-              Icon(Icons.search, color: cs.onSurfaceVariant, size: 20),
-          suffixIcon: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 150),
-            child: controller.text.isEmpty
-                ? const SizedBox.shrink()
-                : IconButton(
-                    key: const ValueKey('clear'),
-                    onPressed: onClear,
-                    icon: const Icon(Icons.close, size: 18),
-                    color: cs.onSurfaceVariant,
-                    tooltip: 'Effacer la recherche',
-                  ),
-          ),
-          border: InputBorder.none,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-          filled: true,
-          fillColor: Colors.transparent,
-        ),
-      ),
-    );
-  }
-}
-class _FollowingTile extends StatelessWidget {
-  final UserProfile user;
-  final bool isProcessing;
-  final bool isLast;
-  final String searchQuery;
-  final VoidCallback onOpen;
-  final VoidCallback onToggle;
-  const _FollowingTile({
-    super.key,
-    required this.user,
-    required this.isProcessing,
-    required this.isLast,
-    required this.searchQuery,
-    required this.onOpen,
-    required this.onToggle,
-  });
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-    final titleStyle = theme.textTheme.titleMedium?.copyWith(
-      color: cs.onSurface,
-      fontWeight: FontWeight.w600,
-      letterSpacing: -0.2,
-    );
-    final subStyle = theme.textTheme.bodySmall?.copyWith(
-      color: cs.onSurfaceVariant,
-      height: 1.2,
-    );
-    return Semantics(
-      button: false,
-      label: 'Utilisateur ${user.name ?? user.username}',
-      child: InkWell(
-        onTap: onOpen,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          child: Row(
-            children: [
-              Hero(
-                tag: 'avatar_${user.id}',
-                child: _Avatar(url: user.avatarUrl),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _highlightedText(
-                        user.name ?? user.username, searchQuery, titleStyle),
-                    const SizedBox(height: 2),
-                    _secondaryLine(user, subStyle, searchQuery),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              _FollowButton(
-                isFollowing: user.isFollowing,
-                isProcessing: isProcessing,
-                onPressed: onToggle,
-              ),
-            ],
-          ),
-        ),
-      ),
-    ).withDivider(show: !isLast);
-  }
-  Widget _secondaryLine(UserProfile u, TextStyle? style, String q) {
-    final handle = '@${u.username}';
-    final org = u.organization?.trim();
-    final text = (org == null || org.isEmpty) ? handle : '$handle · $org';
-    return _highlightedText(text, q, style);
-  }
-  Widget _highlightedText(String text, String query, TextStyle? style) {
-    if (query.isEmpty) {
-      return Text(text,
-          style: style, maxLines: 1, overflow: TextOverflow.ellipsis);
-    }
-    final lower = text.toLowerCase();
-    final q = query.toLowerCase();
-    final i = lower.indexOf(q);
-    if (i < 0) {
-      return Text(text,
-          style: style, maxLines: 1, overflow: TextOverflow.ellipsis);
-    }
-    return RichText(
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      text: TextSpan(
-        style: style,
-        children: [
-          TextSpan(text: text.substring(0, i)),
-          TextSpan(
-              text: text.substring(i, i + q.length),
-              style: style?.copyWith(fontWeight: FontWeight.w800)),
-          TextSpan(text: text.substring(i + q.length)),
         ],
       ),
-    );
-  }
-}
-class _Avatar extends StatelessWidget {
-  final String? url;
-  const _Avatar({required this.url});
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final radius = 22.0;
-    if (url == null) {
-      return CircleAvatar(
-        radius: radius,
-        backgroundColor: cs.surfaceContainerHighest,
-        child: Icon(Icons.person, color: cs.onSurfaceVariant),
-      );
-    }
-    final resolved = ImageUtils.getAvatarUrl(url!);
-    return ClipOval(
-      child: Image.network(
-        resolved,
-        width: radius * 2,
-        height: radius * 2,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.low,
-        cacheWidth: (radius * 2).toInt() * 3,
-        cacheHeight: (radius * 2).toInt() * 3,
-        errorBuilder: (_, __, ___) => CircleAvatar(
-          radius: radius,
-          backgroundColor: cs.surfaceContainerHighest,
-          child: Icon(Icons.person, color: cs.onSurfaceVariant),
-        ),
-        loadingBuilder: (context, child, progress) {
-          if (progress == null) return child;
-          return CircleAvatar(
-              radius: radius, backgroundColor: cs.surfaceContainerHighest);
-        },
-      ),
-    );
-  }
-}
-class _FollowButton extends StatelessWidget {
-  final bool isFollowing;
-  final bool isProcessing;
-  final VoidCallback onPressed;
-  const _FollowButton({
-    required this.isFollowing,
-    required this.isProcessing,
-    required this.onPressed,
-  });
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-    final bool showPrimary = !isFollowing;
-    final ButtonStyle style = TextButton.styleFrom(
-      backgroundColor: showPrimary ? cs.primary : cs.surfaceContainerHighest,
-      foregroundColor: showPrimary ? cs.onPrimary : cs.onSurfaceVariant,
-      shape: const StadiumBorder(),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      minimumSize: const Size(0, 36),
-      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    );
-    return Semantics(
-      button: true,
-      label: isFollowing ? 'Abonné' : 'Suivre',
-      child: TextButton(
-        onPressed: isProcessing
-            ? null
-            : () {
-                HapticFeedback.selectionClick();
-                onPressed();
-              },
-        style: style,
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 150),
-          transitionBuilder: (c, a) => FadeTransition(opacity: a, child: c),
-          child: isProcessing
-              ? SizedBox(
-                  key: const ValueKey('spinner'),
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(cs.onSurfaceVariant)),
-                )
-              : Row(
-                  key: ValueKey(isFollowing ? 'abonne' : 'suivre'),
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(isFollowing ? Icons.check : Icons.add_rounded,
-                        size: 18),
-                    const SizedBox(width: 6),
-                    Text(isFollowing ? 'Abonné' : 'Suivre',
-                        style: const TextStyle(fontWeight: FontWeight.w600)),
-                  ],
-                ),
-        ),
-      ),
-    );
-  }
-}
-class _SearchHeaderDelegate extends SliverPersistentHeaderDelegate {
-  final double height;
-  final Widget child;
-  _SearchHeaderDelegate({required this.height, required this.child});
-  @override
-  double get minExtent => height;
-  @override
-  double get maxExtent => height;
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    final cs = Theme.of(context).colorScheme;
-    return Container(
-      color: cs.surface,
-      alignment: Alignment.centerLeft,
-      child: child,
-    );
-  }
-  @override
-  bool shouldRebuild(covariant _SearchHeaderDelegate oldDelegate) {
-    return oldDelegate.height != height || oldDelegate.child != child;
-  }
-}
-class _Debouncer {
-  final int milliseconds;
-  Timer? _timer;
-  _Debouncer({required this.milliseconds});
-  void run(VoidCallback action) {
-    _timer?.cancel();
-    _timer = Timer(Duration(milliseconds: milliseconds), action);
-  }
-  void dispose() => _timer?.cancel();
-}
-extension _DividerX on Widget {
-  Widget withDivider({required bool show}) {
-    if (!show) return this;
-    return Column(
-      children: [
-        this,
-        const Divider(height: 1, thickness: 0.5),
-      ],
     );
   }
 }

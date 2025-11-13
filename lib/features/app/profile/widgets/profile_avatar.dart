@@ -22,12 +22,18 @@ class ProfileAvatar extends StatelessWidget {
   });
   String get _defaultAvatarPath {
     return role == 'journalist'
-        ? 'assets/images/default_journalist_avatar.png'
+        ? 'assets/images/defaults/default_journalist_avatar.png'
         : 'assets/images/default_user_avatar.png';
   }
   Widget _buildAvatarImage() {
     final processedUrl = UrlHelper.buildMediaUrl(avatarUrl);
     if (processedUrl == null || processedUrl.isEmpty) {
+      return _buildDefaultAvatar();
+    }
+    if (processedUrl.contains('localhost') ||
+        processedUrl.contains('127.0.0.1') ||
+        processedUrl.startsWith('http://localhost') ||
+        processedUrl.startsWith('https://localhost')) {
       return _buildDefaultAvatar();
     }
     if (processedUrl
