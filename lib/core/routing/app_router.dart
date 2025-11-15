@@ -433,6 +433,7 @@ class AppRouter {
         path: RouteNames.newQuestion,
         builder: (context, state) => const NewQuestionScreen(
           journalistId: '',
+          domain: 'societe',
         ),
       ),
       GoRoute(

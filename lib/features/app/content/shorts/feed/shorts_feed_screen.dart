@@ -256,13 +256,15 @@ class _ShortsFeedScreenState extends State<ShortsFeedScreen> {
                           Border.all(color: color.withOpacity(0.5), width: 2),
                     ),
                     child: Icon(
-                      Icons.public,
+                      medianOrientation != null
+                          ? PoliticalOrientationUtils.getIconData(medianOrientation)
+                          : Icons.public,
                       color: color,
                       size: 28,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  if (totalVotes > 0)
+                  if (totalVotes > 0 && medianOrientation != null)
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
@@ -271,10 +273,10 @@ class _ShortsFeedScreenState extends State<ShortsFeedScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                        '$totalVotes',
+                        PoliticalOrientationUtils.getLabel(medianOrientation),
                         style: TextStyle(
                           color: color,
-                          fontSize: 11,
+                          fontSize: 10,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -792,7 +794,11 @@ class _ShortsFeedScreenState extends State<ShortsFeedScreen> {
               GestureDetector(
                 onTap: () {
                   if (short.journalist?.id != null) {
-                    context.push('/profile/${short.journalist!.id}');
+                    context.push('/profile', extra: {
+                      'userId': short.journalist!.id,
+                      'isCurrentUser': false,
+                      'forceReload': true,
+                    });
                   }
                 },
                 child: Row(

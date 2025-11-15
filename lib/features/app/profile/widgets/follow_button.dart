@@ -8,12 +8,14 @@ class FollowButton extends StatelessWidget {
   final String userId;
   final bool initialIsFollowing;
   final bool compact;
+  final bool fullWidth;
 
   const FollowButton({
     super.key,
     required this.userId,
     required bool isFollowing,
     this.compact = false,
+    this.fullWidth = false,
   }) : initialIsFollowing = isFollowing;
 
   @override
@@ -25,10 +27,7 @@ class FollowButton extends StatelessWidget {
         final isFollowing = followProvider.isFollowing(userId);
         final isProcessing = followProvider.isProcessing(userId);
 
-        return SizedBox(
-          height: compact ? 32 : 36,
-          width: compact ? 100 : 110,
-          child: ElevatedButton(
+        final button = ElevatedButton(
             onPressed: isProcessing
                 ? null
                 : () async {
@@ -53,11 +52,14 @@ class FollowButton extends StatelessWidget {
               foregroundColor: Colors.white,
               elevation: 0,
               padding: EdgeInsets.zero,
+              minimumSize: fullWidth ? const Size(double.infinity, 40) : null,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(fullWidth ? 12 : 18),
               ),
             ),
-            child: Ink(
+            child: Container(
+              width: double.infinity,
+              height: double.infinity,
               decoration: BoxDecoration(
                 gradient: isFollowing
                     ? const LinearGradient(
@@ -70,10 +72,13 @@ class FollowButton extends StatelessWidget {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(fullWidth ? 12 : 18),
               ),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: fullWidth ? 10 : 6,
+                ),
                 child: isProcessing
                     ? const SizedBox(
                         width: 16,
@@ -92,11 +97,11 @@ class FollowButton extends StatelessWidget {
                             size: compact ? 14 : 16,
                             color: Colors.white,
                           ),
-                          const SizedBox(width: 6),
+                          SizedBox(width: fullWidth ? 8 : 6),
                           Text(
                             isFollowing ? 'Abonné' : 'Suivre',
                             style: TextStyle(
-                              fontSize: compact ? 12 : 14,
+                              fontSize: fullWidth ? 14 : (compact ? 12 : 14),
                               fontWeight: FontWeight.w600,
                               color: Colors.white,
                             ),
@@ -105,8 +110,26 @@ class FollowButton extends StatelessWidget {
                       ),
               ),
             ),
-          ),
-        );
+          );
+
+        if (fullWidth) {
+          return SizedBox(
+            height: 40,
+            child: button,
+          );
+        } else if (compact) {
+          return SizedBox(
+            height: 32,
+            width: 100,
+            child: button,
+          );
+        } else {
+          return SizedBox(
+            height: 36,
+            width: 110,
+            child: button,
+          );
+        }
       },
     );
   }

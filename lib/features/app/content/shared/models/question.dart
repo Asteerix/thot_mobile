@@ -17,6 +17,7 @@ class Question {
   final DateTime createdAt;
   final bool isLiked;
   final bool isDisliked;
+  final bool isMultipleChoice;
   const Question({
     required this.id,
     required this.title,
@@ -32,6 +33,7 @@ class Question {
     required this.createdAt,
     this.isLiked = false,
     this.isDisliked = false,
+    this.isMultipleChoice = false,
   });
   int get totalVotes => votes.length;
   int get responseCount => totalVotes;
@@ -70,6 +72,7 @@ class Question {
       'createdAt': createdAt.toIso8601String(),
       'isLiked': isLiked,
       'isDisliked': isDisliked,
+      'isMultipleChoice': isMultipleChoice,
     };
   }
 
@@ -133,6 +136,7 @@ class Question {
           : DateTime.now(),
       isLiked: json['isLiked'] == true,
       isDisliked: json['isDisliked'] == true,
+      isMultipleChoice: json['isMultipleChoice'] == true,
     );
   }
 }

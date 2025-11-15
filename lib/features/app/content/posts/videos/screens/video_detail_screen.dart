@@ -131,15 +131,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => ContentDescriptionDialog(
-        post: _post!,
-        mediaWidget: _isVideoInitialized && _videoController != null
-            ? AspectRatio(
-                aspectRatio: 16 / 9,
-                child: VideoPlayer(_videoController!),
-              )
-            : null,
-      ),
+      builder: (context) => ContentDescriptionDialog(post: _post!),
     );
   }
 

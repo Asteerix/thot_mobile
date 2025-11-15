@@ -1,406 +1,248 @@
 import 'package:thot/core/presentation/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:developer' as developer;
 import 'package:thot/features/app/content/shared/models/post.dart';
-import 'package:thot/features/app/content/shared/providers/post_repository_impl.dart';
-import 'package:thot/core/di/service_locator.dart';
-import 'post_actions.dart';
-import 'package:thot/features/app/content/shared/comments/comment_sheet.dart';
 import 'package:thot/core/utils/safe_navigation.dart';
-import 'package:thot/shared/media/widgets/professional_video_player.dart';
-import 'package:thot/shared/media/widgets/professional_audio_player.dart';
 
-class FullArticleDialog extends StatefulWidget {
+class FullArticleDialog extends StatelessWidget {
   final Post post;
   const FullArticleDialog({
     super.key,
     required this.post,
   });
-  @override
-  State<FullArticleDialog> createState() => _FullArticleDialogState();
-}
-
-class _FullArticleDialogState extends State<FullArticleDialog> {
-  final _postRepository = ServiceLocator.instance.postRepository;
-  late Post _currentPost;
-  @override
-  void initState() {
-    super.initState();
-    _currentPost = widget.post;
-  }
-
-  Future<void> _handleLike() async {
-    developer.log(
-      'FullArticleDialog: Handling like for post ${_currentPost.id}',
-      name: 'FullArticleDialog',
-    );
-    if (_currentPost.id.startsWith('invalid_post_id_')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Impossible d\'interagir avec ce post'),
-          backgroundColor: AppColors.error,
-        ),
-      );
-      return;
-    }
-    try {
-      await _postRepository.likePost(_currentPost.id);
-      HapticFeedback.mediumImpact();
-      final response = await _postRepository.getPost(_currentPost.id);
-      final updatedPost = Post.fromJson(response);
-      if (mounted) {
-        setState(() {
-          _currentPost = updatedPost;
-        });
-      }
-    } catch (e) {
-      developer.log(
-        'Error liking post in FullArticleDialog',
-        name: 'FullArticleDialog',
-        error: e,
-      );
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur: ${e.toString()}'),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-    }
-  }
-
-  Future<void> _handleSave() async {
-    developer.log(
-      'FullArticleDialog: Handling save for post ${_currentPost.id}',
-      name: 'FullArticleDialog',
-    );
-    if (_currentPost.id.startsWith('invalid_post_id_')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Impossible de sauvegarder ce post'),
-          backgroundColor: AppColors.error,
-        ),
-      );
-      return;
-    }
-    try {
-      if (_currentPost.isSaved) {
-        await _postRepository.unsavePost(_currentPost.id);
-      } else {
-        await _postRepository.savePost(_currentPost.id);
-      }
-      HapticFeedback.lightImpact();
-      final response = await _postRepository.getPost(_currentPost.id);
-      final updatedPost = Post.fromJson(response);
-      if (mounted) {
-        setState(() {
-          _currentPost = updatedPost;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_currentPost.isSaved
-                ? 'Retiré des favoris'
-                : 'Ajouté aux favoris'),
-            backgroundColor: AppColors.success,
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    } catch (e) {
-      developer.log(
-        'Error saving post in FullArticleDialog',
-        name: 'FullArticleDialog',
-        error: e,
-      );
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur: ${e.toString()}'),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-    }
-  }
-
-  void _showCommentsSheet() {
-    if (_currentPost.id.startsWith('invalid_post_id_')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Impossible d\'afficher les commentaires'),
-          backgroundColor: AppColors.error,
-        ),
-      );
-      return;
-    }
-    SafeNavigation.showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      enableDrag: true,
-      builder: (context) => CommentsBottomSheet(postId: _currentPost.id),
-    );
-  }
-
-  Widget _buildMediaHeader(bool isDark) {
-    if (_currentPost.type == PostType.video && _currentPost.videoUrl != null) {
-      return Stack(
-        fit: StackFit.expand,
-        children: [
-          ProfessionalVideoPlayer(
-            videoUrl: _currentPost.videoUrl!,
-            thumbnailUrl: _currentPost.thumbnailUrl ?? _currentPost.imageUrl,
-            autoPlay: false,
-            looping: false,
-            showControls: true,
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 80,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    (isDark ? Colors.black : Colors.white).withOpacity(0.9),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-
-    if (_currentPost.type == PostType.podcast && _currentPost.videoUrl != null) {
-      return Stack(
-        fit: StackFit.expand,
-        children: [
-          ProfessionalAudioPlayer(
-            audioUrl: _currentPost.videoUrl!,
-            thumbnailUrl: _currentPost.thumbnailUrl ?? _currentPost.imageUrl,
-            autoPlay: false,
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 80,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    (isDark ? Colors.black : Colors.white).withOpacity(0.9),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        if (_currentPost.imageUrl != null)
-          Image.network(
-            _currentPost.imageUrl!,
-            fit: BoxFit.cover,
-          )
-        else
-          Container(
-            color: isDark ? const Color(0xFF1C1C1E) : Colors.grey[200],
-            child: Icon(
-              Icons.broken_image,
-              size: 48,
-              color: isDark ? Colors.grey[600] : Colors.grey[400],
-            ),
-          ),
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.transparent,
-                (isDark ? Colors.black : Colors.white).withOpacity(0.9),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? Colors.black : Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: isDark ? Colors.grey[700] : Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+    final screenWidth = MediaQuery.of(context).size.width;
+    final contentPadding = screenWidth > 600 ? 56.0 : 32.0;
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.88,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFFFBFBFB),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 24,
+                offset: const Offset(0, -8),
               ),
-            ),
-            Expanded(
-              child: CustomScrollView(
-                slivers: [
-                  SliverAppBar(
-                    expandedHeight: MediaQuery.of(context).size.height * 0.3,
-                    pinned: true,
-                    backgroundColor: isDark ? Colors.black : Colors.white,
-                    elevation: 0,
-                    leading: IconButton(
-                      icon: Icon(Icons.close,
-                          color: isDark ? Colors.white : Colors.black),
-                      onPressed: () => SafeNavigation.pop(context),
-                    ),
-                    stretch: true,
-                    stretchTriggerOffset: 100,
-                    flexibleSpace: FlexibleSpaceBar(
-                      background: _buildMediaHeader(isDark),
+            ],
+          ),
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 5,
+                    margin: const EdgeInsets.only(top: 12, bottom: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(3),
                     ),
                   ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: MediaQuery.of(context).size.width * 0.05,
-                        vertical: 20,
-                      ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      controller: scrollController,
+                      physics: const BouncingScrollPhysics(),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            _currentPost.content,
-                            style: TextStyle(
-                              color: isDark
-                                  ? Colors.white.withOpacity(0.9)
-                                  : Colors.black.withOpacity(0.85),
-                              fontSize: 17,
-                              height: 1.6,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                          if (_currentPost.sources.isNotEmpty) ...[
-                            const SizedBox(height: 32),
-                            Text(
-                              'Sources',
-                              style: TextStyle(
-                                color: isDark ? Colors.white : Colors.black,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
+                          if (post.imageUrl != null || post.thumbnailUrl != null)
+                            Container(
+                              margin: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.08),
+                                    blurRadius: 16,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            ..._currentPost.sources.map((source) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 8),
-                                  child: Text(
-                                    '• $source',
-                                    style: TextStyle(
-                                      color: isDark
-                                          ? Colors.blue[300]
-                                          : Colors.blue[700],
-                                      fontSize: 15,
-                                      height: 1.4,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: AspectRatio(
+                                  aspectRatio: 16 / 9,
+                                  child: Image.network(
+                                    post.thumbnailUrl ?? post.imageUrl ?? '',
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) => Container(
+                                      color: Colors.grey[100],
+                                      child: Icon(
+                                        Icons.image_outlined,
+                                        size: 48,
+                                        color: Colors.grey[400],
+                                      ),
                                     ),
                                   ),
-                                )),
-                          ],
-                          if (_currentPost.tags.isNotEmpty) ...[
-                            const SizedBox(height: 24),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: _currentPost.tags
-                                  .map((tag) => Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                          vertical: 8,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: isDark
-                                              ? const Color(0xFF1C1C1E)
-                                              : Colors.grey[200],
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                        ),
-                                        child: Text(
-                                          '#$tag',
-                                          style: TextStyle(
-                                            color: isDark
-                                                ? Colors.white.withOpacity(0.7)
-                                                : Colors.black.withOpacity(0.7),
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      ))
-                                  .toList(),
+                                ),
+                              ),
                             ),
-                          ],
-                          const SizedBox(height: 100),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: contentPadding),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  post.title,
+                                  style: const TextStyle(
+                                    color: Color(0xFF0A0A0A),
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w900,
+                                    height: 1.2,
+                                    letterSpacing: -0.8,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                Container(
+                                  width: 48,
+                                  height: 4,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.blue,
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                ),
+                                const SizedBox(height: 32),
+                                Text(
+                                  post.content,
+                                  style: const TextStyle(
+                                    color: Color(0xFF1F1F1F),
+                                    fontSize: 19,
+                                    height: 1.8,
+                                    letterSpacing: 0.1,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  textAlign: TextAlign.justify,
+                                ),
+                                if (post.sources.isNotEmpty) ...[
+                                  const SizedBox(height: 48),
+                                  Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(24),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF0F7FF),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: const Color(0xFFD1E7FF),
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(8),
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue[600],
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                              child: const Icon(
+                                                Icons.source,
+                                                color: Colors.white,
+                                                size: 18,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            const Text(
+                                              'Sources',
+                                              style: TextStyle(
+                                                color: Color(0xFF0A0A0A),
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w800,
+                                                letterSpacing: -0.2,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 18),
+                                        ...post.sources.map((source) => Padding(
+                                              padding: const EdgeInsets.only(bottom: 12),
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    width: 5,
+                                                    height: 5,
+                                                    margin: const EdgeInsets.only(top: 9),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.blue[700],
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 14),
+                                                  Expanded(
+                                                    child: Text(
+                                                      source,
+                                                      style: TextStyle(
+                                                        color: Colors.blue[900],
+                                                        fontSize: 16,
+                                                        height: 1.6,
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                                if (post.tags.isNotEmpty) ...[
+                                  const SizedBox(height: 36),
+                                  Wrap(
+                                    spacing: 10,
+                                    runSpacing: 10,
+                                    children: post.tags
+                                        .map((tag) => Container(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 16,
+                                                vertical: 9,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius: BorderRadius.circular(24),
+                                                border: Border.all(
+                                                  color: Colors.grey[300]!,
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              child: Text(
+                                                '#$tag',
+                                                style: TextStyle(
+                                                  color: Colors.grey[700],
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  letterSpacing: 0.3,
+                                                ),
+                                              ),
+                                            ))
+                                        .toList(),
+                                  ),
+                                ],
+                                const SizedBox(height: 48),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
                   ),
                 ],
               ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                color: isDark ? Colors.black : Colors.white,
-                border: Border(
-                  top: BorderSide(
-                    color: isDark ? Colors.grey[800]! : Colors.grey[300]!,
-                    width: 1,
-                  ),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-              child: PostActions(
-                post: _currentPost,
-                onLike: _handleLike,
-                onComment: _showCommentsSheet,
-                onSave: _handleSave,
-                onPostUpdated: (updatedPost) {
-                  setState(() {
-                    _currentPost = updatedPost;
-                  });
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

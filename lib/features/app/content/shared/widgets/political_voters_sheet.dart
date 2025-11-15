@@ -8,6 +8,7 @@ import 'package:thot/core/di/service_locator.dart';
 import 'package:thot/core/utils/safe_navigation.dart';
 import 'package:thot/features/app/content/shared/models/post.dart';
 import 'package:thot/shared/widgets/images/app_avatar.dart';
+import 'package:thot/features/app/profile/widgets/follow_button.dart';
 import '../widgets/political_orientation_utils.dart';
 
 class PoliticalVotersSheet extends StatefulWidget {
@@ -85,11 +86,9 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
       builder: (context, scrollController) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
         return Container(
-          decoration: BoxDecoration(
-            color: isDark
-                ? AppColors.darkSurface
-                : Theme.of(context).colorScheme.surface,
-            borderRadius: const BorderRadius.only(
+          decoration: const BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
             ),
@@ -101,10 +100,7 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurfaceVariant
-                      .withOpacity(0.4),
+                  color: Colors.white.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -116,8 +112,8 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
                     Expanded(
                       child: Text(
                         widget.title,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
+                        style: const TextStyle(
+                          color: Colors.white,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -128,7 +124,7 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
                       Text(
                         '${_voters.length}',
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          color: Colors.white.withOpacity(0.7),
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
@@ -139,7 +135,7 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
               Divider(
                 height: 1,
                 thickness: 0.5,
-                color: Theme.of(context).colorScheme.outlineVariant,
+                color: Colors.white.withOpacity(0.1),
               ),
               Expanded(
                 child: _buildContent(scrollController),
@@ -154,9 +150,9 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
   Widget _buildContent(ScrollController scrollController) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     if (_isLoading) {
-      return Center(
+      return const Center(
         child: CircularProgressIndicator(
-          color: Theme.of(context).colorScheme.primary,
+          color: Colors.white,
           strokeWidth: 2,
         ),
       );
@@ -166,26 +162,25 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline,
               size: 64,
-              color: Theme.of(context).colorScheme.error,
+              color: Colors.red,
             ),
             const SizedBox(height: 16),
             Text(
               'Erreur de chargement',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: Colors.white.withOpacity(0.7),
                 fontSize: 16,
               ),
             ),
             const SizedBox(height: 8),
             TextButton(
               onPressed: _loadVoters,
-              child: Text(
+              child: const Text(
                 'Réessayer',
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                style: TextStyle(color: Colors.white),
               ),
             ),
           ],
@@ -200,16 +195,13 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
             Icon(
               Icons.how_to_vote,
               size: 64,
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSurfaceVariant
-                  .withOpacity(0.5),
+              color: Colors.white.withOpacity(0.3),
             ),
             const SizedBox(height: 16),
             Text(
               'Aucun vote',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: Colors.white.withOpacity(0.7),
                 fontSize: 16,
               ),
             ),
@@ -233,7 +225,7 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
                 Expanded(
                   child: Container(
                     height: 0.5,
-                    color: Theme.of(context).colorScheme.outlineVariant,
+                    color: Colors.white.withOpacity(0.2),
                   ),
                 ),
                 Padding(
@@ -241,10 +233,7 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
                   child: Text(
                     'Utilisateurs',
                     style: TextStyle(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurfaceVariant
-                          .withOpacity(0.6),
+                      color: Colors.white.withOpacity(0.5),
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -253,7 +242,7 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
                 Expanded(
                   child: Container(
                     height: 0.5,
-                    color: Theme.of(context).colorScheme.outlineVariant,
+                    color: Colors.white.withOpacity(0.2),
                   ),
                 ),
               ],
@@ -289,7 +278,7 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: Theme.of(context).colorScheme.outlineVariant,
+                          color: Colors.white.withOpacity(0.2),
                           width: 1,
                         ),
                       ),
@@ -297,9 +286,7 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
                         avatarUrl: voter['avatarUrl'],
                         radius: 24,
                         isJournalist: voter['isJournalist'] ?? false,
-                        backgroundColor: Theme.of(context)
-                            .colorScheme
-                            .surfaceContainerHighest,
+                        backgroundColor: Colors.grey[900],
                       ),
                     ),
                     if (voter['verified'] == true)
@@ -310,18 +297,16 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
                           width: 18,
                           height: 18,
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary,
+                            color: Colors.green,
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: isDark
-                                  ? AppColors.darkSurface
-                                  : Theme.of(context).colorScheme.surface,
+                              color: Colors.black,
                               width: 2,
                             ),
                           ),
-                          child: Icon(
+                          child: const Icon(
                             Icons.check,
-                            color: Theme.of(context).colorScheme.onPrimary,
+                            color: Colors.white,
                             size: 10,
                           ),
                         ),
@@ -338,8 +323,8 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
                           Flexible(
                             child: Text(
                               voter['name'] ?? 'Unknown',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurface,
+                              style: const TextStyle(
+                                color: Colors.white,
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -354,23 +339,17 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .tertiary
-                                    .withOpacity(0.2),
+                                color: Colors.blue.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(4),
                                 border: Border.all(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .tertiary
-                                      .withOpacity(0.4),
+                                  color: Colors.blue.withOpacity(0.4),
                                   width: 0.5,
                                 ),
                               ),
-                              child: Text(
+                              child: const Text(
                                 'Journaliste',
                                 style: TextStyle(
-                                  color: Theme.of(context).colorScheme.tertiary,
+                                  color: Colors.blue,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -383,59 +362,20 @@ class _PoliticalVotersSheetState extends State<PoliticalVotersSheet> {
                       Text(
                         '@${voter['username'] ?? ''}',
                         style: TextStyle(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurfaceVariant
-                              .withOpacity(0.6),
+                          color: Colors.white.withOpacity(0.6),
                           fontSize: 13,
                         ),
                       ),
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
+                const SizedBox(width: 8),
+                if (voter['_id'] != null || voter['id'] != null)
+                  FollowButton(
+                    userId: voter['_id'] ?? voter['id'],
+                    isFollowing: voter['isFollowing'] ?? false,
+                    compact: true,
                   ),
-                  decoration: BoxDecoration(
-                    color: PoliticalOrientationUtils.getColor(
-                      PoliticalOrientation.values.firstWhere(
-                        (o) =>
-                            o.toString().split('.').last ==
-                            (voter['view'] ?? widget.orientation),
-                      ),
-                    ).withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: PoliticalOrientationUtils.getColor(
-                        PoliticalOrientation.values.firstWhere(
-                          (o) =>
-                              o.toString().split('.').last ==
-                              (voter['view'] ?? widget.orientation),
-                        ),
-                      ).withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Icon(
-                    PoliticalOrientationUtils.getIconData(
-                      PoliticalOrientation.values.firstWhere(
-                        (o) =>
-                            o.toString().split('.').last ==
-                            (voter['view'] ?? widget.orientation),
-                      ),
-                    ),
-                    color: PoliticalOrientationUtils.getColor(
-                      PoliticalOrientation.values.firstWhere(
-                        (o) =>
-                            o.toString().split('.').last ==
-                            (voter['view'] ?? widget.orientation),
-                      ),
-                    ),
-                    size: 16,
-                  ),
-                ),
               ],
             ),
           ),

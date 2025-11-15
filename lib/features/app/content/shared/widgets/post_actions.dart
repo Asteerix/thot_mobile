@@ -79,19 +79,21 @@ class _PostActionsState extends State<PostActions> {
     final isEnabled = onPressed != null;
     final effectiveIconColor = iconColor ?? (isActive ? Colors.red : Colors.white);
 
-    return InkWell(
-      onTap: isEnabled ? onPressed : null,
-      borderRadius: BorderRadius.circular(12),
-      child: Opacity(
-        opacity: isEnabled ? 1.0 : 0.5,
-        child: Container(
-          height: 56,
-          decoration: BoxDecoration(
-            color: isActive
-                ? Colors.red.withOpacity(0.15)
-                : Colors.grey[900],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: isEnabled ? onPressed : null,
+        borderRadius: BorderRadius.circular(12),
+        child: Opacity(
+          opacity: isEnabled ? 1.0 : 0.5,
+          child: Container(
+            height: 56,
+            decoration: BoxDecoration(
+              color: isActive
+                  ? Colors.red.withOpacity(0.15)
+                  : Colors.grey[900],
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
               color: isActive
                   ? Colors.red.withOpacity(0.3)
                   : Colors.white.withOpacity(0.1),
@@ -128,6 +130,7 @@ class _PostActionsState extends State<PostActions> {
           ),
         ),
       ),
+      ),
     );
   }
 
@@ -156,8 +159,10 @@ class _PostActionsState extends State<PostActions> {
     final color = medianOrientation != null
         ? PoliticalOrientationUtils.getColor(medianOrientation)
         : Colors.grey;
-    return InkWell(
-      onTap: () {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
         if (post.id.startsWith('invalid_post_id_')) return;
         showModalBottomSheet(
           context: context,
@@ -193,7 +198,9 @@ class _PostActionsState extends State<PostActions> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.public,
+              medianOrientation != null
+                  ? PoliticalOrientationUtils.getIconData(medianOrientation)
+                  : Icons.public,
               color: color,
               size: 22,
             ),
@@ -233,17 +240,43 @@ class _PostActionsState extends State<PostActions> {
           ],
         ),
       ),
+      ),
     );
   }
 
   void _showOpposingPostsSheet(BuildContext context, Post currentPost) {
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    print('🔍 OPENING OPPOSITION SHEET');
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    print('📍 Current post: ${currentPost.title}');
+    print('📍 widget.opposingPosts count: ${widget.opposingPosts?.length ?? 0}');
+    print('📍 currentPost.opposedByPosts count: ${currentPost.opposedByPosts?.length ?? 0}');
+    if (widget.opposingPosts != null) {
+      for (var i = 0; i < widget.opposingPosts!.length; i++) {
+        print('   [opposingPosts $i] ${widget.opposingPosts![i].title}');
+      }
+    }
+    if (currentPost.opposedByPosts != null) {
+      for (var i = 0; i < currentPost.opposedByPosts!.length; i++) {
+        print('   [opposedByPosts $i] postId: ${currentPost.opposedByPosts![i].postId}');
+      }
+    }
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+    final validOpposedByIds = currentPost.opposedByPosts
+        ?.where((op) => op.postId.isNotEmpty)
+        .map((op) => op.postId)
+        .toList() ?? [];
+
+    print('📍 Valid opposedBy IDs after filter: $validOpposedByIds');
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (context) => _OppositionBottomSheet(
         opposingPosts: widget.opposingPosts ?? [],
-        opposedByPosts: currentPost.opposedByPosts?.map((op) => op.postId).toList() ?? [],
+        opposedByPosts: validOpposedByIds,
         currentPostId: currentPost.id,
       ),
     );
@@ -325,13 +358,19 @@ class _PostActionsState extends State<PostActions> {
   }
 
   Widget _buildPostListItem(BuildContext context, Post post) {
-    return InkWell(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
       onTap: () {
         Navigator.pop(context);
         if (post.type == PostType.video) {
           context.push('/video-detail', extra: {'postId': post.id});
         } else if (post.type == PostType.podcast) {
           context.push('/podcast-detail', extra: {'postId': post.id});
+        } else if (post.type == PostType.question) {
+          context.push('/question-detail', extra: {'questionId': post.id});
+        } else if (post.type == PostType.short) {
+          context.push('/shorts', extra: {'initialShortId': post.id});
         } else {
           context.push('/article-detail', extra: {'postId': post.id});
         }
@@ -421,6 +460,7 @@ class _PostActionsState extends State<PostActions> {
             ),
           ],
         ),
+      ),
       ),
     );
   }
@@ -521,19 +561,21 @@ class _PostActionsState extends State<PostActions> {
                   const SizedBox(width: 6),
                   const Expanded(flex: 1, child: SizedBox()),
                   const SizedBox(width: 6),
-                  Expanded(
-                    flex: 1,
-                    child: _buildActionButton(
-                      icon: Icons.compare_arrows,
-                      label: ((widget.opposingPosts?.length ?? 0) + (displayPost.opposedByPosts?.length ?? 0)).toString(),
-                      iconColor: Colors.red,
-                      onPressed: ((widget.opposingPosts != null && widget.opposingPosts!.isNotEmpty) ||
-                                  (displayPost.opposedByPosts != null && displayPost.opposedByPosts!.isNotEmpty))
-                          ? () => _showOpposingPostsSheet(context, displayPost)
-                          : null,
+                  if (displayPost.type != PostType.question) ...[
+                    Expanded(
+                      flex: 1,
+                      child: _buildActionButton(
+                        icon: Icons.compare_arrows,
+                        label: ((widget.opposingPosts?.length ?? 0) + (displayPost.opposedByPosts?.length ?? 0)).toString(),
+                        iconColor: Colors.red,
+                        onPressed: ((widget.opposingPosts != null && widget.opposingPosts!.isNotEmpty) ||
+                                    (displayPost.opposedByPosts != null && displayPost.opposedByPosts!.isNotEmpty))
+                            ? () => _showOpposingPostsSheet(context, displayPost)
+                            : null,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 6),
+                    const SizedBox(width: 6),
+                  ],
                   Expanded(
                     flex: 1,
                     child: _buildActionButton(
@@ -603,9 +645,7 @@ class _PostActionsState extends State<PostActions> {
               Row(
                 children: [
                   if (displayPost.stats.views > 0) ...[
-                    InkWell(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Container(
+                    Container(
                         width: 100,
                         height: 56,
                         padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -642,7 +682,6 @@ class _PostActionsState extends State<PostActions> {
                           ],
                         ),
                       ),
-                    ),
                     const SizedBox(width: 8),
                   ],
                   Expanded(
@@ -700,7 +739,17 @@ class _OppositionBottomSheetState extends State<_OppositionBottomSheet>
   }
 
   Future<void> _loadOpposedByPosts() async {
-    if (widget.opposedByPosts.isEmpty) return;
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    print('📥 LOADING OPPOSED BY POSTS');
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    print('📍 opposedByPosts IDs to load: ${widget.opposedByPosts}');
+    print('📍 Count: ${widget.opposedByPosts.length}');
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+    if (widget.opposedByPosts.isEmpty) {
+      print('⚠️ No opposedByPosts to load');
+      return;
+    }
 
     setState(() {
       _isLoading = true;
@@ -709,14 +758,24 @@ class _OppositionBottomSheetState extends State<_OppositionBottomSheet>
     try {
       final loadedPosts = <Post>[];
       for (final postId in widget.opposedByPosts) {
+        print('📥 Loading opposed by post: $postId');
         try {
           final response = await _postRepository.getPost(postId);
+          print('✅ Received response for $postId');
           final post = Post.fromJson(response);
+          print('✅ Parsed post: ${post.title}');
           loadedPosts.add(post);
         } catch (e) {
-          print('Error loading opposed by post $postId: $e');
+          print('❌ Error loading opposed by post $postId: $e');
         }
       }
+
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('✅ OPPOSED BY POSTS LOADED: ${loadedPosts.length}');
+      for (var i = 0; i < loadedPosts.length; i++) {
+        print('   [$i] ${loadedPosts[i].title}');
+      }
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
       if (mounted) {
         setState(() {
@@ -973,13 +1032,19 @@ class _OppositionBottomSheetState extends State<_OppositionBottomSheet>
   }
 
   Widget _buildPostListItem(BuildContext context, Post post) {
-    return InkWell(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
       onTap: () {
         Navigator.pop(context);
         if (post.type == PostType.video) {
           context.push('/video-detail', extra: {'postId': post.id});
         } else if (post.type == PostType.podcast) {
           context.push('/podcast-detail', extra: {'postId': post.id});
+        } else if (post.type == PostType.question) {
+          context.push('/question-detail', extra: {'questionId': post.id});
+        } else if (post.type == PostType.short) {
+          context.push('/shorts', extra: {'initialShortId': post.id});
         } else {
           context.push('/article-detail', extra: {'postId': post.id});
         }
@@ -1069,6 +1134,7 @@ class _OppositionBottomSheetState extends State<_OppositionBottomSheet>
             ),
           ],
         ),
+      ),
       ),
     );
   }

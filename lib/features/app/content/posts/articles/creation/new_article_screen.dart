@@ -50,7 +50,7 @@ class _NewArticleScreenState extends State<NewArticleScreen> {
   bool _isLoading = false;
   String? _error;
   bool _isDirty = false;
-  Post? _opposingPost;
+  List<Post> _opposingPosts = [];
   File? _selectedImage;
   String? _existingImageUrl;
   int _wordCount = 0;
@@ -99,8 +99,9 @@ class _NewArticleScreenState extends State<NewArticleScreen> {
         _existingImageUrl = post['imageUrl'];
         if (post['opposingPosts'] != null &&
             (post['opposingPosts'] as List).isNotEmpty) {
-          final opposingPost = post['opposingPosts'][0];
-          _opposingPost = Post.fromJson(opposingPost);
+          _opposingPosts = (post['opposingPosts'] as List)
+              .map((op) => Post.fromJson(op))
+              .toList();
         }
         _wordCount = _countWords(_contentController.text);
         _readingMinutes = (_wordCount / 220).ceil().clamp(1, 60);
@@ -157,9 +158,19 @@ class _NewArticleScreenState extends State<NewArticleScreen> {
       builder: (context) => PostSearchDialog(
         onPostSelected: (post) {
           setState(() {
-            _opposingPost = post;
+            if (!_opposingPosts.any((p) => p.id == post.id)) {
+              _opposingPosts.add(post);
+            }
             _isDirty = true;
           });
+          SafeNavigation.showSnackBar(
+            context,
+            SnackBar(
+              content: Text('Publication ajoutée aux oppositions'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
         },
       ),
     );
@@ -216,14 +227,12 @@ class _NewArticleScreenState extends State<NewArticleScreen> {
         'domain': widget.domain,
         'type': 'article',
         'status': 'published',
-        'journalistId': widget.journalistId,
+        'journalist': widget.journalistId,
         'imageUrl': imageUrl,
-        if (_opposingPost != null)
-          'opposingPosts': [
-            {
-              'postId': _opposingPost!.id,
-              'description': ''}
-          ],
+        if (_opposingPosts.isNotEmpty)
+          'opposingPosts': _opposingPosts.map((post) => {
+            'postId': post.id,
+          }).toList(),
         'politicalOrientation': <String, dynamic>{
           'journalistChoice': 'neutral',
           'userVotes': {
@@ -251,31 +260,17 @@ class _NewArticleScreenState extends State<NewArticleScreen> {
         } else if (result['data'] != null && result['data']['_id'] != null) {
           postId = result['data']['_id'];
         }
+        _isDirty = false;
+        if (!mounted) return;
+
         EventBus().fire(PostCreatedEvent(
           postId: postId ?? '',
           postType: PostType.article.name,
           journalistId: widget.journalistId,
         ));
-        _isDirty = false;
-        if (!mounted) return;
 
-        SafeNavigation.showSnackBar(
-          context,
-          const SnackBar(
-            content: Text('Article publié avec succès !'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
-
-        if (postId != null) {
-          GoRouter.of(context).push('/article-detail', extra: {
-            'postId': postId,
-            'isFromProfile': true,
-          });
-        } else {
-          GoRouter.of(context).go('/feed');
-        }
+        Navigator.of(context).pop();
+        context.go('/profile');
       }
     } catch (e) {
       if (!mounted) return;
@@ -445,57 +440,80 @@ class _NewArticleScreenState extends State<NewArticleScreen> {
               ),
               SizedBox(height: 16.0),
               CreationSection(
-                title: 'Publication en opposition (optionnel)',
-                child: _opposingPost != null
-                    ? ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: _opposingPost!.imageUrl != null
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(4),
-                                child: Image.network(
-                                  _opposingPost!.imageUrl!,
+                title: 'Publications en opposition (optionnel)',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ..._opposingPosts.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final post = entry.value;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: post.imageUrl != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: Image.network(
+                                    post.imageUrl!,
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) =>
+                                        Container(
+                                      width: 50,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.05),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Icon(Icons.article,
+                                          color: Colors.white.withOpacity(0.5)),
+                                    ),
+                                  ),
+                                )
+                              : Container(
                                   width: 50,
                                   height: 50,
-                                  fit: BoxFit.cover,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.05),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Icon(Icons.article,
+                                      color: Colors.white.withOpacity(0.5)),
                                 ),
-                              )
-                            : Container(
-                                width: 50,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.05),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Icon(Icons.article,
-                                    color: Colors.white.withOpacity(0.5)),
-                              ),
-                        title: Text(
-                          _opposingPost!.title,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
+                          title: Text(
+                            post.title,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                          trailing: IconButton(
+                            icon: Icon(Icons.close,
+                                color: Colors.white.withOpacity(0.5)),
+                            onPressed: () {
+                              setState(() {
+                                _opposingPosts.removeAt(index);
+                                _isDirty = true;
+                              });
+                            },
+                          ),
                         ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.close,
-                              color: Colors.white.withOpacity(0.5)),
-                          onPressed: () {
-                            setState(() {
-                              _opposingPost = null;
-                            });
-                          },
-                        ),
-                      )
-                    : Center(
-                        child: TextButton.icon(
-                          onPressed: _searchOpposingPost,
-                          icon: Icon(Icons.add, color: Colors.white),
-                          label: Text('Ajouter une publication',
-                              style: TextStyle(color: Colors.white)),
-                        ),
+                      );
+                    }).toList(),
+                    Center(
+                      child: TextButton.icon(
+                        onPressed: _searchOpposingPost,
+                        icon: Icon(Icons.add, color: Colors.white),
+                        label: Text('Ajouter une publication',
+                            style: TextStyle(color: Colors.white)),
                       ),
+                    ),
+                  ],
+                ),
               ),
               if (_error != null) ...[
                 SizedBox(height: 16.0),

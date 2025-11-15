@@ -178,6 +178,13 @@ class PostRepositoryImpl with ConnectivityAware {
 
   Map<String, dynamic> _transformPost(Map<String, dynamic> post) {
     var transformed = Map<String, dynamic>.from(post);
+
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    print('🔍 _transformPost - opposedByPosts RAW:');
+    print('   Type: ${transformed['opposedByPosts']?.runtimeType}');
+    print('   Value: ${transformed['opposedByPosts']}');
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
     if (transformed['journalist'] != null) {
       final journalist = transformed['journalist'] as Map<String, dynamic>;
       print('👤 Journalist data in _transformPost');
@@ -417,12 +424,23 @@ class PostRepositoryImpl with ConnectivityAware {
     return withConnectivity(() async {
       try {
         print('📤 Creating post');
+        print('📦 Post data: ${postData.toString()}');
         final response = await _apiService.post('/api/posts', data: postData);
         final result = response.data ?? response;
         print('✅ Post created successfully');
+        print('📦 Result: ${result.toString()}');
         return result;
       } catch (e) {
-        print('Create post error');
+        print('❌ Create post error: ${e.toString()}');
+        if (e is DioException) {
+          print('❌ Status code: ${e.response?.statusCode}');
+          print('❌ Response headers: ${e.response?.headers}');
+          print('❌ Response data: ${e.response?.data}');
+          if (e.response?.data is Map) {
+            final data = e.response?.data as Map;
+            print('❌ Error message: ${data['message'] ?? data['error'] ?? 'No error message'}');
+          }
+        }
         rethrow;
       }
     });
@@ -781,7 +799,7 @@ class PostRepositoryImpl with ConnectivityAware {
       try {
         print('🗳️ Get political voters');
         final response =
-            await _apiService.get('/api/posts/$id/political-voters?view=$view');
+            await _apiService.get('/api/posts/$id/political-voters?orientation=$view');
         Map<String, dynamic> result;
         if (response.data != null && response.data is Map<String, dynamic>) {
           final responseData = response.data as Map<String, dynamic>;

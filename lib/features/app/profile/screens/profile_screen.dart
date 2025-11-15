@@ -636,7 +636,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       } else {
         validQuestions = response
             .where((item) =>
-                item['type'] == PostType.question &&
+                item['type'] == 'question' &&
                 item['metadata'] != null &&
                 item['metadata']['question'] != null)
             .toList();
@@ -644,7 +644,6 @@ class _ProfileScreenState extends State<ProfileScreen>
       setState(() {
         _questions = List<Map<String, dynamic>>.from(validQuestions);
       });
-      await _loadQuestionPosts();
     } catch (e) {
       _handleError(e.toString());
     }
@@ -714,119 +713,17 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  Widget _buildActionButtonsRow() {
-    if (_userProfile == null) return const SliverToBoxAdapter(child: SizedBox.shrink());
-
-    final currentUserId = context.read<AuthProvider>().userProfile?.id;
-    final isOwnProfile = currentUserId == _userProfile!.id;
-    final isJournalist = _userProfile!.isJournalist;
-
-    return SliverToBoxAdapter(
-      child: Container(
-        color: Colors.black,
-        padding: const EdgeInsets.all(16),
-        child: isOwnProfile
-            ? (isJournalist
-                ? Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            final result = await context.push('/edit-profile', extra: _userProfile);
-                            if (result != null && mounted) {
-                              _loadProfile();
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.black,
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: const Text(
-                            'Éditer',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () => context.push('/stats', extra: {'journalistId': _userProfile!.id}),
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            side: const BorderSide(color: Colors.white, width: 1),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: const Text(
-                            'Statistiques',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final result = await context.push('/edit-profile', extra: _userProfile);
-                        if (result != null && mounted) {
-                          _loadProfile();
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Éditer',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ))
-            : FollowButton(
-                userId: _userProfile!.id,
-                isFollowing: _userProfile!.isFollowing,
-                compact: false,
-              ),
-      ),
-    );
-  }
-
   Widget _buildTabBar() {
     _tabItems = [
       TabItemData(
         title: 'Publications',
-        icon: Icons.article,
-        activeIcon: Icons.article,
+        icon: Icons.dashboard,
+        activeIcon: Icons.dashboard,
       ),
       TabItemData(
         title: 'Shorts',
-        icon: Icons.videocam,
-        activeIcon: Icons.videocam,
+        icon: Icons.play_circle_filled,
+        activeIcon: Icons.play_circle_filled,
       ),
       TabItemData(
         title: 'Questions',
@@ -1366,48 +1263,173 @@ class _ProfileScreenState extends State<ProfileScreen>
           final questionId = questionData['id']?.toString() ??
               questionData['_id']?.toString() ??
               '';
-          final questionPost = _questionPosts[questionId];
-          final rawData = _questionsRawData[questionId];
-          if (questionPost != null && rawData != null) {
-            return Padding(
-              padding: EdgeInsets.only(
-                  bottom: 16,
-                  top: index ==
-                          (_userProfile!.isJournalist && widget.isCurrentUser
-                              ? 1
-                              : 0)
-                      ? 16
-                      : 0),
-              child: GestureDetector(
-                onTap: () =>
-                    _navigateToQuestion(Question.fromJson(questionData)),
-                child: QuestionCardWithVoting(
-                  questionPost: questionPost,
-                  rawQuestionData: rawData,
-                  isFromProfile: true,
-                  onVoteCompleted: () {
-                    _loadQuestionPosts();
-                  },
-                ),
-              ),
-            );
+
+          final questionMetadata = questionData['metadata']?['question'];
+          final questionType = questionMetadata?['questionType'] ?? questionMetadata?['type'] ?? 'poll';
+          final isMultipleChoice = questionMetadata?['isMultipleChoice'] ?? false;
+          final hasOptions = questionMetadata?['options'] != null &&
+                             (questionMetadata!['options'] as List).isNotEmpty;
+          final isDebate = questionType == 'openEnded' || !hasOptions;
+
+          String questionLabel;
+          IconData questionIcon;
+          if (isDebate) {
+            questionLabel = 'Débat';
+            questionIcon = Icons.forum;
+          } else if (isMultipleChoice) {
+            questionLabel = 'Choix multiple';
+            questionIcon = Icons.checklist;
+          } else {
+            questionLabel = 'Choix unique';
+            questionIcon = Icons.radio_button_checked;
           }
-          final question = Question.fromJson(questionData);
+
           return Padding(
             padding: EdgeInsets.only(
-                bottom: 16,
+                bottom: 12,
                 top: index ==
                         (_userProfile!.isJournalist && widget.isCurrentUser
                             ? 1
                             : 0)
-                    ? 16
+                    ? 12
                     : 0),
             child: GestureDetector(
-              onTap: () => _navigateToQuestion(question),
-              child: QuestionCard(
-                question: question,
-                onVote: (optionId, optionText) {},
-                isExpanded: false,
+              onTap: () => _navigateToQuestion(Question.fromJson(questionData)),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1C1C1E),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.08),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (questionData['imageUrl'] != null)
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                        child: AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: Image.network(
+                            questionData['imageUrl'],
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => Container(
+                              color: Colors.grey[850],
+                              child: Center(
+                                child: Icon(Icons.help_outline, color: Colors.white.withOpacity(0.3), size: 56),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppColors.blue,
+                                  AppColors.blue.withOpacity(0.7),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(questionIcon, color: Colors.white, size: 14),
+                                const SizedBox(width: 6),
+                                Text(
+                                  questionLabel,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            questionData['title'] ?? 'Question sans titre',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              height: 1.3,
+                              letterSpacing: -0.3,
+                            ),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (questionData['content'] != null &&
+                              questionData['content'].toString().isNotEmpty &&
+                              questionData['content'] != questionData['title']) ...[
+                            const SizedBox(height: 12),
+                            Text(
+                              questionData['content'],
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.75),
+                                fontSize: 15,
+                                height: 1.5,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.comment_outlined, color: Colors.white.withOpacity(0.7), size: 18),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '${questionData['interactions']?['comments'] ?? 0} commentaires',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.7),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const Spacer(),
+                                Icon(Icons.remove_red_eye_outlined, color: Colors.white.withOpacity(0.7), size: 18),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '${questionData['stats']?['views'] ?? 0}',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.7),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -1644,7 +1666,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                               ),
                             ),
                           ),
-                          _buildActionButtonsRow(),
                           _buildTabBar(),
                         ],
                         body: _buildContent(),

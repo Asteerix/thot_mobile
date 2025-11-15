@@ -313,7 +313,7 @@ class _NewShortScreenState extends State<NewShortScreen> {
         'videoUrl': videoUrl,
         'thumbnailUrl': imageUrl,
         'type': widget.isLiveMode ? PostType.live : PostType.short,
-        'journalistId': widget.journalistId,
+        'journalist': widget.journalistId,
         'domain': widget.domain ?? 'societe',
         'status': 'published',
         'politicalOrientation': {
@@ -363,15 +363,9 @@ class _NewShortScreenState extends State<NewShortScreen> {
             postId: postId,
             postType: PostType.short.name,
             journalistId: widget.journalistId));
-        GoRouter.of(context).go(
-          '/post/$postId',
-          extra: {
-            'postId': postId,
-            'isFromProfile': false,
-            'filterType': PostType.short,
-            'isFromFeed': true
-          },
-        );
+
+        Navigator.of(context).pop();
+        context.go('/profile');
       }
     } catch (e) {
       if (!mounted) return;
@@ -459,7 +453,7 @@ class _NewShortScreenState extends State<NewShortScreen> {
         onSubmit: _checkAndPublish,
         isSubmitting: _isUploading,
         canSubmit: canSubmit,
-        submitLabel: widget.isLiveMode ? 'Démarrer' : 'Publier',
+        submitLabel: widget.isLiveMode ? 'Démarrer' : 'Continuer',
         child: Form(
           key: _formKey,
           child: Column(

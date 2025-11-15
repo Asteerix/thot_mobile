@@ -25,6 +25,30 @@ final _logger = Logger(
 class UploadService with ConnectivityAware {
   static const int hashChunkSize = 8192;
   final _loggerService = LoggerService.instance;
+
+  String _sanitizeFilename(String filename) {
+    final lastDotIndex = filename.lastIndexOf('.');
+    final name = lastDotIndex != -1
+        ? filename.substring(0, lastDotIndex)
+        : filename;
+    final ext = lastDotIndex != -1
+        ? filename.substring(lastDotIndex)
+        : '';
+
+    final sanitizedName = name
+        .replaceAll(RegExp(r'[^\w\s.-]'), '')
+        .replaceAll(RegExp(r'\s+'), '_')
+        .replaceAll(RegExp(r'_+'), '_')
+        .replaceAll(RegExp(r'^[._-]+|[._-]+$'), '');
+
+    final result = sanitizedName.isEmpty
+        ? 'file$ext'
+        : '$sanitizedName$ext';
+
+    _loggerService.debug('Sanitized filename: $filename -> $result');
+    return result;
+  }
+
   Future<String> getFileHash(File file) async {
     try {
       final bytes = await file.readAsBytes();
@@ -65,14 +89,15 @@ class UploadService with ConnectivityAware {
         _loggerService.info('Starting upload for type: $type');
         _logger.d('Starting file upload');
         final mimeType = _getMimeType(file, type);
-        final filename = basename(file.path);
+        final originalFilename = basename(file.path);
+        final sanitizedFilename = _sanitizeFilename(originalFilename);
         _loggerService.info(
-            'Uploading file: path=${file.path}, name=$filename, type=$type, mime=$mimeType');
-        _loggerService.info('File: $filename, MIME: $mimeType');
+            'Uploading file: path=${file.path}, name=$sanitizedFilename, type=$type, mime=$mimeType');
+        _loggerService.info('File: $sanitizedFilename, MIME: $mimeType');
         final formData = FormData.fromMap({
           'file': await MultipartFile.fromFile(
             file.path,
-            filename: filename,
+            filename: sanitizedFilename,
             contentType: MediaType.parse(mimeType),
           ),
           'type': type,
@@ -198,13 +223,14 @@ class UploadService with ConnectivityAware {
       try {
         _loggerService.debug('Starting $type upload');
         final mimeType = 'image/jpeg';
-        final filename = basename(file.path);
+        final originalFilename = basename(file.path);
+        final sanitizedFilename = _sanitizeFilename(originalFilename);
         _loggerService.info(
-            'Uploading $type: path=${file.path}, name=$filename, mime=$mimeType');
+            'Uploading $type: path=${file.path}, name=$sanitizedFilename, mime=$mimeType');
         final formData = FormData.fromMap({
           'file': await MultipartFile.fromFile(
             file.path,
-            filename: filename,
+            filename: sanitizedFilename,
             contentType: MediaType.parse(mimeType),
           ),
         });

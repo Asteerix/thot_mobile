@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:thot/features/app/content/shared/models/post.dart';
+import 'package:thot/features/app/content/shared/models/question.dart';
 import 'package:thot/features/app/content/shared/providers/posts_state_provider.dart';
 import 'package:thot/features/app/content/shared/widgets/content_detail_layout.dart';
 import 'package:thot/features/app/content/shared/widgets/full_article_dialog.dart';
 import 'package:thot/features/app/content/shared/comments/comment_sheet.dart';
+import 'package:thot/features/app/content/posts/questions/widgets/question_answer_dialog.dart';
 import 'package:thot/core/di/service_locator.dart';
 import 'package:thot/core/utils/safe_navigation.dart';
 import 'package:thot/shared/media/widgets/professional_video_player.dart';
@@ -305,13 +307,109 @@ class _ContentViewerState extends State<ContentViewer> {
       return;
     }
 
-    SafeNavigation.showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      enableDrag: true,
-      builder: (context) => FullArticleDialog(post: post),
-    );
+    if (post.type == PostType.question) {
+      _showQuestionDialog(post);
+    } else {
+      SafeNavigation.showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        enableDrag: true,
+        builder: (context) => FullArticleDialog(post: post),
+      );
+    }
+  }
+
+  void _showQuestionDialog(Post post) async {
+    try {
+      final postRepository = ServiceLocator.instance.postRepository;
+      final rawData = await postRepository.getPost(post.id);
+
+      if (rawData['metadata'] == null || rawData['metadata']['question'] == null) {
+        return;
+      }
+
+      final questionData = Map<String, dynamic>.from(rawData['metadata']['question']);
+
+      // Vérifier le type de question
+      final questionType = questionData['questionType'] ?? questionData['type'] ?? 'poll';
+      final options = questionData['options'] ?? [];
+      final hasOptions = options is List && options.isNotEmpty;
+      final isDebate = (questionType == 'open' || questionType == 'openEnded') || !hasOptions;
+
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('📋 Question type: $questionType');
+      print('📋 Options: $options');
+      print('📋 Has options: $hasOptions');
+      print('📋 Is debate: $isDebate');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+      // Si c'est un débat, ouvrir directement les commentaires
+      if (isDebate) {
+        print('💬 Opening comments for debate question');
+        _showComments(post);
+        return;
+      }
+
+      // Sinon, c'est un poll, ouvrir le dialog de vote
+      final isMultipleChoice = questionData['isMultipleChoice'] ?? false;
+      print('📋 Question isMultipleChoice from backend: $isMultipleChoice');
+
+      questionData['author'] = rawData['journalist'];
+      questionData['journalist'] = rawData['journalist'];
+      questionData['id'] = rawData['_id'] ?? rawData['id'];
+      questionData['title'] = rawData['title'];
+      questionData['description'] = rawData['content'] ?? '';
+      questionData['imageUrl'] = rawData['imageUrl'] ?? '';
+      questionData['createdAt'] = rawData['createdAt'];
+      questionData['isMultipleChoice'] = isMultipleChoice;
+
+      final interactions = rawData['interactions'];
+      if (interactions != null && interactions is Map) {
+        final likes = interactions['likes'];
+        final comments = interactions['comments'];
+        questionData['likes'] = (likes is Map) ? (likes['count'] ?? 0) : (likes ?? 0);
+        questionData['comments'] = (comments is Map) ? (comments['count'] ?? 0) : (comments ?? 0);
+        questionData['isLiked'] = interactions['isLiked'] ?? false;
+      } else {
+        questionData['likes'] = 0;
+        questionData['comments'] = 0;
+        questionData['isLiked'] = false;
+      }
+
+      questionData['politicalView'] = rawData['politicalOrientation']?['journalistChoice'] ?? 'neutral';
+
+      final voters = questionData['voters'] ?? [];
+      print('📋 Voters from backend: $voters');
+      questionData['votes'] = voters;
+
+      if (questionData['options'] is List) {
+        final options = questionData['options'] as List;
+        for (var i = 0; i < options.length; i++) {
+          if (options[i] is Map && options[i]['id'] == null) {
+            options[i]['id'] = options[i]['_id'] ?? i.toString();
+          }
+        }
+      }
+
+      final question = Question.fromJson(questionData);
+      print('📋 Question votes count: ${question.votes.length}');
+      print('📋 User voted options: ${question.getUserVotedOptions()}');
+
+      if (!mounted) return;
+
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => QuestionAnswerDialog(
+          post: post,
+          question: question,
+        ),
+      );
+    } catch (e) {
+      print('❌ Error showing question dialog: $e');
+    }
   }
 }
 
@@ -348,7 +446,10 @@ class _ContentDetailViewState extends State<_ContentDetailView> {
   }
 
   Future<void> _loadOpposingPosts() async {
-    if (widget.post.opposingPosts == null || widget.post.opposingPosts!.isEmpty) {
+    final hasOpposing = widget.post.opposingPosts != null && widget.post.opposingPosts!.isNotEmpty;
+    final hasOpposedBy = widget.post.opposedByPosts != null && widget.post.opposedByPosts!.isNotEmpty;
+
+    if (!hasOpposing && !hasOpposedBy) {
       return;
     }
 
@@ -358,13 +459,28 @@ class _ContentDetailViewState extends State<_ContentDetailView> {
 
     try {
       final loadedPosts = <Post>[];
-      for (final opposition in widget.post.opposingPosts!) {
-        try {
-          final response = await _postRepository.getPost(opposition.postId);
-          final post = Post.fromJson(response);
-          loadedPosts.add(post);
-        } catch (e) {
-          print('Error loading opposing post ${opposition.postId}: $e');
+
+      if (hasOpposing) {
+        for (final opposition in widget.post.opposingPosts!) {
+          try {
+            final response = await _postRepository.getPost(opposition.postId);
+            final post = Post.fromJson(response);
+            loadedPosts.add(post);
+          } catch (e) {
+            print('Error loading opposing post ${opposition.postId}: $e');
+          }
+        }
+      }
+
+      if (hasOpposedBy) {
+        for (final opposed in widget.post.opposedByPosts!) {
+          try {
+            final response = await _postRepository.getPost(opposed.postId);
+            final post = Post.fromJson(response);
+            loadedPosts.add(post);
+          } catch (e) {
+            print('Error loading opposedBy post ${opposed.postId}: $e');
+          }
         }
       }
 
@@ -423,19 +539,13 @@ class _ContentDetailViewState extends State<_ContentDetailView> {
     }
 
     if (post.type == PostType.podcast) {
-      return SizedBox(
-        width: screenWidth,
-        height: screenWidth * 9 / 16,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: ProfessionalAudioPlayer(
-              audioUrl: post.videoUrl ?? '',
-              thumbnailUrl: post.thumbnailUrl ?? post.imageUrl,
-              autoPlay: false,
-            ),
-          ),
+      return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: ProfessionalVideoPlayer(
+          videoUrl: post.videoUrl ?? '',
+          thumbnailUrl: post.imageUrl,
+          autoPlay: false,
+          showControls: true,
         ),
       );
     }
@@ -480,15 +590,29 @@ class _ContentDetailViewState extends State<_ContentDetailView> {
   }
 
   String _getActionButtonText() {
-    if (widget.post.type == PostType.question) return "Répondre à la question";
+    if (widget.post.type == PostType.question) {
+      final questionMetadata = widget.post.metadata?.question;
+      if (questionMetadata != null) {
+        final questionType = questionMetadata.questionType;
+        final hasOptions = questionMetadata.options?.isNotEmpty ?? false;
+        final isDebate = questionType == 'openEnded' || !hasOptions;
+        return isDebate ? "Débattez en commentaire" : "Répondre à la question";
+      }
+      return "Répondre à la question";
+    }
     if (widget.post.type == PostType.video) return "Lire la description complète";
     if (widget.post.type == PostType.podcast) return "Lire la description complète";
     return "Lire l'article complet";
   }
 
+  String _getQuestionButtonText(Post post) {
+    // Cette méthode sera appelée après avoir chargé les données de la question
+    // Pour déterminer le bon texte du bouton
+    return "Répondre à la question";  // Par défaut
+  }
+
   Widget? _buildQuestionVoting() {
     if (widget.post.type != PostType.question) return null;
-    // TODO: Ajouter le widget de vote pour les questions
-    return null;
+    return const SizedBox.shrink();
   }
 }

@@ -66,6 +66,18 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
         }
       }
 
+      if (post.opposedByPosts != null) {
+        for (final opposedData in post.opposedByPosts!) {
+          try {
+            final opposedPost =
+                await postsStateProvider.loadPost(opposedData.postId);
+            if (opposedPost != null) opposing.add(opposedPost);
+          } catch (e) {
+            debugPrint('Erreur chargement post opposé par: $e');
+          }
+        }
+      }
+
       if (post.relatedPosts != null) {
         for (final relatedPost in post.relatedPosts!) {
           related.add(relatedPost);

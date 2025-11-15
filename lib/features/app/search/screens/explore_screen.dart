@@ -330,18 +330,6 @@ class _ExploreScreenState extends State<ExploreScreen>
                           color: AppColors.neutral,
                         ),
                         SearchFilterChipData(
-                          label: 'Progressistes',
-                          value: 'progressive',
-                          icon: Icons.chevron_right,
-                          color: AppColors.progressive,
-                        ),
-                        SearchFilterChipData(
-                          label: 'Très progressistes',
-                          value: 'extremelyProgressive',
-                          icon: Icons.keyboard_double_arrow_right,
-                          color: AppColors.extremelyProgressive,
-                        ),
-                        SearchFilterChipData(
                           label: 'Conservateurs',
                           value: 'conservative',
                           icon: Icons.chevron_left,
@@ -352,6 +340,18 @@ class _ExploreScreenState extends State<ExploreScreen>
                           value: 'extremelyConservative',
                           icon: Icons.keyboard_double_arrow_left,
                           color: AppColors.extremelyConservative,
+                        ),
+                        SearchFilterChipData(
+                          label: 'Progressistes',
+                          value: 'progressive',
+                          icon: Icons.chevron_right,
+                          color: AppColors.progressive,
+                        ),
+                        SearchFilterChipData(
+                          label: 'Très progressistes',
+                          value: 'extremelyProgressive',
+                          icon: Icons.keyboard_double_arrow_right,
+                          color: AppColors.extremelyProgressive,
                         ),
                       ],
                       selectedFilter: _selectedOrientation,

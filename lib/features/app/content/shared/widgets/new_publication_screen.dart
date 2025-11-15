@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:thot/core/utils/safe_navigation.dart';
+import 'package:thot/core/routing/route_names.dart';
 
 @immutable
 class PublicationFormat {
@@ -198,7 +199,6 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
     HapticFeedback.selectionClick();
     setState(() {
       _selectedFormat = format;
-      _currentStep = 1;
     });
   }
 
@@ -206,7 +206,6 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
     HapticFeedback.selectionClick();
     setState(() {
       _selectedSubType = subType;
-      _currentStep = 2;
     });
   }
 
@@ -244,6 +243,27 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
 
   void _onContinue() {
     HapticFeedback.mediumImpact();
+
+    if (_currentStep == 0 && _selectedFormat != null) {
+      // Si questions ou shorts, passer direct à step 2 (domaine)
+      if (_selectedFormat!.id == 'questions' || _selectedFormat!.id == 'shorts') {
+        setState(() => _currentStep = 2);
+      } else {
+        setState(() => _currentStep = 1);
+      }
+      return;
+    }
+
+    if (_currentStep == 1 && _selectedSubType != null) {
+      setState(() => _currentStep = 2);
+      return;
+    }
+
+    if (_currentStep == 2 && _selectedDomain != null) {
+      _navigateToCreation();
+      return;
+    }
+
     if (_selectedFormat == null) {
       SafeNavigation.showSnackBar(
         context,
@@ -264,16 +284,12 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
       );
       return;
     }
-    if (_selectedDomain == null) {
-      SafeNavigation.showSnackBar(
-        context,
-        const SnackBar(
-          content: Text('Veuillez sélectionner un domaine'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
+  }
+
+  void _navigateToCreation() {
+    if (_selectedFormat == null || _selectedDomain == null) return;
+    if (_selectedFormat!.id == 'publications' && _selectedSubType == null) return;
+
     final String formatId;
     if (_selectedFormat!.id == 'publications') {
       formatId = _selectedSubType!.id;
@@ -283,6 +299,16 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
       formatId = 'question';
     }
     final domain = _selectedDomain!.id;
+
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    print('🚀 NAVIGATE TO CREATION');
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    print('📍 Format: ${_selectedFormat!.id}');
+    print('📍 Format ID: $formatId');
+    print('📍 Domain: $domain');
+    print('📍 Route: /new-content/$formatId/$domain/${widget.journalistId}');
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
     context.push('/new-content/$formatId/$domain/${widget.journalistId}');
   }
 
@@ -298,7 +324,7 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
           onPressed: _onBack,
         ),
         title: const Text(
-          'Nouvelle publication',
+          'Nouveau contenu',
           style: TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -574,15 +600,20 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
           child: ElevatedButton(
             onPressed: canContinue
                 ? () {
-                    if (isFinalStep) {
-                      _onContinue();
-                    } else {
-                      setState(() {
-                        _currentStep++;
-                      });
-                    }
+                    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+                    print('🔘 CONTINUER BUTTON PRESSED');
+                    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+                    print('📍 Current step: $_currentStep');
+                    print('📍 Selected format: ${_selectedFormat?.id}');
+                    print('📍 Selected subtype: ${_selectedSubType?.id}');
+                    print('📍 Selected domain: ${_selectedDomain?.id}');
+                    print('📍 Can continue: $canContinue');
+                    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+                    _onContinue();
                   }
-                : null,
+                : () {
+                    print('❌ Button disabled - canContinue: $canContinue');
+                  },
             style: ElevatedButton.styleFrom(
               backgroundColor: canContinue ? Colors.white : Colors.grey[800],
               foregroundColor: canContinue ? Colors.black : Colors.grey[500],
@@ -602,9 +633,9 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
                   color: canContinue ? Colors.black : Colors.grey[500],
                 ),
                 const SizedBox(width: 8.0),
-                Text(
-                  isFinalStep ? 'Créer' : 'Continuer',
-                  style: const TextStyle(
+                const Text(
+                  'Continuer',
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),

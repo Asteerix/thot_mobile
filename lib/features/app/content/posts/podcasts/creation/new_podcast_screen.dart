@@ -52,8 +52,7 @@ class _NewPodcastScreenState extends State<NewPodcastScreen> {
   bool _isLoading = false;
   bool _isDirty = false;
   String? _error;
-  Post? _opposingPost;
-  String? _oppositionDescription = '';
+  List<Post> _opposingPosts = [];
   File? _selectedAudio;
   File? _selectedThumbnail;
   String? _existingAudioUrl;
@@ -86,9 +85,9 @@ class _NewPodcastScreenState extends State<NewPodcastScreen> {
         _existingThumbnailUrl = post['thumbnailUrl'];
         if (post['opposingPosts'] != null &&
             (post['opposingPosts'] as List).isNotEmpty) {
-          final opposingPost = post['opposingPosts'][0];
-          _opposingPost = Post.fromJson(opposingPost);
-          _oppositionDescription = opposingPost['description'] ?? '';
+          _opposingPosts = (post['opposingPosts'] as List)
+              .map((op) => Post.fromJson(op))
+              .toList();
         }
         _isLoading = false;
         _isDirty = false;
@@ -173,43 +172,17 @@ class _NewPodcastScreenState extends State<NewPodcastScreen> {
       builder: (context) => PostSearchDialog(
         onPostSelected: (post) {
           setState(() {
-            _opposingPost = post;
-            _oppositionDescription = '';
+            if (!_opposingPosts.any((p) => p.id == post.id)) {
+              _opposingPosts.add(post);
+            }
             _isDirty = true;
           });
-          final isDark = Theme.of(context).brightness == Brightness.dark;
-          SafeNavigation.showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              backgroundColor:
-                  isDark ? AppColors.darkSurface : AppColors.surface,
-              title: Text('Raison de l\'opposition',
-                  style: TextStyle(color: Colors.white)),
-              content: TextField(
-                onChanged: (value) => _oppositionDescription = value,
-                style: TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText:
-                      'Expliquez pourquoi cette publication est en opposition...',
-                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                  filled: true,
-                  fillColor: isDark ? AppColors.darkCard : AppColors.surface,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: isDark ? AppColors.darkBorder : AppColors.border,
-                    ),
-                  ),
-                ),
-                maxLines: 3,
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => SafeNavigation.pop(context),
-                  child: Text('Valider',
-                      style: TextStyle(color: AppColors.primary)),
-                ),
-              ],
+          SafeNavigation.showSnackBar(
+            context,
+            SnackBar(
+              content: Text('Publication ajoutée aux oppositions'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
             ),
           );
         },
@@ -293,17 +266,13 @@ class _NewPodcastScreenState extends State<NewPodcastScreen> {
         'domain': widget.domain,
         'type': 'podcast',
         'status': 'published',
-        'journalistId': widget.journalistId,
-        'audioUrl': audioUrl,
-        'thumbnailUrl': thumbnailUrl,
-        if (_audioDuration != null) 'duration': _audioDuration!.inSeconds,
-        if (_opposingPost != null)
-          'opposingPosts': [
-            {
-              'postId': _opposingPost!.id,
-              'description': _oppositionDescription ?? ''
-            }
-          ],
+        'journalist': widget.journalistId,
+        'imageUrl': thumbnailUrl,
+        'videoUrl': audioUrl,
+        if (_opposingPosts.isNotEmpty)
+          'opposingPosts': _opposingPosts.map((post) => {
+            'postId': post.id,
+          }).toList(),
         'politicalOrientation': {
           'journalistChoice': 'neutral',
           'userVotes': {
@@ -314,6 +283,11 @@ class _NewPodcastScreenState extends State<NewPodcastScreen> {
             'extremelyProgressive': 0
           },
           'finalScore': 0
+        },
+        'metadata': {
+          'podcast': {
+            if (_audioDuration != null) 'duration': _audioDuration!.inSeconds,
+          },
         },
       };
       if (widget.isEditing) {
@@ -337,19 +311,9 @@ class _NewPodcastScreenState extends State<NewPodcastScreen> {
         ));
         _isDirty = false;
         if (!mounted) return;
-        if (postId != null) {
-          GoRouter.of(context).go(
-            '/post/$postId',
-            extra: {
-              'postId': postId,
-              'isFromProfile': false,
-              'filterType': PostType.podcast,
-              'isFromFeed': true,
-            },
-          );
-        } else {
-          SafeNavigation.pop(context, true);
-        }
+
+        Navigator.of(context).pop();
+        context.go('/profile');
       }
     } catch (e) {
       if (!mounted) return;
@@ -563,70 +527,84 @@ class _NewPodcastScreenState extends State<NewPodcastScreen> {
               ),
               SizedBox(height: 16.0),
               CreationSection(
-                title: 'Publication en opposition (optionnel)',
-                child: _opposingPost != null
-                    ? ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: _opposingPost!.imageUrl != null
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(4),
-                                child: Image.network(
-                                  _opposingPost!.imageUrl!,
+                title: 'Publications en opposition (optionnel)',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ..._opposingPosts.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final post = entry.value;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: post.imageUrl != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: Image.network(
+                                    post.imageUrl!,
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) =>
+                                        Container(
+                                      width: 50,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                        color: isDark
+                                            ? AppColors.darkCard
+                                            : AppColors.surface,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Icon(Icons.podcasts,
+                                          color: Colors.white.withOpacity(0.5)),
+                                    ),
+                                  ),
+                                )
+                              : Container(
                                   width: 50,
                                   height: 50,
-                                  fit: BoxFit.cover,
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? AppColors.darkCard
+                                        : AppColors.surface,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Icon(Icons.podcasts,
+                                      color: Colors.white.withOpacity(0.5)),
                                 ),
-                              )
-                            : Container(
-                                width: 50,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  color: isDark
-                                      ? AppColors.darkCard
-                                      : AppColors.surface,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Icon(Icons.podcasts,
-                                    color: Colors.white.withOpacity(0.5)),
-                              ),
-                        title: Text(
-                          _opposingPost!.title,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
+                          title: Text(
+                            post.title,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                          trailing: IconButton(
+                            icon: Icon(Icons.close,
+                                color: Colors.white.withOpacity(0.5)),
+                            onPressed: () {
+                              setState(() {
+                                _opposingPosts.removeAt(index);
+                                _isDirty = true;
+                              });
+                            },
+                          ),
                         ),
-                        subtitle: _oppositionDescription?.isNotEmpty ?? false
-                            ? Text(
-                                _oppositionDescription!,
-                                style: TextStyle(
-                                    color: Colors.white.withOpacity(0.6)),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              )
-                            : null,
-                        trailing: IconButton(
-                          icon: Icon(Icons.close,
-                              color: Colors.white.withOpacity(0.5)),
-                          onPressed: () {
-                            setState(() {
-                              _opposingPost = null;
-                              _oppositionDescription = '';
-                              _isDirty = true;
-                            });
-                          },
-                        ),
-                      )
-                    : Center(
-                        child: TextButton.icon(
-                          onPressed: _searchOpposingPost,
-                          icon: Icon(Icons.add, color: AppColors.primary),
-                          label: Text('Ajouter une publication',
-                              style: TextStyle(color: AppColors.primary)),
-                        ),
+                      );
+                    }).toList(),
+                    Center(
+                      child: TextButton.icon(
+                        onPressed: _searchOpposingPost,
+                        icon: Icon(Icons.add, color: AppColors.primary),
+                        label: Text('Ajouter une publication',
+                            style: TextStyle(color: AppColors.primary)),
                       ),
+                    ),
+                  ],
+                ),
               ),
               if (_error != null) ...[
                 SizedBox(height: 16.0),

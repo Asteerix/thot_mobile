@@ -125,7 +125,8 @@ class ContentDetailLayout extends StatelessWidget {
                 ),
               ),
               child: IconButton(
-                icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                icon: const Icon(Icons.delete_outline,
+                    color: Colors.red, size: 20),
                 onPressed: () => _showDeleteConfirmation(context),
                 splashRadius: 22,
                 padding: const EdgeInsets.all(8),
@@ -215,6 +216,7 @@ class ContentDetailLayout extends StatelessWidget {
               fontSize: 18,
               fontWeight: FontWeight.bold,
               height: 1.3,
+              decoration: TextDecoration.none,
             ),
           ),
           const SizedBox(height: 12),
@@ -227,6 +229,7 @@ class ContentDetailLayout extends StatelessWidget {
                 color: Colors.white.withOpacity(0.8),
                 fontSize: 14,
                 height: 1.5,
+                decoration: TextDecoration.none,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -237,7 +240,8 @@ class ContentDetailLayout extends StatelessWidget {
     );
   }
 
-  void _navigateToJournalistProfile(BuildContext context, String? journalistId, bool isOwnPost) {
+  void _navigateToJournalistProfile(
+      BuildContext context, String? journalistId, bool isOwnPost) {
     if (journalistId == null || journalistId.isEmpty) return;
 
     // Toujours fermer le viewer actuel avant de naviguer
@@ -266,9 +270,8 @@ class ContentDetailLayout extends StatelessWidget {
         journalistId.isNotEmpty &&
         currentUserId == journalistId;
 
-    final shouldShowFollow = journalistId != null &&
-        journalistId.isNotEmpty &&
-        !isOwnPost;
+    final shouldShowFollow =
+        journalistId != null && journalistId.isNotEmpty && !isOwnPost;
 
     print('🔍 [CONTENT_DETAIL] Post: ${post.title}');
     print('   - Journalist ID: $journalistId');
@@ -279,7 +282,8 @@ class ContentDetailLayout extends StatelessWidget {
     return Row(
       children: [
         GestureDetector(
-          onTap: () => _navigateToJournalistProfile(context, journalistId, isOwnPost),
+          onTap: () =>
+              _navigateToJournalistProfile(context, journalistId, isOwnPost),
           child: UserAvatar(
             avatarUrl: post.journalist?.avatarUrl,
             name: post.journalist?.name ?? post.journalist?.username,
@@ -290,7 +294,8 @@ class ContentDetailLayout extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: GestureDetector(
-            onTap: () => _navigateToJournalistProfile(context, journalistId, isOwnPost),
+            onTap: () =>
+                _navigateToJournalistProfile(context, journalistId, isOwnPost),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -300,6 +305,7 @@ class ContentDetailLayout extends StatelessWidget {
                     color: Colors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
+                    decoration: TextDecoration.none,
                   ),
                 ),
                 Text(
@@ -307,6 +313,7 @@ class ContentDetailLayout extends StatelessWidget {
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.6),
                     fontSize: 12,
+                    decoration: TextDecoration.none,
                   ),
                 ),
               ],
@@ -362,7 +369,15 @@ class ContentDetailLayout extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ElevatedButton(
-        onPressed: onActionPressed,
+        onPressed: () {
+          print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          print('🔘 ACTION BUTTON PRESSED');
+          print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          print('📝 Button text: $actionButtonText');
+          print('📦 Post ID: ${post.id}');
+          print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          onActionPressed();
+        },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.grey[900],
           foregroundColor: Colors.white,
@@ -382,5 +397,4 @@ class ContentDetailLayout extends StatelessWidget {
       ),
     );
   }
-
 }

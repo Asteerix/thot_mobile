@@ -4,12 +4,15 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:thot/core/config/app_config.dart';
 import 'package:thot/core/presentation/theme/app_colors.dart';
+import 'package:thot/core/routing/route_names.dart';
+import 'package:thot/core/services/realtime/event_bus.dart';
 import 'package:thot/shared/media/config/media_config.dart';
 import 'package:thot/features/app/content/shared/providers/post_repository_impl.dart';
 import 'package:thot/core/di/service_locator.dart';
 import 'package:thot/shared/media/services/upload_service.dart';
 import 'package:thot/core/utils/safe_navigation.dart';
 import 'package:thot/shared/media/widgets/media_picker.dart';
+import 'package:thot/core/routing/app_router.dart';
 
 enum QuestionType { poll, openEnded }
 
@@ -154,6 +157,16 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
       );
       return false;
     }
+    if (_selectedImage == null) {
+      SafeNavigation.showSnackBar(
+        context,
+        const SnackBar(
+          content: Text('Veuillez ajouter une image'),
+          backgroundColor: AppColors.orange,
+        ),
+      );
+      return false;
+    }
     if (_questionType == QuestionType.poll) {
       final validOptions =
           _optionControllers.where((c) => c.text.trim().isNotEmpty).toList();
@@ -175,58 +188,156 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
     if (!_validateQuestion()) return;
     setState(() => _isUploading = true);
     try {
-      String? imageUrl;
-      if (_selectedImage != null) {
-        final uploadResult =
-            await _uploadService.uploadImage(_selectedImage!, type: 'question');
-        imageUrl = uploadResult['url'] as String?;
+      final uploadResult =
+          await _uploadService.uploadImage(_selectedImage!, type: 'question');
+      final imageUrl = uploadResult['url'] as String?;
+
+      if (imageUrl == null || imageUrl.isEmpty) {
+        throw Exception('Erreur lors de l\'upload de l\'image');
       }
-      final data = {
+
+      final questionData = <String, dynamic>{
         'title': _questionController.text.trim(),
         'content': _questionController.text.trim(),
-        if (imageUrl != null) 'imageUrl': imageUrl,
+        'imageUrl': imageUrl,
         'type': 'question',
         'journalist': widget.journalistId,
         'domain': widget.domain ?? 'societe',
         'status': 'published',
-        'metadata': {
-          'question': {
+        'metadata': <String, dynamic>{
+          'question': <String, dynamic>{
             'questionType':
-                _questionType == QuestionType.poll ? 'poll' : 'open',
-            'type': _questionType == QuestionType.poll ? 'poll' : 'open',
-            if (_questionType == QuestionType.poll) ...{
+                _questionType == QuestionType.poll ? 'poll' : 'openEnded',
+            'type': _questionType == QuestionType.poll ? 'poll' : 'openEnded',
+            'totalVotes': 0,
+            'voters': <Map<String, dynamic>>[],
+            if (_questionType == QuestionType.poll)
               'options': _optionControllers
                   .where((c) => c.text.trim().isNotEmpty)
-                  .map((c) => {
+                  .map((c) => <String, dynamic>{
                         'text': c.text.trim(),
                         'votes': 0,
+                        'voters': <Map<String, dynamic>>[],
                       })
                   .toList(),
+            if (_questionType == QuestionType.poll)
               'isMultipleChoice': _isMultipleChoice,
-            },
-            'totalVotes': 0,
+            'allowComments': true,
           },
         },
+        'politicalOrientation': <String, dynamic>{
+          'journalistChoice': 'neutral',
+          'displayOrientation': 'neutral',
+          'voters': <Map<String, dynamic>>[],
+          'userVotes': <String, dynamic>{
+            'extremelyConservative': 0,
+            'conservative': 0,
+            'neutral': 0,
+            'progressive': 0,
+            'extremelyProgressive': 0,
+          },
+        },
+        'interactions': <String, dynamic>{
+          'likes': <String, dynamic>{
+            'count': 0,
+            'users': <String>[],
+          },
+          'comments': <String, dynamic>{
+            'count': 0,
+          },
+          'shares': 0,
+          'bookmarks': 0,
+          'saves': <String, dynamic>{
+            'count': 0,
+            'users': <String>[],
+          },
+        },
+        'stats': <String, dynamic>{
+          'views': 0,
+          'shares': 0,
+        },
       };
-      final result = await _postRepository.createPost(data);
+
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('📤 AVANT ENVOI AU BACKEND');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('📋 Question data keys: ${questionData.keys}');
+      print('📋 Question data complete:');
+      questionData.forEach((key, value) {
+        print('   $key: $value');
+      });
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+      final result = await _postRepository.createPost(questionData);
+
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('✅ RÉPONSE DU BACKEND APRÈS CRÉATION');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('📦 Result type: ${result.runtimeType}');
+      print('📦 Result keys: ${result.keys}');
+      print('📦 Result complete:');
+      result.forEach((key, value) {
+        if (key == 'data' && value is Map) {
+          print('   $key:');
+          (value as Map).forEach((k, v) {
+            print('      $k: $v');
+          });
+        } else {
+          print('   $key: $value');
+        }
+      });
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
       if (mounted) {
         HapticFeedback.heavyImpact();
-        SafeNavigation.showSnackBar(
-          context,
+
+        String questionId = '';
+        if (result['data'] != null && result['data'] is Map) {
+          questionId = (result['data']['_id'] ?? result['data']['id'] ?? '').toString();
+        } else {
+          questionId = (result['_id'] ?? result['id'] ?? '').toString();
+        }
+
+        if (questionId.isEmpty) {
+          throw Exception('Question ID manquant dans la réponse');
+        }
+
+        print('📋 Question ID: $questionId');
+
+        EventBus().fire(PostCreatedEvent(
+          postId: questionId,
+          postType: 'question',
+          journalistId: widget.journalistId,
+        ));
+
+        print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        print('🚀 NAVIGATION VERS LA QUESTION');
+        print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        print('📍 Route: ${RouteNames.questionDetail}');
+        print('📍 Question ID: $questionId');
+        print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+        ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text('Question publiée avec succès!'),
-              backgroundColor: AppColors.success),
+              backgroundColor: AppColors.success,
+              duration: Duration(seconds: 2)),
         );
-        context.pop(result);
+
+        Navigator.of(context).pop();
+        context.go('/profile');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('❌ Error creating question: $e');
+      print('📍 Stack trace: $stackTrace');
       if (mounted) {
         setState(() => _isUploading = false);
         SafeNavigation.showSnackBar(
           context,
           SnackBar(
-            content: Text('Erreur: ${e.toString()}'),
+            content: Text('Erreur lors de la publication: ${e.toString()}'),
             backgroundColor: AppColors.error,
+            duration: const Duration(seconds: 4),
           ),
         );
       }
@@ -333,7 +444,8 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
 
   Widget _buildDomainChip() {
     final domainName = widget.domain ?? 'Société';
-    final capitalizedDomain = domainName[0].toUpperCase() + domainName.substring(1);
+    final capitalizedDomain =
+        domainName[0].toUpperCase() + domainName.substring(1);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -620,8 +732,8 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                                 fontSize: 14,
                                               ),
                                               filled: true,
-                                              fillColor:
-                                                  Colors.white.withOpacity(0.03),
+                                              fillColor: Colors.white
+                                                  .withOpacity(0.03),
                                               contentPadding:
                                                   const EdgeInsets.symmetric(
                                                 horizontal: 16,
@@ -710,7 +822,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                                                 Colors.white.withOpacity(0.6)),
                                         const SizedBox(width: 8),
                                         Text(
-                                          'Image (optionnelle)',
+                                          'Image',
                                           style: TextStyle(
                                             color:
                                                 Colors.white.withOpacity(0.8),
@@ -826,9 +938,8 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
           child: ElevatedButton(
             onPressed: _isUploading ? null : _publishQuestion,
             style: ElevatedButton.styleFrom(
-              backgroundColor: _isUploading
-                  ? Colors.white.withOpacity(0.3)
-                  : Colors.white,
+              backgroundColor:
+                  _isUploading ? Colors.white.withOpacity(0.3) : Colors.white,
               foregroundColor: Colors.black,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),

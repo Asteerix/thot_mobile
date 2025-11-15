@@ -130,11 +130,10 @@ class _VotingDialogState extends State<VotingDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      decoration: BoxDecoration(
-        color: isDark ? Colors.black : Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: const BoxDecoration(
+        color: Color(0xFFFAFAFA),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
         top: false,
@@ -142,22 +141,30 @@ class _VotingDialogState extends State<VotingDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.symmetric(vertical: 12),
+              width: 48,
+              height: 5,
+              margin: const EdgeInsets.only(top: 16, bottom: 16),
               decoration: BoxDecoration(
-                color: isDark ? Colors.grey[700] : Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(3),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  bottom: BorderSide(color: Colors.grey[200]!, width: 1),
+                ),
+              ),
+              child: const Text(
                 'Orientation politique',
                 style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF1A1A1A),
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.3,
                 ),
               ),
             ),
@@ -181,12 +188,10 @@ class _VotingDialogState extends State<VotingDialog> {
                       margin: const EdgeInsets.only(bottom: 8),
                       decoration: BoxDecoration(
                         color: isMyVote
-                            ? color.withOpacity(isDark ? 0.25 : 0.2)
+                            ? color.withOpacity(0.2)
                             : (isMedian
-                                ? color.withOpacity(isDark ? 0.15 : 0.1)
-                                : (isDark
-                                    ? const Color(0xFF1C1C1E)
-                                    : Colors.grey[100])),
+                                ? color.withOpacity(0.1)
+                                : Colors.grey[100]),
                         borderRadius: BorderRadius.circular(12),
                         border: isMyVote
                             ? Border.all(color: color, width: 2.5)
@@ -223,12 +228,11 @@ class _VotingDialogState extends State<VotingDialog> {
                                     color: AppColors.warning,
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color:
-                                          isDark ? Colors.black : Colors.white,
+                                      color: Colors.white,
                                       width: 2,
                                     ),
                                   ),
-                                  child: Icon(Icons.star,
+                                  child: const Icon(Icons.star,
                                       size: 10, color: Colors.white),
                                 ),
                               ),
@@ -240,7 +244,7 @@ class _VotingDialogState extends State<VotingDialog> {
                               child: Text(
                                 PoliticalOrientationUtils.getLabel(orientation),
                                 style: TextStyle(
-                                  color: isDark ? Colors.white : Colors.black,
+                                  color: Colors.black,
                                   fontWeight: isMyVote
                                       ? FontWeight.w700
                                       : (isMedian
@@ -288,10 +292,10 @@ class _VotingDialogState extends State<VotingDialog> {
                                   border:
                                       Border.all(color: color.withOpacity(0.4)),
                                 ),
-                                child: Text(
+                                child: const Text(
                                   'Médiane',
                                   style: TextStyle(
-                                    color: isDark ? Colors.white : Colors.black,
+                                    color: Colors.black,
                                     fontSize: 11,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -317,12 +321,8 @@ class _VotingDialogState extends State<VotingDialog> {
                               '$voteCount vote${voteCount > 1 ? 's' : ''}',
                               style: TextStyle(
                                 color: voteCount > 0
-                                    ? (isDark
-                                        ? Colors.blue[300]
-                                        : Colors.blue[700])
-                                    : (isDark
-                                        ? Colors.grey[600]
-                                        : Colors.grey[500]),
+                                    ? Colors.blue[700]
+                                    : Colors.grey[500],
                                 decoration: voteCount > 0
                                     ? TextDecoration.underline
                                     : null,

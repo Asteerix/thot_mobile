@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:thot/features/app/content/shared/providers/post_repository_impl.dart';
 import 'package:thot/core/di/service_locator.dart';
 
@@ -24,6 +23,7 @@ class _StatsScreenState extends State<StatsScreen> {
   bool _isLoading = true;
   String? _error;
   String _selectedPeriod = '7d';
+
   @override
   void initState() {
     super.initState();
@@ -66,213 +66,213 @@ class _StatsScreenState extends State<StatsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-          ),
-        ),
-      );
-    }
-    if (_error != null) {
-      return Scaffold(
-        backgroundColor: Colors.black,
-        body: SafeArea(
-          child: Column(
-            children: [
-              _buildHeader(),
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.error_outline, color: Colors.red, size: 64),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Erreur de chargement',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 40),
-                        child: Text(
-                          _error!,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.7),
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed: _loadStats,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 32, vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text('Réessayer',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: _loadStats,
-          color: Colors.white,
-          backgroundColor: Colors.black,
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
-              SliverToBoxAdapter(child: _buildHeader()),
-              SliverToBoxAdapter(child: _buildPeriodSelector()),
-              SliverToBoxAdapter(child: const SizedBox(height: 24)),
-              SliverToBoxAdapter(child: _buildOverviewCards()),
-              SliverToBoxAdapter(child: const SizedBox(height: 24)),
-              SliverToBoxAdapter(child: _buildEngagementChart()),
-              SliverToBoxAdapter(child: const SizedBox(height: 24)),
-              SliverToBoxAdapter(child: _buildContentMetrics()),
-              SliverToBoxAdapter(child: const SizedBox(height: 24)),
-              SliverToBoxAdapter(child: _buildPoliticalOrientationCard()),
-              SliverToBoxAdapter(child: const SizedBox(height: 24)),
-              SliverToBoxAdapter(child: _buildAudienceCard()),
-              SliverToBoxAdapter(child: const SizedBox(height: 40)),
-            ],
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            HapticFeedback.selectionClick();
+            context.pop();
+          },
+        ),
+        title: const Text(
+          'Statistiques',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            )
+          : _error != null
+              ? _buildError()
+              : RefreshIndicator(
+                  onRefresh: _loadStats,
+                  color: Colors.white,
+                  backgroundColor: Colors.black,
+                  child: ListView(
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      _buildPeriodSelector(),
+                      const SizedBox(height: 24),
+                      _buildStatsGrid(),
+                      const SizedBox(height: 24),
+                      _buildContentCard(),
+                      const SizedBox(height: 24),
+                      _buildPoliticalCard(),
+                      const SizedBox(height: 24),
+                      _buildAudienceCard(),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ),
     );
   }
 
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () {
-              HapticFeedback.selectionClick();
-              context.pop();
-            },
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+  Widget _buildError() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red, size: 64),
+            const SizedBox(height: 24),
+            const Text(
+              'Erreur de chargement',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
-              child: Icon(Icons.arrow_back, color: Colors.white, size: 20),
             ),
-          ),
-          const SizedBox(width: 16),
-          const Text(
-            'Statistiques',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+            const SizedBox(height: 12),
+            Text(
+              _error!,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.7),
+                fontSize: 14,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: _loadStats,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text('Réessayer',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildPeriodSelector() {
     final periods = {
-      '7d': '7 jours',
-      '30d': '30 jours',
-      '3m': '3 mois',
-      '1y': '1 an',
+      '7d': '7j',
+      '30d': '30j',
+      '3m': '3m',
+      '1y': '1an',
     };
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
-        ),
-        child: Row(
-          children: periods.entries.map((entry) {
-            final isSelected = _selectedPeriod == entry.key;
-            return Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  HapticFeedback.selectionClick();
-                  setState(() => _selectedPeriod = entry.key);
-                  _loadStats();
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: isSelected ? Colors.white : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    entry.value,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: isSelected
-                          ? Colors.black
-                          : Colors.white.withOpacity(0.6),
-                      fontSize: 14,
-                      fontWeight:
-                          isSelected ? FontWeight.bold : FontWeight.normal,
-                    ),
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Row(
+        children: periods.entries.map((entry) {
+          final isSelected = _selectedPeriod == entry.key;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () {
+                HapticFeedback.selectionClick();
+                setState(() => _selectedPeriod = entry.key);
+                _loadStats();
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.white : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  entry.value,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color:
+                        isSelected ? Colors.black : Colors.white.withOpacity(0.6),
+                    fontSize: 13,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                   ),
                 ),
               ),
-            );
-          }).toList(),
-        ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
 
-  Widget _buildOverviewCards() {
-    final views = _stats?['views'] ?? 0;
-    final likes = _stats?['likes'] ?? 0;
-    final comments = _stats?['comments'] ?? 0;
-    final engagement = likes + comments;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
+  Widget _buildStatsGrid() {
+    final views = (_stats?['views'] as num?)?.toInt() ?? 0;
+    final likes = (_stats?['likes'] as num?)?.toInt() ?? 0;
+    final comments = (_stats?['comments'] as num?)?.toInt() ?? 0;
+    final followers = (_stats?['followers'] as num?)?.toInt() ?? 0;
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(child: _buildStatCard('Vues', views, Icons.visibility)),
+            const SizedBox(width: 12),
+            Expanded(child: _buildStatCard('J\'aime', likes, Icons.favorite)),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+                child: _buildStatCard('Commentaires', comments, Icons.comment)),
+            const SizedBox(width: 12),
+            Expanded(
+                child: _buildStatCard('Abonnés', followers, Icons.people)),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatCard(String label, int value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: _buildMetricCard(
-              'Vues',
-              _formatNumber(views),
-              Icons.visibility,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Icon(icon, color: Colors.white.withOpacity(0.6), size: 20),
+              Text(
+                _formatNumber(value),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _buildMetricCard(
-              'Engagement',
-              _formatNumber(engagement),
-              Icons.favorite,
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.6),
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -280,7 +280,12 @@ class _StatsScreenState extends State<StatsScreen> {
     );
   }
 
-  Widget _buildMetricCard(String label, String value, IconData icon) {
+  Widget _buildContentCard() {
+    final publications = (_stats?['postes'] as num?)?.toInt() ?? 0;
+    final shorts = (_stats?['shorts'] as num?)?.toInt() ?? 0;
+    final questions = (_stats?['questions'] as num?)?.toInt() ?? 0;
+    final total = publications + shorts + questions;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -291,29 +296,82 @@ class _StatsScreenState extends State<StatsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: Colors.white, size: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Contenus créés',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '$total total',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
+          _buildContentRow(
+              'Publications', publications, Icons.article, Colors.blue),
+          const SizedBox(height: 12),
+          _buildContentRow(
+              'Shorts', shorts, Icons.play_circle_filled, Colors.red),
+          const SizedBox(height: 12),
+          _buildContentRow(
+              'Questions', questions, Icons.help_outline, Colors.purple),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContentRow(String label, int value, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.03),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
           Text(
-            value,
+            value.toString(),
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.6),
-              fontSize: 14,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],
@@ -321,452 +379,190 @@ class _StatsScreenState extends State<StatsScreen> {
     );
   }
 
-  Widget _buildEngagementChart() {
-    final likes = (_stats?['likes'] ?? 0).toDouble();
-    final comments = (_stats?['comments'] ?? 0).toDouble();
-    final maxValue = [likes, comments].reduce((a, b) => a > b ? a : b);
-    if (maxValue == 0) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Container(
-          padding: const EdgeInsets.all(40),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
-          ),
-          child: Center(
-            child: Text(
-              'Aucune donnée d\'engagement',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
-                fontSize: 14,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
+  Widget _buildPoliticalCard() {
+    final politicalData =
+        _stats?['politicalOrientation'] as Map<String, dynamic>?;
+    final avgOrientation =
+        politicalData?['averageOrientation'] as String? ?? 'neutral';
+    final postsByOrientation =
+        politicalData?['postsByOrientation'] as Map<String, dynamic>? ?? {};
+    final totalPosts =
+        (politicalData?['totalAnalyzedPosts'] as num?)?.toInt() ?? 0;
+
+    if (totalPosts == 0) {
+      return Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.white.withOpacity(0.1)),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Engagement détaillé',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              height: 200,
-              child: BarChart(
-                BarChartData(
-                  alignment: BarChartAlignment.spaceAround,
-                  maxY: maxValue * 1.2,
-                  barTouchData: BarTouchData(enabled: false),
-                  titlesData: FlTitlesData(
-                    show: true,
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          String text;
-                          IconData icon;
-                          switch (value.toInt()) {
-                            case 0:
-                              text = 'J\'aime';
-                              icon = Icons.favorite;
-                              break;
-                            case 1:
-                              text = 'Commentaires';
-                              icon = Icons.comment;
-                              break;
-                            default:
-                              return const SizedBox();
-                          }
-                          return Column(
-                            children: [
-                              Icon(icon,
-                                  color: Colors.white.withOpacity(0.6),
-                                  size: 16),
-                              const SizedBox(height: 4),
-                              Text(
-                                text,
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.6),
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                        reservedSize: 42,
-                      ),
-                    ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 40,
-                        getTitlesWidget: (value, meta) {
-                          return Text(
-                            _formatNumber(value.toInt()),
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.6),
-                              fontSize: 12,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    topTitles: const AxisTitles(
-                        sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: const AxisTitles(
-                        sideTitles: SideTitles(showTitles: false)),
-                  ),
-                  borderData: FlBorderData(show: false),
-                  barGroups: [
-                    BarChartGroupData(
-                      x: 0,
-                      barRods: [
-                        BarChartRodData(
-                          toY: likes,
-                          color: Colors.white,
-                          width: 32,
-                          borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(4)),
-                        ),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 1,
-                      barRods: [
-                        BarChartRodData(
-                          toY: comments,
-                          color: Colors.white.withOpacity(0.6),
-                          width: 32,
-                          borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(4)),
-                        ),
-                      ],
-                    ),
-                  ],
-                  gridData: FlGridData(
-                    show: true,
-                    drawVerticalLine: false,
-                    horizontalInterval: maxValue / 4,
-                    getDrawingHorizontalLine: (value) {
-                      return FlLine(
-                        color: Colors.white.withOpacity(0.1),
-                        strokeWidth: 1,
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildContentMetrics() {
-    final postes = _stats?['postes'] ?? 0;
-    final shorts = _stats?['shorts'] ?? 0;
-    final questions = _stats?['questions'] ?? 0;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Publications',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-            _buildContentRow('Postes', postes, Icons.article),
-            const SizedBox(height: 12),
-            _buildContentRow('Shorts', shorts, Icons.videocam),
-            const SizedBox(height: 12),
-            _buildContentRow('Questions', questions, Icons.help_outline),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildContentRow(String label, int value, IconData icon) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, color: Colors.white.withOpacity(0.7), size: 20),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
-          ),
-        ),
-        Text(
-          _formatNumber(value),
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPoliticalOrientationCard() {
-    final politicalOrientation =
-        (_stats?['political_orientation'] as num?)?.toDouble() ?? 0.0;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Orientation politique moyenne',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Moyenne des votes reçus sur vos publications',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 24),
-            _buildOrientationGauge(politicalOrientation),
-            const SizedBox(height: 24),
-            _buildOrientationLegend(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOrientationGauge(double value) {
-    final normalizedValue = ((value + 2) / 4).clamp(0.0, 1.0);
-    final orientationLabel = _getOrientationLabel(value);
-    final orientationColor = _getOrientationColor(value);
-    return Column(
-      children: [
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              height: 24,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                gradient: const LinearGradient(
-                  colors: [
-                    Color(0xFFFF6B6B),
-                    Color(0xFFFFB366),
-                    Color(0xFFFFFFFF),
-                    Color(0xFF66B3FF),
-                    Color(0xFF6B6BFF),
-                  ],
-                  stops: [0.0, 0.25, 0.5, 0.75, 1.0],
-                ),
-              ),
-            ),
-            Positioned(
-              left: normalizedValue * (MediaQuery.of(context).size.width - 80),
-              child: Container(
-                width: 4,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.white.withOpacity(0.5),
-                      blurRadius: 8,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Très\nconservateur',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
-                fontSize: 10,
-              ),
-            ),
-            Text(
-              'Conservateur',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
-                fontSize: 10,
-              ),
-            ),
-            Text(
-              'Neutre',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
-                fontSize: 10,
-              ),
-            ),
-            Text(
-              'Progressiste',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
-                fontSize: 10,
-              ),
-            ),
-            Text(
-              'Très\nprogressiste',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
-                fontSize: 10,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: orientationColor.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: orientationColor.withOpacity(0.4),
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+        child: Center(
+          child: Column(
             children: [
-              Icon(
-                _getOrientationIcon(value),
-                color: orientationColor,
-                size: 24,
-              ),
-              const SizedBox(width: 12),
+              Icon(Icons.bar_chart,
+                  color: Colors.white.withOpacity(0.3), size: 48),
+              const SizedBox(height: 16),
               Text(
-                orientationLabel,
+                'Aucune donnée politique',
                 style: TextStyle(
-                  color: orientationColor,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                '(${value.toStringAsFixed(2)})',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withOpacity(0.6),
                   fontSize: 14,
                 ),
               ),
             ],
           ),
         ),
-      ],
-    );
-  }
+      );
+    }
 
-  Widget _buildOrientationLegend() {
-    return Column(
-      children: [
-        Divider(height: 1, color: Colors.white.withOpacity(0.1)),
-        const SizedBox(height: 16),
-        Text(
-          'Échelle de notation',
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.6),
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 12,
-          runSpacing: 8,
-          alignment: WrapAlignment.center,
-          children: [
-            _buildLegendItem('-2', 'Très conservateur', const Color(0xFFFF6B6B)),
-            _buildLegendItem('-1', 'Conservateur', const Color(0xFFFFB366)),
-            _buildLegendItem('0', 'Neutre', Colors.white),
-            _buildLegendItem('+1', 'Progressiste', const Color(0xFF66B3FF)),
-            _buildLegendItem('+2', 'Très progressiste', const Color(0xFF6B6BFF)),
-          ],
-        ),
-      ],
-    );
-  }
+    final ec = (postsByOrientation['extremely_conservative'] as num?)?.toInt() ?? 0;
+    final c = (postsByOrientation['conservative'] as num?)?.toInt() ?? 0;
+    final n = (postsByOrientation['neutral'] as num?)?.toInt() ?? 0;
+    final p = (postsByOrientation['progressive'] as num?)?.toInt() ?? 0;
+    final ep = (postsByOrientation['extremely_progressive'] as num?)?.toInt() ?? 0;
 
-  Widget _buildLegendItem(String value, String label, Color color) {
+    final orientationLabel = _getOrientationLabel(avgOrientation);
+    final orientationColor = _getOrientationColor(avgOrientation);
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Courant politique',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  orientationColor.withOpacity(0.3),
+                  orientationColor.withOpacity(0.1),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: orientationColor.withOpacity(0.5),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  _getOrientationIcon(avgOrientation),
+                  color: orientationColor,
+                  size: 28,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  orientationLabel,
+                  style: TextStyle(
+                    color: orientationColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Répartition ($totalPosts publication${totalPosts > 1 ? 's' : ''})',
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.7),
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            height: 40,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.white.withOpacity(0.2)),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(7),
+              child: Row(
+                children: [
+                  if (ec > 0)
+                    Expanded(
+                      flex: ec,
+                      child: Container(color: const Color(0xFF0D47A1)),
+                    ),
+                  if (c > 0)
+                    Expanded(
+                      flex: c,
+                      child: Container(color: const Color(0xFF1976D2)),
+                    ),
+                  if (n > 0)
+                    Expanded(
+                      flex: n,
+                      child: Container(color: const Color(0xFF9E9E9E)),
+                    ),
+                  if (p > 0)
+                    Expanded(
+                      flex: p,
+                      child: Container(color: const Color(0xFFEF5350)),
+                    ),
+                  if (ep > 0)
+                    Expanded(
+                      flex: ep,
+                      child: Container(color: const Color(0xFFD32F2F)),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              if (ec > 0)
+                _buildLegend(
+                    'T.Conservateur', ec, const Color(0xFF0D47A1)),
+              if (c > 0) _buildLegend('Conservateur', c, const Color(0xFF1976D2)),
+              if (n > 0) _buildLegend('Neutre', n, const Color(0xFF9E9E9E)),
+              if (p > 0) _buildLegend('Progressiste', p, const Color(0xFFEF5350)),
+              if (ep > 0)
+                _buildLegend('T.Progressiste', ep, const Color(0xFFD32F2F)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLegend(String label, int count, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 12,
-            height: 12,
+            width: 10,
+            height: 10,
             decoration: BoxDecoration(
               color: color,
               shape: BoxShape.circle,
@@ -774,10 +570,11 @@ class _StatsScreenState extends State<StatsScreen> {
           ),
           const SizedBox(width: 6),
           Text(
-            '$value: $label',
+            '$count $label',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
-              fontSize: 11,
+              color: color,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -785,116 +582,125 @@ class _StatsScreenState extends State<StatsScreen> {
     );
   }
 
-  String _getOrientationLabel(double value) {
-    if (value <= -1.5) return 'Très conservateur';
-    if (value <= -0.5) return 'Conservateur';
-    if (value < 0.5) return 'Neutre';
-    if (value < 1.5) return 'Progressiste';
-    return 'Très progressiste';
-  }
-
-  Color _getOrientationColor(double value) {
-    if (value <= -1.5) return const Color(0xFFFF6B6B);
-    if (value <= -0.5) return const Color(0xFFFFB366);
-    if (value < 0.5) return Colors.white;
-    if (value < 1.5) return const Color(0xFF66B3FF);
-    return const Color(0xFF6B6BFF);
-  }
-
-  IconData _getOrientationIcon(double value) {
-    if (value <= -1.5) return Icons.keyboard_double_arrow_left;
-    if (value <= -0.5) return Icons.chevron_left;
-    if (value < 0.5) return Icons.remove;
-    if (value < 1.5) return Icons.chevron_right;
-    return Icons.keyboard_double_arrow_right;
-  }
-
   Widget _buildAudienceCard() {
-    final followers = _stats?['followers'] ?? 0;
-    final following = _stats?['following'] ?? 0;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Audience',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+    final followers = (_stats?['followers'] as num?)?.toInt() ?? 0;
+    final following = (_stats?['following'] as num?)?.toInt() ?? 0;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Audience',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: _buildAudienceItem('Abonnés', followers, Icons.group),
               ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      Icon(Icons.group,
-                          color: Colors.white.withOpacity(0.7), size: 32),
-                      const SizedBox(height: 8),
-                      Text(
-                        _formatNumber(followers),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Abonnés',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.6),
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  width: 1,
-                  height: 60,
-                  color: Colors.white.withOpacity(0.2),
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Icon(Icons.person_add,
-                          color: Colors.white.withOpacity(0.7), size: 32),
-                      const SizedBox(height: 8),
-                      Text(
-                        _formatNumber(following),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Abonnements',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.6),
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+              Container(
+                width: 1,
+                height: 60,
+                color: Colors.white.withOpacity(0.2),
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+              ),
+              Expanded(
+                child: _buildAudienceItem(
+                    'Abonnements', following, Icons.person_add),
+              ),
+            ],
+          ),
+        ],
       ),
     );
+  }
+
+  Widget _buildAudienceItem(String label, int value, IconData icon) {
+    return Column(
+      children: [
+        Icon(icon, color: Colors.white.withOpacity(0.6), size: 28),
+        const SizedBox(height: 12),
+        Text(
+          _formatNumber(value),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 28,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.6),
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _getOrientationLabel(String orientation) {
+    switch (orientation) {
+      case 'extremely_conservative':
+        return 'Très conservateur';
+      case 'conservative':
+        return 'Conservateur';
+      case 'neutral':
+        return 'Neutre';
+      case 'progressive':
+        return 'Progressiste';
+      case 'extremely_progressive':
+        return 'Très progressiste';
+      default:
+        return 'Neutre';
+    }
+  }
+
+  Color _getOrientationColor(String orientation) {
+    switch (orientation) {
+      case 'extremely_conservative':
+        return const Color(0xFF0D47A1);
+      case 'conservative':
+        return const Color(0xFF1976D2);
+      case 'neutral':
+        return const Color(0xFF9E9E9E);
+      case 'progressive':
+        return const Color(0xFFEF5350);
+      case 'extremely_progressive':
+        return const Color(0xFFD32F2F);
+      default:
+        return const Color(0xFF9E9E9E);
+    }
+  }
+
+  IconData _getOrientationIcon(String orientation) {
+    switch (orientation) {
+      case 'extremely_conservative':
+        return Icons.keyboard_double_arrow_left;
+      case 'conservative':
+        return Icons.chevron_left;
+      case 'neutral':
+        return Icons.remove;
+      case 'progressive':
+        return Icons.chevron_right;
+      case 'extremely_progressive':
+        return Icons.keyboard_double_arrow_right;
+      default:
+        return Icons.remove;
+    }
   }
 }

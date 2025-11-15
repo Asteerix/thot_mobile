@@ -26,6 +26,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   final _postRepository = ServiceLocator.instance.postRepository;
   Post? _post;
   Question? _question;
+  String? _questionType;
   List<Post>? _opposingPosts;
   List<Post>? _relatedPosts;
   bool _isLoading = true;
@@ -41,6 +42,12 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
 
   Future<void> _loadQuestion() async {
     try {
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('📺 QUESTION_DETAIL_SCREEN - LOAD QUESTION');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('🆔 Question ID: ${widget.questionId}');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
       setState(() {
         _isLoading = true;
         _error = null;
@@ -49,16 +56,115 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
       final postsStateProvider = context.read<PostsStateProvider>();
       final post = await postsStateProvider.loadPost(widget.questionId);
 
+      print('📦 Post loaded: ${post?.id} - ${post?.title}');
+
       if (post == null) {
         throw Exception('Question non trouvée');
       }
 
       // Charger les données brutes de la question
       final rawData = await _postRepository.getPost(widget.questionId);
+
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('📥 RÉCUPÉRATION QUESTION DEPUIS BACKEND');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      print('🆔 Question ID: ${widget.questionId}');
+      print('📦 Raw data keys: ${rawData.keys}');
+      print('📦 Raw data complete:');
+      rawData.forEach((key, value) {
+        if (key == 'metadata' && value is Map) {
+          print('   $key:');
+          (value as Map).forEach((k, v) {
+            if (k == 'question' && v is Map) {
+              print('      $k:');
+              (v as Map).forEach((qk, qv) {
+                print('         $qk: $qv');
+              });
+            } else {
+              print('      $k: $v');
+            }
+          });
+        } else if (value is Map && key != 'journalist') {
+          print('   $key: ${value.keys}');
+        } else {
+          print('   $key: $value');
+        }
+      });
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
       Question? question;
+      String? questionType;
 
       if (rawData['metadata'] != null && rawData['metadata']['question'] != null) {
-        question = Question.fromJson(rawData['metadata']['question']);
+        final questionData = Map<String, dynamic>.from(rawData['metadata']['question']);
+
+        // Ajouter les données du journaliste depuis le post parent
+        if (rawData['journalist'] != null) {
+          questionData['author'] = rawData['journalist'];
+          questionData['journalist'] = rawData['journalist'];
+        }
+
+        // Ajouter les autres données depuis le post parent
+        questionData['id'] = rawData['_id'] ?? rawData['id'];
+        questionData['title'] = rawData['title'];
+        questionData['description'] = rawData['content'] ?? '';
+        questionData['imageUrl'] = rawData['imageUrl'] ?? '';
+        questionData['createdAt'] = rawData['createdAt'];
+
+        // Parser les interactions correctement
+        final interactions = rawData['interactions'];
+        if (interactions != null && interactions is Map) {
+          final likes = interactions['likes'];
+          final comments = interactions['comments'];
+          questionData['likes'] = (likes is Map) ? (likes['count'] ?? 0) : (likes ?? 0);
+          questionData['comments'] = (comments is Map) ? (comments['count'] ?? 0) : (comments ?? 0);
+          questionData['isLiked'] = interactions['isLiked'] ?? false;
+        } else {
+          questionData['likes'] = 0;
+          questionData['comments'] = 0;
+          questionData['isLiked'] = false;
+        }
+
+        // Ajouter political view (requis)
+        questionData['politicalView'] = rawData['politicalOrientation']?['journalistChoice'] ?? 'neutral';
+
+        // Ajouter votes (requis, vide par défaut)
+        questionData['votes'] = questionData['voters'] ?? [];
+
+        // S'assurer que les options ont un ID
+        if (questionData['options'] is List) {
+          final options = questionData['options'] as List;
+          for (var i = 0; i < options.length; i++) {
+            if (options[i] is Map && options[i]['id'] == null) {
+              options[i]['id'] = options[i]['_id'] ?? i.toString();
+            }
+          }
+        }
+
+        print('📋 Question data enriched with parent data');
+        print('   Journalist: ${questionData['journalist']?['name']}');
+        print('   Title: ${questionData['title']}');
+        print('   Likes: ${questionData['likes']}');
+        print('   Comments: ${questionData['comments']}');
+        print('   Political view: ${questionData['politicalView']}');
+        print('   Options: ${questionData['options']?.length}');
+
+        question = Question.fromJson(questionData);
+        questionType = questionData['questionType'] ?? questionData['type'] ?? 'poll';
+
+        print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        print('✅ QUESTION PARSÉE');
+        print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        print('📋 Question ID: ${question.id}');
+        print('📋 Question title: ${question.title}');
+        print('📋 Question type from data: ${questionData['questionType']} / ${questionData['type']}');
+        print('📋 Question type final: $questionType');
+        print('📋 Question options count: ${question.options.length}');
+        question.options.asMap().forEach((index, option) {
+          print('   Option $index: ${option.text} (votes: ${option.votes}, id: ${option.id})');
+        });
+        print('📋 Total votes: ${question.totalVotes}');
+        print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       }
 
       // Charger les posts en opposition et relatés
@@ -86,6 +192,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
         setState(() {
           _post = post;
           _question = question;
+          _questionType = questionType;
           _opposingPosts = opposing.isEmpty ? null : opposing;
           _relatedPosts = related.isEmpty ? null : related;
           _isLoading = false;
@@ -103,7 +210,19 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
 
 
   void _showFullQuestion() {
-    if (_post == null || _question == null) return;
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    print('🎬 SHOW FULL QUESTION');
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    print('📦 Post: ${_post?.id}');
+    print('📋 Question: ${_question?.id}');
+    print('📋 Question title: ${_question?.title}');
+    print('📋 Question options: ${_question?.options.length}');
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+    if (_post == null || _question == null) {
+      print('❌ Cannot show question: post or question is null');
+      return;
+    }
 
     showModalBottomSheet(
       context: context,
@@ -165,11 +284,14 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
       );
     }
 
+    final isDebate = _questionType == 'open' || _questionType == 'openEnded';
+    final buttonText = isDebate ? "Débattez en commentaire" : "Répondre à la question";
+
     return ContentDetailLayout(
       post: _post!,
       previewWidget: _buildQuestionPreview(),
-      actionButtonText: "Répondre à la question",
-      onActionPressed: _showFullQuestion,
+      actionButtonText: buttonText,
+      onActionPressed: isDebate ? _showComments : _showFullQuestion,
       onComment: _showComments,
       opposingPosts: _opposingPosts,
       relatedPosts: _relatedPosts,
@@ -226,6 +348,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           height: 1.3,
+                          decoration: TextDecoration.none,
                         ),
                         textAlign: TextAlign.center,
                         maxLines: 3,

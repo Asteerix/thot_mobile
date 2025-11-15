@@ -39,9 +39,12 @@ class _ProfessionalAudioPlayerState extends State<ProfessionalAudioPlayer> {
 
   Future<void> _initializePlayer() async {
     try {
+      print('🎵 Initializing audio player with URL: ${widget.audioUrl}');
       _audioPlayer = AudioPlayer();
 
+      print('🎵 Setting audio URL...');
       await _audioPlayer!.setUrl(widget.audioUrl);
+      print('🎵 Audio URL set successfully');
 
       _positionSubscription = _audioPlayer!.positionStream.listen((position) {
         if (mounted) {

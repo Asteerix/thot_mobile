@@ -36,7 +36,9 @@ class _PostDetailWrapperState extends State<PostDetailWrapper> {
   @override
   void initState() {
     super.initState();
-    _loadPost();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadPost();
+    });
   }
 
   Future<void> _loadPost() async {

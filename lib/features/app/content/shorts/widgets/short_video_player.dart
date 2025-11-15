@@ -541,9 +541,8 @@ class _ShortVideoPlayerState extends State<ShortVideoPlayer> {
                         if (isOwnPost) {
                           context.go(RouteNames.profile);
                         } else {
-                          context.pop();
-                          context.go(
-                            RouteNames.profile,
+                          context.push(
+                            '/profile',
                             extra: {
                               'userId': journalist.id,
                               'isCurrentUser': false,

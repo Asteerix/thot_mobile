@@ -1,6 +1,7 @@
 import 'package:thot/core/presentation/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:thot/core/config/app_config.dart';
 import 'package:thot/core/routing/app_router.dart';
 import 'package:thot/core/routing/route_names.dart';
@@ -8,8 +9,11 @@ import 'package:thot/features/app/profile/models/user_profile.dart';
 import 'package:thot/features/app/profile/widgets/badges.dart';
 import 'package:thot/features/app/profile/widgets/profile_avatar.dart';
 import 'package:thot/features/app/profile/widgets/profile_cover.dart';
+import 'package:thot/features/app/profile/widgets/follow_button.dart';
+import 'package:thot/features/public/auth/shared/providers/auth_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'profile_logger.dart';
+
 class ProfileHeader extends StatefulWidget {
   final UserProfile userProfile;
   final VoidCallback onLoadProfile;
@@ -27,6 +31,7 @@ class ProfileHeader extends StatefulWidget {
   @override
   State<ProfileHeader> createState() => _ProfileHeaderState();
 }
+
 class _ProfileHeaderState extends State<ProfileHeader>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
@@ -50,6 +55,7 @@ class _ProfileHeaderState extends State<ProfileHeader>
     );
     _controller.forward();
   }
+
   void _navigateToEditProfile() {
     AppRouter.navigateTo(
       context,
@@ -64,132 +70,6 @@ class _ProfileHeaderState extends State<ProfileHeader>
     });
   }
 
-  Widget buildActionButtonsRow() {
-    if (widget.isCurrentUser) {
-      if (widget.userProfile.type == UserType.journalist) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          child: Row(
-            children: [
-              Expanded(
-                child: _buildActionButton(
-                  'Éditer',
-                  Icons.edit,
-                  onPressed: _navigateToEditProfile,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildActionButton(
-                  'Statistiques',
-                  Icons.bar_chart,
-                  onPressed: _showStatisticsComingSoon,
-                ),
-              ),
-            ],
-          ),
-        );
-      } else {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          child: _buildActionButton(
-            'Éditer',
-            Icons.edit,
-            onPressed: _navigateToEditProfile,
-          ),
-        );
-      }
-    }
-
-    if (widget.userProfile.type == UserType.journalist) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        child: GestureDetector(
-          onTap: widget.isProcessingFollow
-              ? null
-              : () {
-                  ProfileLogger.d(
-                    'Follow button tapped - userId: ${widget.userProfile.id}, currentState: ${widget.userProfile.isFollowing}',
-                  );
-                  widget.onFollowToggle(widget.userProfile);
-                },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            height: 40,
-            decoration: BoxDecoration(
-              color: widget.userProfile.isFollowing
-                  ? Colors.grey[900]
-                  : Theme.of(context).primaryColor,
-              border: widget.userProfile.isFollowing
-                  ? Border.all(color: Colors.grey[700]!, width: 1)
-                  : null,
-              borderRadius: BorderRadius.circular(20),
-              gradient: widget.userProfile.isFollowing
-                  ? null
-                  : LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Theme.of(context).primaryColor,
-                        Theme.of(context).primaryColor.withOpacity(0.8),
-                      ],
-                    ),
-              boxShadow: widget.userProfile.isFollowing
-                  ? null
-                  : [
-                      BoxShadow(
-                        color: Theme.of(context).primaryColor.withOpacity(0.3),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-            ),
-            child: widget.isProcessingFollow
-                ? Center(
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          widget.userProfile.isFollowing
-                              ? Colors.grey[400]!
-                              : Colors.white,
-                        ),
-                      ),
-                    ),
-                  )
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        widget.userProfile.isFollowing ? Icons.check : Icons.add,
-                        color: widget.userProfile.isFollowing
-                            ? Colors.grey[400]
-                            : Colors.white,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        widget.userProfile.isFollowing ? 'Abonné' : 'Suivre',
-                        style: TextStyle(
-                          color: widget.userProfile.isFollowing
-                              ? Colors.grey[400]
-                              : Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                    ],
-                  ),
-          ),
-        ),
-      );
-    }
-
-    return const SizedBox.shrink();
-  }
   Future<void> _launchUrl(String urlString) async {
     try {
       final url = Uri.parse(
@@ -215,6 +95,7 @@ class _ProfileHeaderState extends State<ProfileHeader>
       );
     }
   }
+
   Widget _buildProfileSection() {
     return Container(
       width: double.infinity,
@@ -313,8 +194,7 @@ class _ProfileHeaderState extends State<ProfileHeader>
                     padding: const EdgeInsets.only(top: 4),
                     child: Row(
                       children: [
-                        Icon(Icons.location_on,
-                            size: 14, color: Colors.grey),
+                        Icon(Icons.location_on, size: 14, color: Colors.grey),
                         const SizedBox(width: 4),
                         Text(
                           widget.userProfile.location!,
@@ -338,6 +218,7 @@ class _ProfileHeaderState extends State<ProfileHeader>
                   ),
                   const SizedBox(height: 16),
                 ],
+                _buildActionButtonsRow(),
                 if (widget.userProfile.type == UserType.journalist) ...[
                   const SizedBox(height: 16),
                   Row(
@@ -433,248 +314,91 @@ class _ProfileHeaderState extends State<ProfileHeader>
       ),
     );
   }
-  Widget _buildActionButtons() {
-    if (widget.isCurrentUser) {
-      if (widget.userProfile.type == UserType.journalist) {
-        return Row(
-          children: [
-            Expanded(
-              child: _buildActionButton(
-                'Éditer',
-                Icons.edit,
-                onPressed: _navigateToEditProfile,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _buildActionButton(
-                'Statistiques',
-                Icons.bar_chart,
-                onPressed: _showStatisticsComingSoon,
-              ),
-            ),
-          ],
-        );
-      } else {
-        return _buildActionButton(
-          'Éditer',
-          Icons.edit,
-          onPressed: _navigateToEditProfile,
-        );
-      }
-    }
-    if (widget.userProfile.type == UserType.journalist) {
-      return GestureDetector(
-        onTap: widget.isProcessingFollow
-            ? null
-            : () {
-                ProfileLogger.d(
-                  'Follow button tapped - userId: ${widget.userProfile.id}, currentState: ${widget.userProfile.isFollowing}',
-                );
-                widget.onFollowToggle(widget.userProfile);
-              },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          height: 40,
-          decoration: BoxDecoration(
-            color: widget.userProfile.isFollowing
-                ? Colors.grey[900]
-                : Theme.of(context).primaryColor,
-            border: widget.userProfile.isFollowing
-                ? Border.all(color: Colors.grey[700]!, width: 1)
-                : null,
-            borderRadius: BorderRadius.circular(20),
-            gradient: widget.userProfile.isFollowing
-                ? null
-                : LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Theme.of(context).primaryColor,
-                      Theme.of(context).primaryColor.withOpacity(0.8),
-                    ],
+
+  Widget _buildActionButtonsRow() {
+    final currentUserId = context.read<AuthProvider>().userProfile?.id;
+    final isOwnProfile = currentUserId == widget.userProfile.id;
+    final isJournalist = widget.userProfile.isJournalist;
+
+    if (isJournalist) {
+      return Row(
+        children: [
+          Expanded(
+            child: widget.isCurrentUser
+                ? _buildActionButton(
+                    'Éditer',
+                    Icons.edit,
+                    onPressed: _navigateToEditProfile,
+                  )
+                : FollowButton(
+                    userId: widget.userProfile.id,
+                    isFollowing: widget.userProfile.isFollowing,
+                    compact: false,
+                    fullWidth: true,
                   ),
-            boxShadow: widget.userProfile.isFollowing
-                ? null
-                : [
-                    BoxShadow(
-                      color: Theme.of(context).primaryColor.withOpacity(0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
           ),
-          child: widget.isProcessingFollow
-              ? Center(
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        widget.userProfile.isFollowing
-                            ? Colors.grey[400]!
-                            : Colors.white,
-                      ),
-                    ),
-                  ),
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      widget.userProfile.isFollowing ? Icons.check : Icons.add,
-                      color: widget.userProfile.isFollowing
-                          ? Colors.grey[400]
-                          : Colors.white,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      widget.userProfile.isFollowing ? 'Abonné' : 'Suivre',
-                      style: TextStyle(
-                        color: widget.userProfile.isFollowing
-                            ? Colors.grey[400]
-                            : Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                  ],
-                ),
-        ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _buildActionButton(
+              'Statistiques',
+              Icons.bar_chart,
+              onPressed: _showStatisticsComingSoon,
+              isSecondary: true,
+            ),
+          ),
+        ],
+      );
+    } else {
+      return _buildActionButton(
+        'Éditer',
+        Icons.edit,
+        onPressed: _navigateToEditProfile,
       );
     }
-    return Row(
-      children: [
-        Expanded(
-          child: GestureDetector(
-            onTap: widget.isProcessingFollow
-                ? null
-                : () {
-                    ProfileLogger.d(
-                      'Follow button tapped - userId: ${widget.userProfile.id}, currentState: ${widget.userProfile.isFollowing}',
-                    );
-                    widget.onFollowToggle(widget.userProfile);
-                  },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              height: 40,
-              decoration: BoxDecoration(
-                color: widget.userProfile.isFollowing
-                    ? Colors.grey[900]
-                    : Theme.of(context).primaryColor,
-                border: widget.userProfile.isFollowing
-                    ? Border.all(color: Colors.grey[700]!, width: 1)
-                    : null,
-                borderRadius: BorderRadius.circular(20),
-                gradient: widget.userProfile.isFollowing
-                    ? null
-                    : LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Theme.of(context).primaryColor,
-                          Theme.of(context).primaryColor.withOpacity(0.8),
-                        ],
-                      ),
-                boxShadow: widget.userProfile.isFollowing
-                    ? null
-                    : [
-                        BoxShadow(
-                          color:
-                              Theme.of(context).primaryColor.withOpacity(0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-              ),
-              child: widget.isProcessingFollow
-                  ? Center(
-                      child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            widget.userProfile.isFollowing
-                                ? Colors.grey[400]!
-                                : Colors.white,
-                          ),
-                        ),
-                      ),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          widget.userProfile.isFollowing
-                              ? Icons.check
-                              : Icons.add,
-                          color: widget.userProfile.isFollowing
-                              ? Colors.grey[400]
-                              : Colors.white,
-                          size: 16,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          widget.userProfile.isFollowing ? 'Abonné' : 'Suivre',
-                          style: TextStyle(
-                            color: widget.userProfile.isFollowing
-                                ? Colors.grey[400]
-                                : Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.2,
-                          ),
-                        ),
-                      ],
-                    ),
-            ),
-          ),
-        ),
-      ],
-    );
   }
+
   Widget _buildActionButton(
     String label,
     IconData icon, {
     required VoidCallback onPressed,
+    bool isSecondary = false,
   }) {
-    return Container(
+    return SizedBox(
       height: 40,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(18),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  icon,
-                  size: 16,
-                  color: Colors.black,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  label,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isSecondary ? Colors.black : Colors.white,
+          foregroundColor: isSecondary ? Colors.white : Colors.black,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          minimumSize: const Size(double.infinity, 40),
+          side: isSecondary
+              ? const BorderSide(color: Colors.white, width: 1)
+              : null,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: isSecondary ? Colors.white : Colors.black,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: isSecondary ? Colors.white : Colors.black,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -687,6 +411,7 @@ class _ProfileHeaderState extends State<ProfileHeader>
       extra: {'journalistId': widget.userProfile.id},
     );
   }
+
   Widget _buildFormations() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -906,6 +631,7 @@ class _ProfileHeaderState extends State<ProfileHeader>
       ],
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return FadeTransition(
@@ -916,10 +642,12 @@ class _ProfileHeaderState extends State<ProfileHeader>
       ),
     );
   }
+
   @override
   void didUpdateWidget(ProfileHeader oldWidget) {
     super.didUpdateWidget(oldWidget);
   }
+
   @override
   void dispose() {
     _controller.dispose();

@@ -85,7 +85,8 @@ class _PostSearchDialogState extends State<PostSearchDialog> {
   }
 
   Future<void> _loadPosts() async {
-    print('🔍 [POST_SEARCH] Loading posts - query: "${_queryController.text}", domain: $_selectedDomain');
+    print(
+        '🔍 [POST_SEARCH] Loading posts - query: "${_queryController.text}", domain: $_selectedDomain');
 
     setState(() {
       _isLoading = true;
@@ -212,7 +213,8 @@ class _PostSearchDialogState extends State<PostSearchDialog> {
                   ),
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close, color: Colors.white70, size: 24),
+                    icon: const Icon(Icons.close,
+                        color: Colors.white70, size: 24),
                   ),
                 ],
               ),
@@ -229,10 +231,12 @@ class _PostSearchDialogState extends State<PostSearchDialog> {
                   hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
                   filled: true,
                   fillColor: Colors.white.withOpacity(0.05),
-                  prefixIcon: Icon(Icons.search, color: Colors.white.withOpacity(0.7)),
+                  prefixIcon:
+                      Icon(Icons.search, color: Colors.white.withOpacity(0.7)),
                   suffixIcon: _queryController.text.isNotEmpty
                       ? IconButton(
-                          icon: Icon(Icons.close, color: Colors.white.withOpacity(0.7)),
+                          icon: Icon(Icons.close,
+                              color: Colors.white.withOpacity(0.7)),
                           onPressed: () {
                             _queryController.clear();
                             _loadPosts();
@@ -241,13 +245,15 @@ class _PostSearchDialogState extends State<PostSearchDialog> {
                       : null,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                    borderSide:
+                        BorderSide(color: Colors.white.withOpacity(0.3)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(color: Colors.white, width: 2),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                 ),
                 onChanged: _onSearchChanged,
                 textInputAction: TextInputAction.search,
@@ -265,24 +271,30 @@ class _PostSearchDialogState extends State<PostSearchDialog> {
                 itemBuilder: (context, index) {
                   final isAll = index == 0;
                   final domainKey = isAll ? null : _domains[index - 1];
-                  final label = isAll ? 'Tous' : (_domainLabels[domainKey] ?? domainKey!);
+                  final label =
+                      isAll ? 'Tous' : (_domainLabels[domainKey] ?? domainKey!);
                   final isSelected = (isAll && _selectedDomain == null) ||
-                                    (!isAll && _selectedDomain == domainKey);
+                      (!isAll && _selectedDomain == domainKey);
 
                   return ChoiceChip(
                     label: Text(
                       label,
                       style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.white.withOpacity(0.7),
+                        color: isSelected
+                            ? Colors.white
+                            : Colors.white.withOpacity(0.7),
                         fontSize: 13,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.normal,
                       ),
                     ),
                     selected: isSelected,
                     backgroundColor: Colors.white.withOpacity(0.05),
                     selectedColor: Colors.white.withOpacity(0.15),
                     side: BorderSide(
-                      color: isSelected ? Colors.white : Colors.white.withOpacity(0.3),
+                      color: isSelected
+                          ? Colors.white
+                          : Colors.white.withOpacity(0.3),
                       width: isSelected ? 2 : 1,
                     ),
                     onSelected: (_) {
@@ -375,7 +387,8 @@ class _PostSearchDialogState extends State<PostSearchDialog> {
                             )
                           : ListView.builder(
                               controller: _scrollController,
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
                               itemCount: _results.length,
                               itemBuilder: (context, index) {
                                 final post = _results[index];
@@ -403,21 +416,25 @@ class _PostSearchDialogState extends State<PostSearchDialog> {
                                       child: Row(
                                         children: [
                                           ClipRRect(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                             child: post.imageUrl != null
                                                 ? Image.network(
                                                     post.imageUrl!,
                                                     width: 60,
                                                     height: 60,
                                                     fit: BoxFit.cover,
-                                                    errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                                                    errorBuilder:
+                                                        (_, __, ___) =>
+                                                            _buildPlaceholder(),
                                                   )
                                                 : _buildPlaceholder(),
                                           ),
                                           const SizedBox(width: 12),
                                           Expanded(
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   post.title,
@@ -427,7 +444,8 @@ class _PostSearchDialogState extends State<PostSearchDialog> {
                                                     fontWeight: FontWeight.w600,
                                                   ),
                                                   maxLines: 2,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
                                                 const SizedBox(height: 4),
                                                 Row(
@@ -440,13 +458,16 @@ class _PostSearchDialogState extends State<PostSearchDialog> {
                                                     const SizedBox(width: 4),
                                                     Expanded(
                                                       child: Text(
-                                                        post.journalist?.name ?? 'Inconnu',
+                                                        post.journalist?.name ??
+                                                            'Inconnu',
                                                         style: TextStyle(
-                                                          color: Colors.grey[400],
+                                                          color:
+                                                              Colors.grey[400],
                                                           fontSize: 12,
                                                         ),
                                                         maxLines: 1,
-                                                        overflow: TextOverflow.ellipsis,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
                                                       ),
                                                     ),
                                                   ],
@@ -475,7 +496,8 @@ class _PostSearchDialogState extends State<PostSearchDialog> {
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
                                                 border: Border.all(
-                                                  color: Colors.white.withOpacity(0.3),
+                                                  color: Colors.white
+                                                      .withOpacity(0.3),
                                                   width: 2,
                                                 ),
                                               ),
@@ -525,13 +547,17 @@ class _PostSearchDialogState extends State<PostSearchDialog> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            _selectedPost != null ? Icons.check_circle : Icons.check_circle_outline,
+                            _selectedPost != null
+                                ? Icons.check_circle
+                                : Icons.check_circle_outline,
                             size: 20,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              _selectedPost != null ? 'Continuer' : 'Sélectionnez une publication',
+                              _selectedPost != null
+                                  ? 'Continuer'
+                                  : 'Sélectionnez une publication',
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
