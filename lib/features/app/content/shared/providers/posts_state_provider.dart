@@ -27,6 +27,8 @@ class PostsStateProvider extends ChangeNotifier {
         _handleSocketLikeEvent(event.data);
       } else if (event.type == 'updated') {
         _handleSocketPostUpdatedEvent(event.data);
+      } else if (event.type == 'political_vote_updated') {
+        _handlePoliticalVoteUpdatedEvent(event.data);
       }
     });
   }
@@ -78,6 +80,42 @@ class PostsStateProvider extends ChangeNotifier {
     } catch (e, stackTrace) {
       print(
           '❌ [POSTS_STATE_PROVIDER] Error handling socket post updated event | error: $e, stackTrace: $stackTrace');
+    }
+  }
+
+  void _handlePoliticalVoteUpdatedEvent(Map<String, dynamic> data) {
+    try {
+      final postId = data['postId'] as String?;
+      final userVotes = data['userVotes'] as Map<String, dynamic>?;
+      final totalVotes = data['totalVotes'] as int?;
+
+      print('🗳️ [POSTS_STATE_PROVIDER] Processing political vote update | postId: $postId, totalVotes: $totalVotes');
+
+      if (postId == null || userVotes == null) {
+        print('⚠️ [POSTS_STATE_PROVIDER] Invalid political vote event data');
+        return;
+      }
+
+      final post = _postsCache[postId];
+      if (post == null) {
+        print('⚠️ [POSTS_STATE_PROVIDER] Post not found in cache | postId: $postId');
+        return;
+      }
+
+      final updatedPoliticalOrientation = post.politicalOrientation.copyWith(
+        userVotes: Map<String, int>.from(userVotes.map((key, value) => MapEntry(key, value as int))),
+      );
+
+      final updatedPost = post.copyWith(
+        politicalOrientation: updatedPoliticalOrientation,
+      );
+
+      _postsCache[postId] = updatedPost;
+      notifyListeners();
+
+      print('✅ [POSTS_STATE_PROVIDER] Political votes updated from socket | postId: $postId');
+    } catch (e, stackTrace) {
+      print('❌ [POSTS_STATE_PROVIDER] Error handling political vote event | error: $e, stackTrace: $stackTrace');
     }
   }
 

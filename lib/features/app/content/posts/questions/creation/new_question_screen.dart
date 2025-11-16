@@ -477,9 +477,12 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        resizeToAvoidBottomInset: true,
+        body: Stack(
         children: [
           CustomScrollView(
             controller: _scrollController,
@@ -967,6 +970,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen>
                   ),
           ),
         ),
+      ),
       ),
     );
   }

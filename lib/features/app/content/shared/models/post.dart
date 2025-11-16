@@ -314,21 +314,26 @@ class OppositionPost {
     this.description,
   }) : imageUrl = imageUrl != null ? UrlHelper.buildMediaUrl(imageUrl) : null;
   factory OppositionPost.fromJson(Map<String, dynamic> json) {
+    print('🔥 OppositionPost.fromJson called with: $json');
     final postIdData = json['postId'];
+    print('🔥 postIdData type: ${postIdData.runtimeType}, value: $postIdData');
     String extractedPostId;
     String extractedTitle;
     String? extractedImageUrl;
     if (postIdData is Map<String, dynamic>) {
+      print('🔥 postIdData is Map');
       extractedPostId = postIdData['_id'] as String? ?? '';
       extractedTitle =
           postIdData['title'] as String? ?? json['title'] as String? ?? '';
       extractedImageUrl =
           postIdData['imageUrl'] as String? ?? json['imageUrl'] as String?;
     } else {
+      print('🔥 postIdData is String: $postIdData');
       extractedPostId = postIdData as String? ?? '';
       extractedTitle = json['title'] as String? ?? '';
       extractedImageUrl = json['imageUrl'] as String?;
     }
+    print('🔥 Final values - postId: $extractedPostId, title: $extractedTitle');
     return OppositionPost(
       postId: extractedPostId,
       title: extractedTitle,

@@ -472,18 +472,6 @@ class _ContentDetailViewState extends State<_ContentDetailView> {
         }
       }
 
-      if (hasOpposedBy) {
-        for (final opposed in widget.post.opposedByPosts!) {
-          try {
-            final response = await _postRepository.getPost(opposed.postId);
-            final post = Post.fromJson(response);
-            loadedPosts.add(post);
-          } catch (e) {
-            print('Error loading opposedBy post ${opposed.postId}: $e');
-          }
-        }
-      }
-
       if (mounted) {
         setState(() {
           _loadedOpposingPosts = loadedPosts;

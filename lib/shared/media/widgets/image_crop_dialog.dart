@@ -24,11 +24,7 @@ class _ImageCropDialogState extends State<ImageCropDialog> {
   @override
   void initState() {
     super.initState();
-    _aspectRatioText = switch (widget.type) {
-      MediaType.question => 'Paysage (16:9)',
-      MediaType.short => 'Portrait (9:16)',
-      _ => 'Carré (1:1)',
-    };
+    _aspectRatioText = 'Paysage (16:9)';
   }
   void _handleCrop() {
     if (_isCropping) return;

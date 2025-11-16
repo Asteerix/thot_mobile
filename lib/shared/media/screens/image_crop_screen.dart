@@ -150,33 +150,11 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
   }
 
   AspectPreset _presetFromMediaType(MediaType t) {
-    return switch (t) {
-      MediaType.question => AspectPreset.landscape169,
-      MediaType.short => AspectPreset.portrait916,
-      MediaType.shortThumbnail => AspectPreset.portrait916,
-      _ => AspectPreset.square,
-    };
+    return AspectPreset.landscape169;
   }
 
   List<AspectPreset> _getAllowedPresets(MediaType t) {
-    switch (t) {
-      case MediaType.question:
-        return [AspectPreset.landscape169];
-      case MediaType.short:
-      case MediaType.shortThumbnail:
-        return [AspectPreset.portrait916];
-      case MediaType.video:
-        return [AspectPreset.landscape169];
-      case MediaType.article:
-      case MediaType.podcast:
-        return [AspectPreset.square, AspectPreset.landscape169];
-      default:
-        return [
-          AspectPreset.square,
-          AspectPreset.post45,
-          AspectPreset.landscape169,
-        ];
-    }
+    return [AspectPreset.landscape169];
   }
 
   double? _aspectFromPreset(AspectPreset p) {
@@ -200,19 +178,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
   }
 
   String _getMediaTypeLabel(MediaType t) {
-    switch (t) {
-      case MediaType.question:
-        return '(16:9)';
-      case MediaType.short:
-      case MediaType.shortThumbnail:
-        return '(9:16)';
-      case MediaType.video:
-        return '(16:9)';
-      case MediaType.article:
-      case MediaType.podcast:
-      default:
-        return '';
-    }
+    return '(16:9)';
   }
 
   @override

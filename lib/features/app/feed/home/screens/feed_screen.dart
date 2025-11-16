@@ -10,7 +10,8 @@ import 'package:thot/core/di/service_locator.dart';
 import 'package:thot/core/services/realtime/event_bus.dart';
 import 'package:thot/features/app/content/shared/models/post.dart';
 import 'package:thot/core/routing/route_names.dart';
-import 'package:thot/features/app/feed/home/widgets/feed_filters.dart' as filters;
+import 'package:thot/features/app/feed/home/widgets/feed_filters.dart'
+    as filters;
 import 'package:thot/shared/widgets/errors/error_view.dart';
 import 'package:thot/features/public/auth/shared/mixins/auth_aware_mixin.dart';
 import 'package:thot/core/services/logging/logger_service.dart';
@@ -116,20 +117,23 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
   @override
   ThemeData appBarTheme(BuildContext context) {
     final base = Theme.of(context);
-    final isDark = base.brightness == Brightness.dark;
     return base.copyWith(
-      appBarTheme: AppBarTheme(
-        backgroundColor: isDark ? Colors.black : Colors.white,
-        elevation: 1,
+      scaffoldBackgroundColor: Colors.black,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.black,
+        elevation: 0,
         iconTheme: IconThemeData(
-          color: isDark ? Colors.white : Colors.black87,
+          color: Colors.white,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         hintStyle: TextStyle(
-          color: isDark ? Colors.white.withOpacity(0.54) : Colors.black54,
+          color: Colors.white.withOpacity(0.54),
         ),
         border: InputBorder.none,
+      ),
+      textTheme: base.textTheme.copyWith(
+        titleLarge: const TextStyle(color: Colors.white),
       ),
     );
   }
@@ -276,7 +280,12 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
                         final post = _searchResultPosts[index];
                         return YouTubeListItem(
                           post: post,
-                          onTap: () => close(context, post.id),
+                          onTap: () {
+                            close(context, null);
+                            if (onPostTap != null) {
+                              onPostTap!(post.id);
+                            }
+                          },
                         );
                       },
                     );
@@ -298,7 +307,12 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
                         final post = _searchResultPosts[index];
                         return ModernFeedCard(
                           post: post,
-                          onTap: () => close(context, post.id),
+                          onTap: () {
+                            close(context, null);
+                            if (onPostTap != null) {
+                              onPostTap!(post.id);
+                            }
+                          },
                         );
                       },
                     );
@@ -350,126 +364,99 @@ class YouTubeSearchDelegate extends SearchDelegate<String?> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    if (query.trim().isNotEmpty && query.length >= 3) {
+      SearchHistoryService.addRecentSearch(query.trim());
+    }
 
-    return FutureBuilder<List<String>>(
-      future: query.isEmpty
-          ? SearchHistoryService.getRecentSearches()
-          : SearchHistoryService.getSuggestions(query),
-      builder: (context, snapshot) {
-        final List<String> suggestionList = snapshot.data ?? [];
-        final combinedList = query.isEmpty
-            ? [...suggestionList, ...suggestions]
-            : suggestionList.isEmpty
-                ? suggestions
-                    .where((s) => s.toLowerCase().contains(query.toLowerCase()))
-                    .toList()
-                : suggestionList;
+    if (query.length < 3) {
+      return FutureBuilder<List<String>>(
+        future: SearchHistoryService.getRecentSearches(),
+        builder: (context, snapshot) {
+          final List<String> recentList = snapshot.data ?? [];
 
-        if (combinedList.isEmpty && query.isNotEmpty) {
-          return Center(
-            child: Text(
-              'Tapez pour rechercher',
-              style: TextStyle(
-                  color:
-                      isDark ? Colors.white.withOpacity(0.54) : Colors.black45),
-            ),
-          );
-        }
+          if (recentList.isEmpty) {
+            return Center(
+              child: Text(
+                'Tapez au moins 3 caractères pour rechercher',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.54),
+                ),
+              ),
+            );
+          }
 
-        return ListView.builder(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          itemCount: combinedList.length +
-              (query.isEmpty && combinedList.isNotEmpty ? 1 : 0),
-          itemBuilder: (context, index) {
-            if (query.isEmpty && index == 0 && combinedList.isNotEmpty) {
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            itemCount: recentList.length + 1,
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return ListTile(
+                  leading: Icon(
+                    Icons.history,
+                    color: Colors.white.withOpacity(0.54),
+                    size: 20,
+                  ),
+                  title: Text(
+                    'Recherches récentes',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white.withOpacity(0.7),
+                    ),
+                  ),
+                  trailing: TextButton(
+                    onPressed: () async {
+                      await SearchHistoryService.clearRecentSearches();
+                      showSuggestions(context);
+                    },
+                    child: Text(
+                      'Effacer',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.white.withOpacity(0.7),
+                      ),
+                    ),
+                  ),
+                );
+              }
+
+              final suggestion = recentList[index - 1];
               return ListTile(
                 leading: Icon(
                   Icons.history,
-                  color:
-                      isDark ? Colors.white.withOpacity(0.54) : Colors.black54,
+                  color: Colors.white.withOpacity(0.54),
                   size: 20,
                 ),
                 title: Text(
-                  'Recherches récentes',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color:
-                        isDark ? Colors.white.withOpacity(0.7) : Colors.black54,
+                  suggestion,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.white,
                   ),
                 ),
-                trailing: TextButton(
+                trailing: IconButton(
+                  icon: Icon(
+                    Icons.close,
+                    size: 18,
+                    color: Colors.white.withOpacity(0.38),
+                  ),
                   onPressed: () async {
-                    await SearchHistoryService.clearRecentSearches();
+                    await SearchHistoryService.removeRecentSearch(suggestion);
                     showSuggestions(context);
                   },
-                  child: Text(
-                    'Effacer',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color:
-                          isDark ? Colors.white.withOpacity(0.7) : Colors.blue,
-                    ),
-                  ),
                 ),
+                onTap: () {
+                  query = suggestion;
+                  showSuggestions(context);
+                },
               );
-            }
+            },
+          );
+        },
+      );
+    }
 
-            final actualIndex = query.isEmpty ? index - 1 : index;
-            final suggestion = combinedList[actualIndex];
-            final isRecent = suggestionList.contains(suggestion);
-
-            return ListTile(
-              leading: Icon(
-                isRecent ? Icons.history : Icons.search,
-                color: isDark ? Colors.white.withOpacity(0.54) : Colors.black54,
-                size: 20,
-              ),
-              title: Text(
-                suggestion,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: isDark ? Colors.white : Colors.black87,
-                ),
-              ),
-              trailing: isRecent
-                  ? IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        size: 18,
-                        color: isDark
-                            ? Colors.white.withOpacity(0.38)
-                            : Colors.black38,
-                      ),
-                      onPressed: () async {
-                        await SearchHistoryService.removeRecentSearch(
-                            suggestion);
-                        showSuggestions(context);
-                      },
-                    )
-                  : IconButton(
-                      icon: Icon(
-                        Icons.north_west,
-                        size: 18,
-                        color: isDark
-                            ? Colors.white.withOpacity(0.38)
-                            : Colors.black38,
-                      ),
-                      onPressed: () {
-                        query = suggestion;
-                        showSuggestions(context);
-                      },
-                    ),
-              onTap: () {
-                query = suggestion;
-                showResults(context);
-              },
-            );
-          },
-        );
-      },
-    );
+    return buildResults(context);
   }
 }
 
@@ -526,6 +513,11 @@ class _FeedScreenState extends State<FeedScreen> with AuthAwareMixin {
       _isLoading = false;
       _error = null;
     });
+  }
+
+  void _navigateToPostById(String postId) {
+    if (postId.isEmpty) return;
+    context.push('/article-detail', extra: {'postId': postId});
   }
 
   List<String> _getSearchSuggestions() {
@@ -729,7 +721,7 @@ class _FeedScreenState extends State<FeedScreen> with AuthAwareMixin {
               });
             },
             onSearch: () async {
-              final result = await showSearch<String?>(
+              await showSearch<String?>(
                 context: context,
                 delegate: YouTubeSearchDelegate(
                   postService: _postRepository,
@@ -737,14 +729,9 @@ class _FeedScreenState extends State<FeedScreen> with AuthAwareMixin {
                   selectedType: _selectedType,
                   selectedPoliticalView: _selectedPoliticalOrientation,
                   suggestions: _getSearchSuggestions(),
+                  onPostTap: (postId) => _navigateToPostById(postId),
                 ),
               );
-              if (result != null && mounted) {
-                context.pushNamed(
-                  RouteNames.postDetail,
-                  pathParameters: {'postId': result},
-                );
-              }
             },
             onNotifications: () {
               context.pushNamed(RouteNames.notifications);
@@ -895,7 +882,8 @@ class _FeedListState extends State<_FeedList>
 
         print('📱 FEED - Posts chargés: ${_posts.length} posts');
         for (var i = 0; i < _posts.length; i++) {
-          print('  [$i] ${_posts[i].type.toString().split('.').last} - ${_posts[i].id} - ${_posts[i].title}');
+          print(
+              '  [$i] ${_posts[i].type.toString().split('.').last} - ${_posts[i].id} - ${_posts[i].title}');
         }
       }
     } catch (e) {
@@ -1335,9 +1323,7 @@ class ModernFeedCard extends StatelessWidget {
                               '12.5K abonnés',
                               style: TextStyle(
                                 fontSize: 11,
-                                color: isDark
-                                    ? Colors.white60
-                                    : Colors.black45,
+                                color: isDark ? Colors.white60 : Colors.black45,
                               ),
                             ),
                           ],
@@ -1767,9 +1753,7 @@ class YouTubeListItem extends StatelessWidget {
                         ' • 12.5K abonnés',
                         style: TextStyle(
                           fontSize: 11,
-                          color: isDark
-                              ? Colors.white60
-                              : Colors.black45,
+                          color: isDark ? Colors.white60 : Colors.black45,
                         ),
                       ),
                     ],

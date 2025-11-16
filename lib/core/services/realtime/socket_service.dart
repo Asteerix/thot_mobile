@@ -83,6 +83,7 @@ class SocketService {
     _socket!.on('notification:new', _handleNewNotification);
     _socket!.on('post:updated', _handlePostUpdated);
     _socket!.on('post:liked', _handlePostLiked);
+    _socket!.on('post:political_vote_updated', _handlePoliticalVoteUpdated);
   }
   void _scheduleReconnect() {
     if (_reconnectAttempts >= _maxReconnectAttempts) {
@@ -155,6 +156,13 @@ class SocketService {
     _logger.info('Post liked: $data');
     _eventBus.fire(SocketPostEvent(
       type: 'liked',
+      data: data,
+    ));
+  }
+  void _handlePoliticalVoteUpdated(dynamic data) {
+    _logger.info('Political vote updated: $data');
+    _eventBus.fire(SocketPostEvent(
+      type: 'political_vote_updated',
       data: data,
     ));
   }

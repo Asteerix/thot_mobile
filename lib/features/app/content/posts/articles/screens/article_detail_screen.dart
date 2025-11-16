@@ -31,12 +31,16 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   @override
   void initState() {
     super.initState();
+    print(
+        '🟢🟢🟢 ArticleDetailScreen initState called for postId: ${widget.postId}');
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      print('🟢🟢🟢 Calling _loadArticle from postFrameCallback');
       _loadArticle();
     });
   }
 
   Future<void> _loadArticle() async {
+    print('🟢🟢🟢 _loadArticle STARTED for postId: ${widget.postId}');
     try {
       setState(() {
         _isLoading = true;
@@ -44,7 +48,11 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
       });
 
       final postsStateProvider = context.read<PostsStateProvider>();
-      final post = await postsStateProvider.loadPost(widget.postId);
+
+      print('🔄 FORCE RELOAD POST: ${widget.postId}');
+      final postData = await _postRepository.getPost(widget.postId);
+      final post = Post.fromJson(postData);
+      postsStateProvider.updatePostSilently(post);
 
       if (post == null) {
         throw Exception('Article non trouvé');
@@ -54,29 +62,27 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
       final opposing = <Post>[];
       final related = <Post>[];
 
+      print('📌 POST: ${post.title}');
+      print('📌 opposingPosts count: ${post.opposingPosts?.length ?? 0}');
+      print('📌 opposedByPosts count: ${post.opposedByPosts?.length ?? 0}');
+
       if (post.opposingPosts != null) {
         for (final opposingData in post.opposingPosts!) {
+          print('📌 Loading opposing post: ${opposingData.postId}');
           try {
             final opposingPost =
                 await postsStateProvider.loadPost(opposingData.postId);
-            if (opposingPost != null) opposing.add(opposingPost);
+            if (opposingPost != null) {
+              opposing.add(opposingPost);
+              print('📌 Added to opposing: ${opposingPost.title}');
+            }
           } catch (e) {
             debugPrint('Erreur chargement post opposé: $e');
           }
         }
       }
 
-      if (post.opposedByPosts != null) {
-        for (final opposedData in post.opposedByPosts!) {
-          try {
-            final opposedPost =
-                await postsStateProvider.loadPost(opposedData.postId);
-            if (opposedPost != null) opposing.add(opposedPost);
-          } catch (e) {
-            debugPrint('Erreur chargement post opposé par: $e');
-          }
-        }
-      }
+      print('📌 FINAL opposing count: ${opposing.length}');
 
       if (post.relatedPosts != null) {
         for (final relatedPost in post.relatedPosts!) {

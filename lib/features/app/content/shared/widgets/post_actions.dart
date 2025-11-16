@@ -782,6 +782,9 @@ class _OppositionBottomSheetState extends State<_OppositionBottomSheet>
           _loadedOpposedByPosts = loadedPosts;
           _isLoading = false;
         });
+        print('🎯 setState called - _loadedOpposedByPosts.length: ${_loadedOpposedByPosts.length}');
+      } else {
+        print('⚠️ Widget not mounted, setState skipped');
       }
     } catch (e) {
       if (mounted) {
@@ -796,6 +799,10 @@ class _OppositionBottomSheetState extends State<_OppositionBottomSheet>
   Widget build(BuildContext context) {
     final hasOpposing = widget.opposingPosts.isNotEmpty;
     final hasOpposedBy = _loadedOpposedByPosts.isNotEmpty;
+
+    print('🎨 BUILDING OPPOSITION SHEET:');
+    print('   widget.opposingPosts.length: ${widget.opposingPosts.length}');
+    print('   _loadedOpposedByPosts.length: ${_loadedOpposedByPosts.length}');
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,

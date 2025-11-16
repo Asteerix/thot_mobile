@@ -289,7 +289,7 @@ class PostRepositoryImpl with ConnectivityAware {
           imageUrl = 'https://via.placeholder.com/400x300';
         }
         return {
-          'postId': post['post'] ?? post['_id'],
+          'postId': post['postId'] ?? post['post'] ?? post['_id'],
           'title': post['title'] ?? '',
           'imageUrl': imageUrl,
           'description': post['description'] ?? '',

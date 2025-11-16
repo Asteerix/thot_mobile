@@ -60,11 +60,15 @@ class CreationScreenLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     final bgColor = Colors.black;
 
-    return Scaffold(
-      backgroundColor: bgColor,
-      appBar: _buildAppBar(bgColor),
-      body: _buildBody(),
-      bottomNavigationBar: _buildBottomBar(false),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: bgColor,
+        resizeToAvoidBottomInset: true,
+        appBar: _buildAppBar(bgColor),
+        body: _buildBody(),
+        bottomNavigationBar: _buildBottomBar(false),
+      ),
     );
   }
 

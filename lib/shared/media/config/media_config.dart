@@ -70,10 +70,10 @@ class MediaConfig {
   static const int _kB = 1024;
   static const int _mb = 1024 * _kB;
   static const double questionAspectRatio = 16 / 9;
-  static const double shortAspectRatio = 9 / 16;
-  static const double articleAspectRatio = 1 / 1;
+  static const double shortAspectRatio = 16 / 9;
+  static const double articleAspectRatio = 16 / 9;
   static const double videoAspectRatio = 16 / 9;
-  static const int shortMaxDuration = 60;
+  static const int shortMaxDuration = 30;
   static const int videoMaxDuration = 300;
   static const Duration shortMax = Duration(seconds: shortMaxDuration);
   static const Duration videoMax = Duration(seconds: videoMaxDuration);
@@ -88,8 +88,8 @@ class MediaConfig {
   static const int maxAudioSize = 100 * _mb;
   static const int jpegQuality = 85;
   static const Resolution res1080pLandscape = Resolution(1920, 1080);
-  static const Resolution res1080pPortrait = Resolution(1080, 1920);
-  static const Resolution res1080Square = Resolution(1080, 1080);
+  static const Resolution res1080pPortrait = Resolution(1920, 1080);
+  static const Resolution res1080Square = Resolution(1920, 1080);
   static const List<String> _imageExt = ['jpg', 'jpeg', 'png', 'webp'];
   static const List<String> _videoExt = ['mp4', 'mov', 'm4v', 'webm'];
   static const List<String> _audioExt = ['mp3', 'aac', 'm4a', 'wav', 'flac'];

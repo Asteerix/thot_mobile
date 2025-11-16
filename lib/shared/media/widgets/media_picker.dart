@@ -51,33 +51,6 @@ class _MediaPickerState extends State<MediaPicker> {
       );
       return false;
     }
-    if (isShort) {
-      if (aspectRatio > 0.65) {
-        if (!mounted) return false;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'Le short doit être en format portrait (9:16). Pour les vidéos en format paysage, utilisez la section "Vidéo".'),
-            backgroundColor: AppColors.error,
-            duration: Duration(seconds: 5),
-          ),
-        );
-        return false;
-      }
-    } else {
-      if (aspectRatio < 1.0) {
-        if (!mounted) return false;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'Cette section est réservée aux vidéos en format paysage (16:9). Pour les vidéos en format portrait, utilisez la section "Short".'),
-            backgroundColor: AppColors.error,
-            duration: Duration(seconds: 5),
-          ),
-        );
-        return false;
-      }
-    }
     return true;
   }
   Future<void> _pickMedia(ImageSource source) async {
@@ -151,11 +124,7 @@ class _MediaPickerState extends State<MediaPicker> {
   void _showMediaPicker() {
     final isVideo = widget.type.isVideoContent;
     final isAudio = widget.type.isAudioContent;
-    final aspectRatioText = switch (widget.type) {
-      MediaType.question => 'paysage (16:9)',
-      MediaType.short => 'portrait (9:16)',
-      _ => 'carré (1:1)',
-    };
+    final aspectRatioText = 'paysage (16:9)';
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.black,

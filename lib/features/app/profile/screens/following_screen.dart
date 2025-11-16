@@ -8,6 +8,7 @@ import 'package:thot/features/public/auth/shared/providers/auth_provider.dart';
 import 'package:thot/features/app/profile/providers/follow_state_provider.dart';
 import 'package:thot/core/utils/safe_navigation.dart';
 import 'package:thot/shared/widgets/images/user_avatar.dart';
+import 'package:thot/features/app/profile/widgets/follow_button.dart';
 
 class FollowingScreen extends StatefulWidget {
   final String userId;
@@ -91,9 +92,11 @@ class _FollowingScreenState extends State<FollowingScreen> {
           }
         },
         (following) {
-          print('✅ [FOLLOWING] Success! Received ${following.length} following');
+          print(
+              '✅ [FOLLOWING] Success! Received ${following.length} following');
           if (following.isNotEmpty) {
-            print('   First following: ${following[0].username} (${following[0].id})');
+            print(
+                '   First following: ${following[0].username} (${following[0].id})');
           }
           if (mounted) {
             setState(() {
@@ -101,7 +104,8 @@ class _FollowingScreenState extends State<FollowingScreen> {
               _filterFollowing();
               _isLoading = false;
             });
-            print('✅ [FOLLOWING] State updated - displaying ${_filteredFollowing.length} following');
+            print(
+                '✅ [FOLLOWING] State updated - displaying ${_filteredFollowing.length} following');
           }
         },
       );
@@ -226,15 +230,18 @@ class _FollowingScreenState extends State<FollowingScreen> {
               style: const TextStyle(color: Colors.white, fontSize: 15),
               decoration: InputDecoration(
                 hintText: 'Rechercher',
-                hintStyle: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 15),
-                prefixIcon: Icon(Icons.search, color: Colors.white.withOpacity(0.4)),
+                hintStyle: TextStyle(
+                    color: Colors.white.withOpacity(0.4), fontSize: 15),
+                prefixIcon:
+                    Icon(Icons.search, color: Colors.white.withOpacity(0.4)),
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.1),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               ),
             ),
           ),
@@ -276,18 +283,16 @@ class _FollowingScreenState extends State<FollowingScreen> {
                         itemBuilder: (context, index) {
                           final user = _filteredFollowing[index];
                           final isCurrentUser = currentUserId == user.id;
-                          final isProcessing = _processingFollows.contains(user.id);
+                          final isProcessing =
+                              _processingFollows.contains(user.id);
 
                           return InkWell(
                             onTap: () {
+                              context.pop();
                               if (isCurrentUser) {
                                 context.go('/profile');
                               } else {
-                                context.push('/profile', extra: {
-                                  'userId': user.id,
-                                  'isCurrentUser': false,
-                                  'forceReload': true,
-                                });
+                                context.go('/profile/${user.id}');
                               }
                             },
                             child: Container(
@@ -332,54 +337,10 @@ class _FollowingScreenState extends State<FollowingScreen> {
                                   ),
                                   if (!isCurrentUser) ...[
                                     const SizedBox(width: 12),
-                                    SizedBox(
-                                      height: 32,
-                                      child: isProcessing
-                                          ? const SizedBox(
-                                              width: 100,
-                                              child: Center(
-                                                child: SizedBox(
-                                                  width: 16,
-                                                  height: 16,
-                                                  child: CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ),
-                                            )
-                                          : ElevatedButton(
-                                              onPressed: () => _toggleFollow(user),
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: user.isFollowing
-                                                    ? Colors.transparent
-                                                    : Colors.white,
-                                                foregroundColor: user.isFollowing
-                                                    ? Colors.white
-                                                    : Colors.black,
-                                                elevation: 0,
-                                                side: user.isFollowing
-                                                    ? BorderSide(
-                                                        color: Colors.white.withOpacity(0.3),
-                                                      )
-                                                    : null,
-                                                padding: const EdgeInsets.symmetric(
-                                                  horizontal: 24,
-                                                  vertical: 6,
-                                                ),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(8),
-                                                ),
-                                                minimumSize: const Size(100, 32),
-                                              ),
-                                              child: Text(
-                                                user.isFollowing ? 'Abonné' : 'Suivre',
-                                                style: const TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                            ),
+                                    FollowButton(
+                                      userId: user.id,
+                                      isFollowing: user.isFollowing,
+                                      compact: true,
                                     ),
                                   ],
                                 ],
