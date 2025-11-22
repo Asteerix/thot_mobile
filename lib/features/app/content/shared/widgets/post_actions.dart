@@ -134,8 +134,7 @@ class _PostActionsState extends State<PostActions> {
     );
   }
 
-  Widget _buildPoliticalOrientationButton(Post post) {
-    final votes = post.politicalOrientation.userVotes;
+  PoliticalOrientation _calculateMedian(Map<String, int> votes) {
     final frequencies = [
       votes['extremelyConservative'] ?? 0,
       votes['conservative'] ?? 0,
@@ -144,18 +143,47 @@ class _PostActionsState extends State<PostActions> {
       votes['extremelyProgressive'] ?? 0,
     ];
     final totalVotes = frequencies.fold(0, (sum, freq) => sum + freq);
-    PoliticalOrientation? medianOrientation;
-    if (totalVotes > 0) {
-      final medianPosition = totalVotes / 2;
-      var cumulative = 0;
-      for (var i = 0; i < frequencies.length; i++) {
-        cumulative += frequencies[i];
-        if (cumulative > medianPosition) {
-          medianOrientation = PoliticalOrientation.values[i];
-          break;
+    if (totalVotes == 0) return PoliticalOrientation.neutral;
+
+    final medianPosition = totalVotes / 2;
+    var cumulative = 0;
+
+    for (var i = 0; i < frequencies.length; i++) {
+      cumulative += frequencies[i];
+      if (cumulative > medianPosition) {
+        return PoliticalOrientation.values[i];
+      } else if (cumulative == medianPosition && totalVotes % 2 == 0) {
+        for (var j = i + 1; j < frequencies.length; j++) {
+          if (frequencies[j] > 0) {
+            final score1 = i - 2;
+            final score2 = j - 2;
+            final avgScore = (score1 + score2) / 2;
+            final median = avgScore > 0 ? avgScore.floor() : avgScore.ceil();
+            final index = median + 2;
+            if (index >= 0 && index < PoliticalOrientation.values.length) {
+              return PoliticalOrientation.values[index];
+            }
+            return PoliticalOrientation.neutral;
+          }
         }
+        return PoliticalOrientation.values[i];
       }
     }
+    return PoliticalOrientation.neutral;
+  }
+
+  Widget _buildPoliticalOrientationButton(Post post) {
+    final votes = post.politicalOrientation.userVotes;
+    final totalVotes = (votes['extremelyConservative'] ?? 0) +
+        (votes['conservative'] ?? 0) +
+        (votes['neutral'] ?? 0) +
+        (votes['progressive'] ?? 0) +
+        (votes['extremelyProgressive'] ?? 0);
+
+    final medianOrientation = totalVotes > 0
+        ? _calculateMedian(votes)
+        : null;
+
     final color = medianOrientation != null
         ? PoliticalOrientationUtils.getColor(medianOrientation)
         : Colors.grey;
